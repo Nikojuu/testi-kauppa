@@ -63,6 +63,7 @@ export interface Product {
   description: string;
   price: number;
   images: string[];
+  quantity: number | null;
   salePrice?: number | null;
   salePercent?: string | null;
   saleEndDate?: Date | null;

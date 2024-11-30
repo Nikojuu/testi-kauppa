@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 
 const prismaClientSingleton = () => {
+  if (!process.env.TENANT_ID) {
+    throw new Error("TENANT_ID is not defined");
+  }
   return new PrismaClient();
 };
 

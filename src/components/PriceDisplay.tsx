@@ -6,28 +6,32 @@ interface PriceDisplayProps {
 }
 
 export const PriceDisplay: React.FC<PriceDisplayProps> = ({ priceInfo }) => {
-  if (!priceInfo.isOnSale) {
-    return (
-      <span className="text-lg font-bold text-primary">
-        €{priceInfo.currentPrice.toFixed(2)}
-      </span>
-    );
-  }
-
+  const discountPercentage = priceInfo.salePercent
+    ? ((1 - parseFloat(priceInfo.salePercent)) * 100).toFixed(0)
+    : null;
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-1 ">
       <div className="flex items-center gap-2">
-        {priceInfo.salePercent && (
-          <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded">
-            -{parseFloat(priceInfo.salePercent) * 100}%
+        {priceInfo.isOnSale && priceInfo.salePercent ? (
+          <span className="bg-red-100 text-red-500 text-xs font-medium px-2 py-0.5 rounded">
+            -{discountPercentage}%
           </span>
+        ) : (
+          <span className="invisible"></span>
         )}
-        <span className="text-gray-400 line-through text-sm">
+        <span
+          className={`text-gray-400 text-sm ${
+            priceInfo.isOnSale ? "line-through" : "invisible"
+          }`}
+        >
           €{priceInfo.currentPrice.toFixed(2)}
         </span>
       </div>
-      <span className="text-lg font-bold text-primary">
-        €{priceInfo.salePrice!.toFixed(2)}
+      <span className="text-lg font-bold">
+        €
+        {priceInfo.isOnSale
+          ? priceInfo.salePrice!.toFixed(2)
+          : priceInfo.currentPrice.toFixed(2)}
       </span>
     </div>
   );

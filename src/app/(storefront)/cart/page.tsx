@@ -52,7 +52,7 @@ const CartPage = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  console.log(items);
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -96,6 +96,17 @@ const CartPage = () => {
               })}
             >
               {items.map(({ product, variation, cartQuantity }, i) => {
+                // Determine if the stock is unlimited or out of stock
+                const isUnlimitedStock = variation
+                  ? variation.quantity === null
+                  : product.quantity === null;
+
+                const isOutOfStock = variation
+                  ? !isUnlimitedStock &&
+                    (variation.quantity ?? 0) <= cartQuantity
+                  : !isUnlimitedStock &&
+                    (product.quantity ?? 0) <= cartQuantity;
+
                 return (
                   <li className="flex py-6 sm:py-10" key={i}>
                     <div className="flex-shrink-0">
@@ -140,7 +151,7 @@ const CartPage = () => {
                               size="icon"
                               className="h-8 w-8"
                               onClick={() => incrementQuantity(product.id)}
-                              disabled={cartQuantity === 99}
+                              disabled={isOutOfStock} // New logic here
                             >
                               <Plus className="h-4 w-4" />
                               <span className="sr-only">Increase quantity</span>
@@ -155,7 +166,6 @@ const CartPage = () => {
                           <p className="mt-1 text-sm font-medium text-gray-900">
                             {/* Check if there's a variation and its sale price */}
                             {variation ? (
-                              // If there's a variation, check for the sale price first
                               isSaleActive(
                                 variation?.saleStartDate ??
                                   product.saleStartDate,
@@ -172,8 +182,7 @@ const CartPage = () => {
                                   {variation?.price ?? product.price} €
                                 </span>
                               )
-                            ) : // No variation, show product price
-                            isSaleActive(
+                            ) : isSaleActive(
                                 product.saleStartDate,
                                 product.saleEndDate
                               ) && product.salePrice ? (

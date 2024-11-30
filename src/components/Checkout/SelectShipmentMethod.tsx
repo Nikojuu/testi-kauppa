@@ -10,6 +10,7 @@ import type { ShipitShippingMethod, ShipmentMethods } from "@prisma/client";
 import Image from "next/image";
 import { DropInLocation } from "@/app/utils/types";
 import { cn } from "@/lib/utils";
+import Subtitle from "../subtitle";
 
 const LOCATIONS_PER_PAGE = 6;
 
@@ -45,66 +46,69 @@ export function SelectShipmentMethod({
     : dropInLocations.slice(0, LOCATIONS_PER_PAGE);
 
   return (
-    <RadioGroup
-      onValueChange={(value: string) => {
-        const selected = allMethods.find((method) => method.id === value);
-        if (selected) {
-          setChosenShipmentMethod(selected);
-        }
-      }}
-      value={chosenShipmentMethod?.id}
-      className="space-y-6"
-    >
-      <Card>
-        <CardHeader>
-          <CardTitle>Custom Postipaketti</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {allShipmentMethods.customShipmentMethods.map((method) => (
-            <ShipmentMethod key={method.id} method={method} />
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Shipit Postipaketti</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {allShipmentMethods.shipitShipmentMethods.map((method) => (
-            <ShipmentMethod key={method.id} method={method} />
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Drop In Locations</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {visibleLocations.map((method) => (
-              <ParchelLockerShipmentMethod key={method.id} method={method} />
+    <>
+      <Subtitle subtitle="Valitse toimitustapa" />
+      <RadioGroup
+        onValueChange={(value: string) => {
+          const selected = allMethods.find((method) => method.id === value);
+          if (selected) {
+            setChosenShipmentMethod(selected);
+          }
+        }}
+        value={chosenShipmentMethod?.id}
+        className="space-y-6 mx-auto max-w-2xl mt-48"
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Custom Postipaketti</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {allShipmentMethods.customShipmentMethods.map((method) => (
+              <ShipmentMethod key={method.id} method={method} />
             ))}
-          </div>
-          {dropInLocations.length > LOCATIONS_PER_PAGE && (
-            <div className="flex justify-center pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowAllLocations(!showAllLocations)}
-                className="w-full max-w-xs"
-              >
-                {showAllLocations
-                  ? "Näytä vähemmän automaatteja"
-                  : `Näytä lisää automaatteja (${
-                      dropInLocations.length - LOCATIONS_PER_PAGE
-                    })`}
-              </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Shipit Postipaketti</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {allShipmentMethods.shipitShipmentMethods.map((method) => (
+              <ShipmentMethod key={method.id} method={method} />
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Drop In Locations</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {visibleLocations.map((method) => (
+                <ParchelLockerShipmentMethod key={method.id} method={method} />
+              ))}
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </RadioGroup>
+            {dropInLocations.length > LOCATIONS_PER_PAGE && (
+              <div className="flex justify-center pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAllLocations(!showAllLocations)}
+                  className="w-full max-w-xs"
+                >
+                  {showAllLocations
+                    ? "Näytä vähemmän automaatteja"
+                    : `Näytä lisää automaatteja (${
+                        dropInLocations.length - LOCATIONS_PER_PAGE
+                      })`}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </RadioGroup>
+    </>
   );
 }
 

@@ -537,7 +537,7 @@ export const getDropInLocations = async ({
     },
   });
   if (dropInServiceIds.length === 0) {
-    return alert("No drop in locations set in shop settings");
+    return [];
   }
 
   const url =

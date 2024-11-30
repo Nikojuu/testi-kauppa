@@ -12,6 +12,11 @@ const nextConfig = {
         hostname: "www.shipit.fi",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "resources.paytrail.com",
+        port: "",
+      },
     ],
   },
 };

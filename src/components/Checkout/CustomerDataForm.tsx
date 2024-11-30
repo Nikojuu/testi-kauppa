@@ -1,9 +1,7 @@
-// CustomerDataForm.tsx
 import React from "react";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { CustomerData, customerDataSchema } from "@/lib/zodSchemas";
-import { z } from "zod";
 import {
   Card,
   CardContent,
@@ -12,16 +10,18 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 interface CustomerDataFormProps {
   handleSubmit: (data: CustomerData) => void;
+  initialData?: CustomerData | null;
 }
 
-const CustomerDataForm: React.FC<CustomerDataFormProps> = ({
+export default function CustomerDataForm({
   handleSubmit,
-}) => {
+  initialData,
+}: CustomerDataFormProps) {
   const [form, fields] = useForm({
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: customerDataSchema });
@@ -36,11 +36,12 @@ const CustomerDataForm: React.FC<CustomerDataFormProps> = ({
         handleSubmit(result.data);
       }
     },
+    defaultValue: initialData || undefined,
   });
 
   return (
     <form id={form.id} onSubmit={form.onSubmit}>
-      <Card className="mt-5">
+      <Card className="mt-48 mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle className="text-2xl">Tilaajan tiedot</CardTitle>
         </CardHeader>
@@ -48,80 +49,98 @@ const CustomerDataForm: React.FC<CustomerDataFormProps> = ({
           <div className="flex flex-col gap-y-6">
             <div className="flex gap-3">
               <div className="flex flex-col gap-3 w-1/2">
-                <Label>Etunimi</Label>
+                <Label htmlFor={fields.first_name.id}>Etunimi</Label>
                 <Input
+                  id={fields.first_name.id}
                   name={fields.first_name.name}
-                  key={fields.first_name.key}
+                  defaultValue={initialData?.first_name || ""}
                   type="text"
                   placeholder="Anna etunimesi"
                 />
-                <p className="text-red-500">{fields.first_name.errors}</p>
+                {fields.first_name.errors && (
+                  <p className="text-red-500">{fields.first_name.errors}</p>
+                )}
               </div>
               <div className="flex flex-col gap-3 w-1/2">
-                <Label>Sukunimi</Label>
+                <Label htmlFor={fields.last_name.id}>Sukunimi</Label>
                 <Input
+                  id={fields.last_name.id}
                   name={fields.last_name.name}
-                  key={fields.last_name.key}
+                  defaultValue={initialData?.last_name || ""}
                   type="text"
                   placeholder="Anna sukunimesi"
                 />
-                <p className="text-red-500">{fields.last_name.errors}</p>
+                {fields.last_name.errors && (
+                  <p className="text-red-500">{fields.last_name.errors}</p>
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <Label>Sähköposti</Label>
+              <Label htmlFor={fields.email.id}>Sähköposti</Label>
               <Input
+                id={fields.email.id}
                 name={fields.email.name}
-                key={fields.email.key}
-                type="text"
+                defaultValue={initialData?.email || ""}
+                type="email"
                 placeholder="Anna sähköpostiosoitteesi"
               />
-              <p className="text-red-500">{fields.email.errors}</p>
+              {fields.email.errors && (
+                <p className="text-red-500">{fields.email.errors}</p>
+              )}
             </div>
-
             <div className="flex flex-col gap-3">
-              <Label>Katuosoite</Label>
+              <Label htmlFor={fields.address.id}>Katuosoite</Label>
               <Input
+                id={fields.address.id}
                 name={fields.address.name}
-                key={fields.address.key}
+                defaultValue={initialData?.address || ""}
                 type="text"
                 placeholder="Anna katuosoitteesi"
               />
-              <p className="text-red-500">{fields.address.errors}</p>
+              {fields.address.errors && (
+                <p className="text-red-500">{fields.address.errors}</p>
+              )}
             </div>
-
-            <div className="flex gap-3 ">
+            <div className="flex gap-3">
               <div className="flex flex-col gap-3 w-1/2">
-                <Label>Postinumero</Label>
+                <Label htmlFor={fields.postal_code.id}>Postinumero</Label>
                 <Input
+                  id={fields.postal_code.id}
                   name={fields.postal_code.name}
-                  key={fields.postal_code.key}
+                  defaultValue={initialData?.postal_code || ""}
                   type="text"
                   placeholder="Anna postinumerosi"
                 />
-                <p className="text-red-500">{fields.postal_code.errors}</p>
-              </div>{" "}
+                {fields.postal_code.errors && (
+                  <p className="text-red-500">{fields.postal_code.errors}</p>
+                )}
+              </div>
               <div className="flex flex-col gap-3 w-1/2">
-                <Label>Kaupunki</Label>
+                <Label htmlFor={fields.city.id}>Kaupunki</Label>
                 <Input
+                  id={fields.city.id}
                   name={fields.city.name}
-                  key={fields.city.key}
+                  defaultValue={initialData?.city || ""}
                   type="text"
                   placeholder="Anna kaupungin nimi"
                 />
-                <p className="text-red-500">{fields.city.errors}</p>
+                {fields.city.errors && (
+                  <p className="text-red-500">{fields.city.errors}</p>
+                )}
               </div>
             </div>
-
             <div className="flex flex-col gap-3">
-              <Label>Puhelinnumero</Label>
+              <Label htmlFor={fields.phone.id}>Puhelinnumero</Label>
               <Input
+                id={fields.phone.id}
                 name={fields.phone.name}
-                key={fields.phone.key}
-                type="text"
+                defaultValue={initialData?.phone || ""}
+                type="tel"
                 placeholder="Anna puhelinnumerosi"
               />
-              <p className="text-red-500">{fields.phone.errors}</p>
+              {fields.phone.errors && (
+                <p className="text-red-500">{fields.phone.errors}</p>
+              )}
             </div>
           </div>
         </CardContent>
@@ -131,6 +150,4 @@ const CustomerDataForm: React.FC<CustomerDataFormProps> = ({
       </Card>
     </form>
   );
-};
-
-export default CustomerDataForm;
+}

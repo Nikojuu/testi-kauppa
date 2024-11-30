@@ -103,7 +103,7 @@ const Cart = () => {
                       className: "w-full",
                     })}
                   >
-                    Continue to Checkout
+                    Siirry tilaamaan!
                   </Link>
                 </SheetTrigger>
               </SheetFooter>
@@ -121,17 +121,17 @@ const Cart = () => {
                 alt="empty shopping cart hippo"
               />
             </div>
-            <div className="text-xl font-semibold">Your cart is empty</div>
+            <div className="text-xl font-semibold">Ostoskorisi on tyhjä</div>
             <SheetTrigger asChild>
               <Link
                 href="/products"
                 className={buttonVariants({
-                  variant: "link",
+                  variant: "gooeyLeft",
                   size: "sm",
                   className: "text-sm text-muted-foreground",
                 })}
               >
-                Add items to your cart to checkout
+                Aloita lisäämällä tuotteita
               </Link>
             </SheetTrigger>
           </div>
