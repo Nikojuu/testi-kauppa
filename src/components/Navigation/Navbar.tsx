@@ -19,7 +19,6 @@ const getData = async () => {
 
 const Navbar = async ({ className = "" }: { className?: string }) => {
   const categories = await getData();
-
   return (
     <nav
       className={`w-full max-w-[3500px] mx-auto px-4 sm:px-6 lg:px-40 py-5 flex items-center h-28 justify-between bg-white ${className}`}
@@ -32,7 +31,6 @@ const Navbar = async ({ className = "" }: { className?: string }) => {
         </Link>
         <NavbarLinks categories={categories} />
       </div>
-
       <div className="flex gap-4">
         <Cart />
       </div>

@@ -6,11 +6,7 @@ interface SubtitleProps {
 const Subtitle = ({ subtitle, dark }: SubtitleProps) => {
   return (
     <div className="flex justify-center items-center gap-8 my-12 ">
-      <div
-        className={`h-[1px] w-full ${
-          dark ? "bg-primary-foreground" : "bg-secondary-foreground"
-        }`}
-      ></div>
+      <div className={`h-[1px] w-full bg-black`}></div>
       <h2
         className={`text-3xl font-primary text-nowrap ${
           dark ? "text-primary" : ""
@@ -18,11 +14,7 @@ const Subtitle = ({ subtitle, dark }: SubtitleProps) => {
       >
         {subtitle}
       </h2>
-      <div
-        className={`h-[1px] w-full ${
-          dark ? "bg-primary-foreground" : "bg-secondary-foreground"
-        }`}
-      ></div>
+      <div className={`h-[1px] w-full bg-black `}></div>
     </div>
   );
 };

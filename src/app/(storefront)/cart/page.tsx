@@ -1,5 +1,6 @@
 "use client";
 
+import Subtitle from "@/components/subtitle";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { cn, getDisplayPriceSelectedProduct, isSaleActive } from "@/lib/utils";
@@ -54,12 +55,9 @@ const CartPage = () => {
   }, []);
 
   return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          Ostoskori
-        </h1>
-
+    <section className="mt-48">
+      <Subtitle subtitle="Ostoskori" />
+      <div className="mx-auto max-w-screen-2xl">
         <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <div
             className={cn("lg:col-span-7", {
@@ -137,7 +135,9 @@ const CartPage = () => {
                               variant="outline"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() => decrementQuantity(product.id)}
+                              onClick={() =>
+                                decrementQuantity(product.id, variation?.id)
+                              }
                               disabled={cartQuantity === 1}
                             >
                               <Minus className="h-4 w-4" />
@@ -150,7 +150,9 @@ const CartPage = () => {
                               variant="outline"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() => incrementQuantity(product.id)}
+                              onClick={() =>
+                                incrementQuantity(product.id, variation?.id)
+                              }
                               disabled={isOutOfStock} // New logic here
                             >
                               <Plus className="h-4 w-4" />
@@ -201,7 +203,9 @@ const CartPage = () => {
                           <div className="absolute right-0 top-0">
                             <Button
                               aria-label="remove product"
-                              onClick={() => removeItem(product.id)}
+                              onClick={() =>
+                                removeItem(product.id, variation?.id)
+                              }
                               variant="ghost"
                             >
                               <X className="h-5 w-5" aria-hidden="true" />
@@ -228,7 +232,7 @@ const CartPage = () => {
 
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <div className="text-base font-medium text-gray-900">
-                  Order Total
+                  Yhteensä
                 </div>
                 <div className="text-base font-medium text-gray-900">
                   {isMounted ? (
@@ -243,13 +247,15 @@ const CartPage = () => {
             <div className="mt-6">
               {/* <CheckoutButton /> */}
               <Link href="/payment/checkout">
-                <Button>Tee tilaus</Button>
+                <Button className="bg-tertiary" variant="gooeyLeft">
+                  Tee tilaus
+                </Button>
               </Link>
             </div>
           </section>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

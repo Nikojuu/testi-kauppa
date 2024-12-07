@@ -90,7 +90,7 @@ const Cart = () => {
               <Separator />
               <div className="space-y-1.5 text-sm">
                 <div className="flex">
-                  <span className="flex-1">Total</span>
+                  <span className="flex-1">Yhteensä</span>
                   <span>{cartTotal}</span>
                 </div>
               </div>

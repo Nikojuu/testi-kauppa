@@ -9,10 +9,11 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import Link from "next/link";
-import { PriceDisplay } from "./PriceDisplay";
+
 import { Product } from "@/app/utils/types";
 import { getPriceInfo } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
+import { LowestPriceDisplay } from "./LowestPriceDisplay";
 
 interface ProductCardProps {
   item: Product;
@@ -31,8 +32,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   const statusClass = hasVariations
     ? " font-semibold" // Variations available
     : isAvailable
-    ? "text-green-600 font-semibold" // Products available
-    : "text-red-600 font-semibold"; // Products not available
+      ? "text-green-600 font-semibold" // Products available
+      : "text-red-600 font-semibold"; // Products not available
 
   return (
     <div className="h-full flex flex-col">
@@ -59,25 +60,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         <CarouselPrevious className="ml-16" />
         <CarouselNext className="mr-16" />
       </Carousel>
-      <div className="flex-grow flex flex-col p-3">
-        <div className="flex justify-between items-start mb-2">
-          <h1 className="font-semibold text-xl flex-grow truncate">
-            {item.name}
-          </h1>
-          <PriceDisplay priceInfo={priceInfo} />
-        </div>
-        {/* Conditional information with styling */}
-        <p className={`text-sm self-end ${statusClass}`}>
-          {hasVariations ? "Tuotteella on eri vaihtoehtoja" : quantityInfo}
-        </p>
-        <p className="text-gray-600 text-sm flex-grow line-clamp-2">
-          {item.description}
-        </p>
-      </div>
       <Link
         href={`/product/${item.id}`}
         className="block rounded-lg hover:shadow-sm hover:shadow-primary transition-shadow duration-300 h-full"
       >
+        <div className="flex-grow flex flex-col p-3">
+          <div className="flex justify-between items-start mb-2">
+            <h1 className="font-semibold text-xl flex-grow truncate">
+              {item.name}
+            </h1>
+            <LowestPriceDisplay priceInfo={priceInfo} />
+          </div>
+          {/* Conditional information with styling */}
+          <p className={`text-sm self-end ${statusClass}`}>
+            {hasVariations ? "Tuotteella on eri vaihtoehtoja" : quantityInfo}
+          </p>
+        </div>
         <Button variant="gooeyLeft" className="w-full">
           Näytä lisätietoja
         </Button>

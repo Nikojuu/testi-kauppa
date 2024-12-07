@@ -9,7 +9,11 @@ import {
 } from "@/components/ui/select";
 import AddToCartButton from "@/components/Cart/AddToCartButton";
 import { ImageSlider } from "../ImageSlider";
-import { getPriceInfo } from "@/lib/utils";
+import {
+  getDisplayPriceSelectedProduct,
+  getPriceInfo,
+  isSaleActive,
+} from "@/lib/utils";
 import { Check, X } from "lucide-react";
 import { PriceDisplay } from "../PriceDisplay";
 import { Separator } from "../ui/separator";
@@ -68,8 +72,16 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
     ? (selectedVariation.quantity ?? 0) > 0
     : null;
 
-  const priceInfo = getPriceInfo(product);
-
+  const displayPrice = getDisplayPriceSelectedProduct(
+    product,
+    selectedVariation
+  );
+  const isOnSale = selectedVariation
+    ? isSaleActive(
+        selectedVariation.saleStartDate,
+        selectedVariation.saleEndDate
+      )
+    : isSaleActive(product.saleStartDate, product.saleEndDate);
   return (
     <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <Breadcrumbs categories={product.categories} productName={product.name} />
@@ -92,7 +104,19 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
 
             <div className="mb-6 flex justify-between">
               <h3 className="font-semibold my-4">Hinta:</h3>
-              <PriceDisplay priceInfo={priceInfo} />
+              <PriceDisplay
+                displayPrice={displayPrice!}
+                originalPrice={
+                  isOnSale
+                    ? selectedVariation?.price || product.price
+                    : undefined
+                }
+                isOnSale={isOnSale}
+                salePercent={
+                  selectedVariation?.salePercent || product.salePercent
+                }
+              />
+              ;
             </div>
             <Separator />
 

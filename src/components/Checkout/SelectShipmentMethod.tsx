@@ -84,8 +84,8 @@ export function SelectShipmentMethod({
           <CardHeader>
             <CardTitle>Drop In Locations</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
               {visibleLocations.map((method) => (
                 <ParchelLockerShipmentMethod key={method.id} method={method} />
               ))}
@@ -125,7 +125,11 @@ function ShipmentMethod({
         "transition-colors duration-200"
       )}
     >
-      <RadioGroupItem value={method.id} id={method.id} />
+      <RadioGroupItem
+        value={method.id}
+        id={method.id}
+        className="border-gray-500 text-gray-700 bg-tertiary "
+      />
       <Label
         htmlFor={method.id}
         className="flex justify-between w-full cursor-pointer"
@@ -140,19 +144,23 @@ function ParchelLockerShipmentMethod({ method }: { method: DropInLocation }) {
   return (
     <div
       className={cn(
-        "flex items-center space-x-2 p-4 rounded-lg border",
+        "flex items-center   p-2 rounded-lg border",
         "hover:bg-accent hover:text-accent-foreground",
         "transition-colors duration-200"
       )}
     >
-      <RadioGroupItem value={method.id} id={method.id} />
+      <RadioGroupItem
+        className="border-gray-500 text-gray-700 bg-tertiary "
+        value={method.id}
+        id={method.id}
+      />
       <Label
         htmlFor={method.id}
-        className="flex flex-col items-start cursor-pointer w-full space-y-2"
+        className="flex flex-col items-start cursor-pointer w-full p-2 "
       >
-        <div className="flex justify-between w-full space-x-2">
-          <span className="font-medium">{method.name}</span>
-          <span className="text-sm text-muted-foreground">
+        <div className="flex justify-between w-full ">
+          <span className="font-medium ">{method.name}</span>
+          <span className="text-sm text-muted-foreground ">
             {method.merchantPrice! / 100} €
           </span>
         </div>

@@ -1,6 +1,7 @@
 import { shipitCreateShipment } from "@/app/actions";
 import { calculateHmac } from "@/app/utils/calculateHmac";
 import prisma from "@/app/utils/db";
+import { sendOrderConfirmationEmail } from "@/app/utils/sendOrderConfirmationEmail";
 
 import { NextResponse } from "next/server";
 
@@ -48,16 +49,13 @@ export async function GET(request: Request) {
       });
 
       // Parse items from the order
-      const orderItems = JSON.parse(order.items as string) as Array<{
-        productCode: string;
-        units: number;
-        stamp: string; // tells type of product (variation or product or shipping)
-      }>;
+      const orderItems = JSON.parse(order.items as string);
 
       // Update product quantities
       for (const item of orderItems) {
-        if (item.stamp === "variation") {
-          // Update variation quantity if applicable
+        const [type, id] = item.stamp.split("-"); // Extract type and ID from stamp
+
+        if (type === "variation") {
           await prisma.productVariation.update({
             where: { id: item.productCode },
             data: {
@@ -66,8 +64,7 @@ export async function GET(request: Request) {
               },
             },
           });
-        } else if (item.stamp === "product") {
-          // Update product quantity
+        } else if (type === "product") {
           await prisma.product.update({
             where: { id: item.productCode },
             data: {
@@ -76,6 +73,11 @@ export async function GET(request: Request) {
               },
             },
           });
+        } else if (type === "shipping") {
+          // No inventory update needed for shipping
+          console.log("Shipping cost item processed");
+        } else {
+          throw new Error(`Unknown item type: ${type}`);
         }
       }
 
@@ -102,7 +104,10 @@ export async function GET(request: Request) {
           },
         });
       }
-      return NextResponse.redirect(new URL("/payment/success", request.url));
+      sendOrderConfirmationEmail(customerData, orderItems, shipmentMethod);
+      return NextResponse.redirect(
+        new URL(`/payment/success/${reference}`, request.url)
+      );
     } else {
       // Update order status to FAILED
       await prisma.order.update({

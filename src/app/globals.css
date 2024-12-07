@@ -10,10 +10,16 @@
     --card-foreground: 20 14.3% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
-    --primary: 47.9 95.8% 53.1%;
+    /* --primary: 47.9 95.8% 53.1%; */
+    /* --primary: 337.4 100% 89.6%; */
+    --primary: 42.3 88.8% 79%;
+
     --primary-foreground: 26 83.3% 14.1%;
     --secondary: 60 4.8% 95.9%;
+
     --secondary-foreground: 24 9.8% 10%;
+    --tertiary: 47.9 95.8% 53.1%;
+    --tertiary-foreground: 24 9.8% 10%;
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;
     --accent: 60 4.8% 95.9%;
@@ -220,8 +226,12 @@ figure.effect-layla img,
 figure.effect-layla figcaption::before,
 figure.effect-layla figcaption::after,
 figure.effect-layla p {
-  -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
-  transition: opacity 0.35s, transform 0.35s;
+  -webkit-transition:
+    opacity 0.35s,
+    -webkit-transform 0.35s;
+  transition:
+    opacity 0.35s,
+    transform 0.35s;
 }
 
 figure.effect-layla:hover img {

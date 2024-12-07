@@ -8,6 +8,9 @@ import { calculateHmac } from "./utils/calculateHmac";
 import type { ShipitShippingMethod } from "@prisma/client";
 import { confirmedItems, ShipmentMethodUnion } from "./utils/types";
 import { isSaleActive } from "@/lib/utils";
+import { z } from "zod";
+import { Resend } from "resend";
+import ContactFormEmail from "@/components/Email/ContactFormEmail";
 
 export async function getShipmentMethods() {
   // make aktive shipment method in database TODO later§
@@ -107,6 +110,10 @@ export const payTrailCheckout = async (
         items.map(async (item: CartItem) => {
           const { product, variation } = item;
 
+          const stamp = variation
+            ? `variation-${variation.id}`
+            : `product-${product.id}`;
+
           const confirmedProduct = await prisma.product.findUnique({
             where: {
               id: product.id,
@@ -154,7 +161,7 @@ export const payTrailCheckout = async (
             currentPrice =
               isOnSale && confirmedVariation.salePrice
                 ? confirmedVariation.salePrice
-                : confirmedVariation.price ?? currentPrice;
+                : (confirmedVariation.price ?? currentPrice);
 
             if (cartIsOnSale !== isOnSale) {
               throw new CartError(
@@ -196,7 +203,7 @@ export const payTrailCheckout = async (
             currentPrice =
               isOnSale && confirmedProduct.salePrice
                 ? confirmedProduct.salePrice
-                : confirmedProduct.price ?? currentPrice;
+                : (confirmedProduct.price ?? currentPrice);
 
             if (cartIsOnSale !== isOnSale) {
               throw new CartError(
@@ -234,7 +241,7 @@ export const payTrailCheckout = async (
             vatPercentage:
               confirmedProduct.vatPercentage || storeVatRate.defaultVatRate, // Use product or variation VAT if applicable
             productCode: variation ? variation.id : product.id,
-            stamp: variation ? "variation" : "product",
+            stamp,
             description: variation
               ? `${product.name} - ${variation.optionName} (${variation.optionValue})`
               : product.name,
@@ -247,7 +254,7 @@ export const payTrailCheckout = async (
         unitPrice: shipmentMethod.price,
         units: 1,
         vatPercentage: 0,
-        productCode: shipmentMethod.name,
+        productCode: shipmentMethod.id,
         description: "Shipping Cost",
         stamp: "shipping",
       });
@@ -447,54 +454,6 @@ export const shipitCreateShipment = async (
   }
 };
 
-// const createOrder = async (
-//   items: confirmedItems[],
-//   data: CustomerData,
-//   shipmentMethod: ShipmentMethodUnion,
-//   totalAmount: number,
-//   referenceId: string,
-//   shipitResponse?: ShipitResponse
-// ) => {
-//   const isShipitShippingMethod = (
-//     method: ShipmentMethodUnion
-//   ): method is ShipitShippingMethod => {
-//     return "serviceId" in method;
-//   };
-
-//   const newOrder = await prisma.order.create({
-//     data: {
-//       id: referenceId,
-//       address: data.address,
-//       storeId: process.env.TENANT_ID,
-//       shipmentMethodsId: isShipitShippingMethod(shipmentMethod)
-//         ? null
-//         : shipmentMethod.id,
-//       shipitShippingMethodId: isShipitShippingMethod(shipmentMethod)
-//         ? shipmentMethod.id
-//         : null,
-//       customerEmail: data.email,
-//       customerName: data.first_name + " " + data.last_name,
-//       totalAmount,
-//       status: "PENDING",
-
-//       OrderProduct: {
-//         create: items.map((item) => ({
-//           id: randomUUID(),
-//           quantity: item.units,
-//           price: item.unitPrice,
-//           productId: item.productCode,
-//         })),
-//       },
-//       shipitOrderId: shipitResponse?.orderId || null,
-//       trackingNumber: shipitResponse?.trackingNumber || null,
-//       trackingUrls: shipitResponse?.trackingUrls || [],
-//       freightDoc: shipitResponse?.freightDoc || [],
-//     },
-//   });
-
-//   return newOrder;
-// };
-
 export const getPaymentMethods = async (amount: number, groups?: string[]) => {
   const url = "https://services.paytrail.com/merchants/payment-providers";
   const headers = createHeaders("GET");
@@ -592,3 +551,47 @@ export const getDropInLocations = async ({
     throw error; // Optionally rethrow to handle it in the calling function
   }
 };
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FormSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().optional(),
+  email: z.string().email("Invalid email address"),
+  message: z.string().min(5, "Message must be at least 5 characters long"),
+});
+
+export async function submitContactForm(formData: FormData) {
+  const validatedFields = FormSchema.safeParse({
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    email: formData.get("email"),
+    message: formData.get("message"),
+  });
+
+  if (!validatedFields.success) {
+    return { error: validatedFields.error.flatten().fieldErrors };
+  }
+
+  const { firstName, lastName, email, message } = validatedFields.data;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: "Putiikkipalvelu <info@putiikkipalvelu.fi>",
+      to: ["info@webdevniko.fi"],
+      subject: "Sinulle on uusi yhteydenottopyyntö",
+      react: ContactFormEmail({ firstName, lastName, email, message }),
+    });
+
+    if (error) {
+      console.error("Error sending email:", error);
+      return { error: "Failed to send email. Please try again." };
+    }
+
+    return {
+      success:
+        "Kiitos yhteydenotostasi olen sinuun yhteydessä mahdollisimman pian!",
+    };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return { error: "An unexpected error occurred. Please try again." };
+  }
+}

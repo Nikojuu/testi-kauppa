@@ -10,7 +10,7 @@ const AboutMeSection = () => {
       </div>
 
       <div className="z-10 mx-1 -mt-32 flex-1 bg-[hsl(0,0%,18.4%)] p-2 text-white sm:mx-8  sm:p-8 lg:-ml-24  lg:mb-24 lg:mt-24">
-        <h3 className="mb-8  font-primary text-primary text-2xl ">
+        <h3 className="mb-8  font-primary text-tertiary text-2xl ">
           Minä olen kultainen
         </h3>
         <p>

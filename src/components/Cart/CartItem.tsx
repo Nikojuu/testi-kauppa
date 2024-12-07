@@ -67,7 +67,7 @@ export default function CartItem({ product, variation }: CartItemProps) {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => decrementQuantity(product.id)}
+                onClick={() => decrementQuantity(product.id, variation?.id)}
                 disabled={(cartItem?.cartQuantity || 0) <= 1}
               >
                 <Minus className="h-4 w-4" />
@@ -80,7 +80,7 @@ export default function CartItem({ product, variation }: CartItemProps) {
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => incrementQuantity(product.id)}
+                onClick={() => incrementQuantity(product.id, variation?.id)}
                 disabled={
                   isOutOfStock || // Disable if out of stock
                   (!isUnlimitedStock &&
@@ -93,7 +93,7 @@ export default function CartItem({ product, variation }: CartItemProps) {
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
               <button
-                onClick={() => removeItem(product.id)}
+                onClick={() => removeItem(product.id, variation?.id)}
                 className="flex items-center gap-0.5"
               >
                 <X className="w-3 h-4" />

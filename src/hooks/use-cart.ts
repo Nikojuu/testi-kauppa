@@ -19,10 +19,16 @@ type CartState = {
 
     variation?: SelectedProductVariation
   ) => void;
-  removeItem: (productId: string) => void;
+  removeItem: (productId: string, variationId: string | undefined) => void;
   clearCart: () => void;
-  incrementQuantity: (productId: string) => void;
-  decrementQuantity: (productId: string) => void;
+  incrementQuantity: (
+    productId: string,
+    variationId: string | undefined
+  ) => void;
+  decrementQuantity: (
+    productId: string,
+    variationId: string | undefined
+  ) => void;
 };
 
 export const useCart = create<CartState>()(
@@ -32,11 +38,13 @@ export const useCart = create<CartState>()(
       addItem: (product, variation) =>
         set((state) => {
           const existingItemIndex = state.items.findIndex(
-            (item) => item.product.id === product.id
+            (item) =>
+              item.product.id === product.id &&
+              item.variation?.id === variation?.id // Compare variation ID as well
           );
 
           if (existingItemIndex !== -1) {
-            // If the product already exists in the cart, increment the quantity
+            // If the product with the same variation exists, increment the quantity
             const updatedItems = state.items.map((item, index) =>
               index === existingItemIndex
                 ? { ...item, cartQuantity: item.cartQuantity + 1 }
@@ -44,29 +52,37 @@ export const useCart = create<CartState>()(
             );
             return { items: updatedItems };
           } else {
-            // If the product does not exist in the cart, add it with a quantity of 1
+            // Add a new item to the cart with the selected variation
             return {
               items: [...state.items, { product, variation, cartQuantity: 1 }],
             };
           }
         }),
-      removeItem: (id) =>
+      removeItem: (id, variationId) =>
         set((state) => ({
-          items: state.items.filter((item) => item.product.id !== id),
+          items: state.items.filter(
+            (item) =>
+              item.product.id !== id ||
+              (variationId && item.variation?.id !== variationId)
+          ),
         })),
       clearCart: () => set({ items: [] }),
-      incrementQuantity: (id) =>
+
+      incrementQuantity: (id, variationId) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.product.id === id
+            item.product.id === id && item.variation?.id === variationId
               ? { ...item, cartQuantity: item.cartQuantity + 1 }
               : item
           ),
         })),
-      decrementQuantity: (id) =>
+
+      decrementQuantity: (id, variationId) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.product.id === id && item.cartQuantity > 1
+            item.product.id === id &&
+            item.variation?.id === variationId &&
+            item.cartQuantity > 1
               ? { ...item, cartQuantity: item.cartQuantity - 1 }
               : item
           ),

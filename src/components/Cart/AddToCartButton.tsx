@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { CartItem, useCart } from "@/hooks/use-cart";
+import { useCart } from "@/hooks/use-cart";
 import {
   SelectedProduct,
   SelectedProductVariation,
@@ -16,21 +16,38 @@ const AddToCartButton = ({
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const addItem = useCart((state) => state.addItem);
+  const cartItems = useCart((state) => state.items);
 
   // Determine stock availability
-  const isUnlimitedStock = selectedVariation
-    ? selectedVariation.quantity === null
-    : product.quantity === null;
+  const availableStock = selectedVariation
+    ? selectedVariation.quantity
+    : product.quantity;
 
-  const isOutOfStock = selectedVariation
-    ? !isUnlimitedStock && (selectedVariation.quantity ?? 0) <= 0
-    : !isUnlimitedStock && (product.quantity ?? 0) <= 0;
+  const currentCartQuantity = cartItems.reduce((total, item) => {
+    if (
+      item.product.id === product.id &&
+      (!selectedVariation || item.variation?.id === selectedVariation.id)
+    ) {
+      return total + item.cartQuantity;
+    }
+    return total;
+  }, 0);
+
+  const isOutOfStock =
+    availableStock !== null && currentCartQuantity >= availableStock;
 
   const handleAddToCart = () => {
     if (isOutOfStock) return; // Prevent action if out of stock
     addItem(product, selectedVariation);
     setIsSuccess(true);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      const timeout = setTimeout(() => setIsSuccess(false), 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [isSuccess]);
 
   return (
     <Button
@@ -42,8 +59,8 @@ const AddToCartButton = ({
       {isOutOfStock
         ? "Ei varastossa"
         : isSuccess
-        ? "Lisätty"
-        : "Lisää ostoskoriin"}
+          ? "Lisätty"
+          : "Lisää ostoskoriin"}
     </Button>
   );
 };

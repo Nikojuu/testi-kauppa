@@ -28,17 +28,6 @@ export interface DropInLocation {
   distanceInKilometers: number;
 }
 
-// export interface ProductClient {
-//   id: string;
-//   name: string;
-//   description: string;
-//   price: number;
-//   images: string[];
-//   category: string;
-//   categories: { id: string; name: string }[];
-//   ProductVariation: CartItem["variation"];
-// }
-
 export interface ShipitResponse {
   status: string;
   number: number;

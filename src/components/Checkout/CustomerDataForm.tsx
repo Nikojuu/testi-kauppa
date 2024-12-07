@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
@@ -12,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { PhoneInput } from "../ui/phone-input";
 
 interface CustomerDataFormProps {
   handleSubmit: (data: CustomerData) => void;
@@ -41,7 +43,7 @@ export default function CustomerDataForm({
 
   return (
     <form id={form.id} onSubmit={form.onSubmit}>
-      <Card className="mt-48 mx-auto max-w-2xl">
+      <Card className="my-12 mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle className="text-2xl">Tilaajan tiedot</CardTitle>
         </CardHeader>
@@ -130,7 +132,7 @@ export default function CustomerDataForm({
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor={fields.phone.id}>Puhelinnumero</Label>
+              {/* <Label htmlFor={fields.phone.id}>Puhelinnumero</Label>
               <Input
                 id={fields.phone.id}
                 name={fields.phone.name}
@@ -140,12 +142,25 @@ export default function CustomerDataForm({
               />
               {fields.phone.errors && (
                 <p className="text-red-500">{fields.phone.errors}</p>
+              )} */}
+              <PhoneInput
+                id={fields.phone.id}
+                name={fields.phone.name}
+                defaultValue={initialData?.phone || ""}
+                defaultCountry="FI"
+                international
+                placeholder="Anna puhelin numerosi"
+              />
+              {fields.phone.errors && (
+                <p className="text-red-500">{fields.phone.errors}</p>
               )}
             </div>
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit">Jatka valitsemaan toimitustapa</Button>
+          <Button type="submit" className="bg-tertiary" variant="gooeyLeft">
+            Jatka valitsemaan toimitustapa
+          </Button>
         </CardFooter>
       </Card>
     </form>

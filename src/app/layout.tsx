@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
-import { Inter } from "next/font/google";
 import Navbar from "@/components/Navigation/Navbar";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
@@ -30,7 +29,7 @@ export default function RootLayout({
         <StickyNavbar>
           <Navbar />
         </StickyNavbar>
-        <main className="min-h-[75vh] mt-28 max-w-[3500px]">{children}</main>
+        <main className="min-h-[75vh] my-28 max-w-[3500px]">{children}</main>
         <Footer />
 
         <Toaster />

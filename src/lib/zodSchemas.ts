@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { z } from "zod";
 
 export const customerDataSchema = z.object({
@@ -10,13 +11,13 @@ export const customerDataSchema = z.object({
     .string({ message: "Katuosoite vaaditaan" })
     .min(1, "Katuosoite vaaditaan"),
   postal_code: z
-    .string({ message: "Postinumero vaaditaan" })
-    .min(1, "Postinumero vaaditaan"),
+    .string()
+    .regex(/^\d{5}$/, "Postinumeron on oltava viisi numeroa"),
   city: z
     .string({ message: "Kaupunki vaaditaan" })
     .min(1, "Kaupunki vaaditaan"),
   phone: z
-    .string({ message: "Puhelinnumero vaaditaan" })
-    .min(1, "Puhelinnumero vaaditaan"),
+    .string()
+    .refine(isValidPhoneNumber, { message: "Virheellinen puhelin numero" }),
 });
 export type CustomerData = z.infer<typeof customerDataSchema>;

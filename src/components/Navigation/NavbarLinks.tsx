@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Menu } from "lucide-react";
@@ -12,9 +13,21 @@ interface Category {
   children?: Category[];
 }
 
-const DesktopDropdown: React.FC<{ category: Category }> = ({ category }) => {
+const getCategoryPath = (
+  category: Category,
+  parentPath: string = ""
+): string => {
+  const path = `${parentPath}/${category.slug}`;
+  return `/products${path}`;
+};
+
+const DesktopDropdown: React.FC<{
+  category: Category;
+  parentPath?: string;
+}> = ({ category, parentPath = "" }) => {
   const [isHovered, setIsHovered] = useState(false);
   const hasChildren = category.children && category.children.length > 0;
+  const categoryPath = getCategoryPath(category, parentPath);
 
   return (
     <div
@@ -22,7 +35,7 @@ const DesktopDropdown: React.FC<{ category: Category }> = ({ category }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/products/${category.slug}`}>
+      <Link href={categoryPath}>
         <Button variant="linkHover2" className="w-full justify-between px-4">
           {category.name}
           {hasChildren && <ChevronDown className="h-4 w-4 -rotate-90" />}
@@ -32,7 +45,11 @@ const DesktopDropdown: React.FC<{ category: Category }> = ({ category }) => {
       {hasChildren && isHovered && (
         <div className="absolute left-full top-0 min-w-[200px] bg-background border rounded-md shadow-md py-2">
           {category.children?.map((child) => (
-            <DesktopDropdown key={child.id} category={child} />
+            <DesktopDropdown
+              key={child.id}
+              category={child}
+              parentPath={categoryPath}
+            />
           ))}
         </div>
       )}
@@ -43,18 +60,16 @@ const DesktopDropdown: React.FC<{ category: Category }> = ({ category }) => {
 const MobileMenuItem: React.FC<{
   category: Category;
   onClose: () => void;
-}> = ({ category, onClose }) => {
+  parentPath?: string;
+}> = ({ category, onClose, parentPath = "" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasChildren = category.children && category.children.length > 0;
+  const categoryPath = getCategoryPath(category, parentPath);
 
   return (
     <div>
       <div className="flex">
-        <Link
-          href={`/products/${category.slug}`}
-          className="flex-1"
-          onClick={onClose}
-        >
+        <Link href={categoryPath} className="flex-1" onClick={onClose}>
           <Button variant="ghost" className="w-full justify-start">
             {category.name}
           </Button>
@@ -76,7 +91,12 @@ const MobileMenuItem: React.FC<{
       {isOpen && hasChildren && (
         <div className="ml-4 mt-1">
           {category.children?.map((child) => (
-            <MobileMenuItem key={child.id} category={child} onClose={onClose} />
+            <MobileMenuItem
+              key={child.id}
+              category={child}
+              onClose={onClose}
+              parentPath={categoryPath}
+            />
           ))}
         </div>
       )}
@@ -100,7 +120,7 @@ export function NavbarLinks({ categories }: { categories: Category[] }) {
           <Link href="/products">
             <Button
               variant="linkHover2"
-              className="flex items-center gap-1 text-2xl font-bold"
+              className="flex items-center gap-1 text-lg font-primary font-bold "
             >
               Tuotteet
               <ChevronDown className="h-4 w-4" />
@@ -117,13 +137,27 @@ export function NavbarLinks({ categories }: { categories: Category[] }) {
         </div>
 
         <Link href="/about">
-          <Button variant="linkHover2" className="text-2xl font-bold">
+          <Button
+            variant="linkHover2"
+            className="text-lg font-primary font-bold"
+          >
             Pupunkorvien tarina
           </Button>
         </Link>
         <Link href="/gallery">
-          <Button variant="linkHover2" className="text-2xl font-bold">
+          <Button
+            variant="linkHover2"
+            className="text-lg font-bold font-primary"
+          >
             Galleria
+          </Button>
+        </Link>
+        <Link href="/contact">
+          <Button
+            variant="linkHover2"
+            className="text-lg font-bold font-primary"
+          >
+            Yhteydenotto
           </Button>
         </Link>
       </nav>
@@ -137,12 +171,9 @@ export function NavbarLinks({ categories }: { categories: Category[] }) {
         </SheetTrigger>
         <SheetContent side="left" className="w-[300px] sm:w-[400px]">
           <nav className="flex flex-col gap-4 mt-4">
-            <Link
-              href="/products/all"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
+            <Link href="/products" onClick={() => setIsMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
-                Shop All
+                All Products
               </Button>
             </Link>
             {categories.map((category) => (
@@ -157,12 +188,14 @@ export function NavbarLinks({ categories }: { categories: Category[] }) {
                 About
               </Button>
             </Link>
-            <Link
-              href="/how-its-made"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
+            <Link href="/gallery" onClick={() => setIsMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
-                How Its Made
+                Gallery
+              </Button>
+            </Link>
+            <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">
+                Yhteydenotto
               </Button>
             </Link>
           </nav>
