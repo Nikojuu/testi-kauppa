@@ -21,15 +21,13 @@ export function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
           <div
             key={step.number}
             className={`flex flex-col items-center ${
-              step.number <= currentStep
-                ? "text-tertiary"
-                : "text-muted-foreground"
+              step.number <= currentStep ? "" : "text-muted-foreground"
             }`}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 ${
                 step.number <= currentStep
-                  ? "bg-tertiary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-muted"
               }`}
             >

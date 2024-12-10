@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import prisma from "@/app/utils/db";
 import ProductDetail from "@/components/Product/ProductDetail";
+import { Metadata, ResolvingMetadata } from "next";
 
 const getData = async (productId: string) => {
   const data = await prisma.product.findUnique({
     where: {
-      id: productId,
+      slug: productId,
       storeId: process.env.TENANT_ID,
     },
     select: {
@@ -16,6 +17,8 @@ const getData = async (productId: string) => {
       quantity: true,
       price: true,
       images: true,
+      metaTitle: true,
+      metaDescription: true,
       salePercent: true,
       salePrice: true,
       saleStartDate: true,
@@ -43,9 +46,30 @@ const getData = async (productId: string) => {
   }
   return data;
 };
+type Props = {
+  params: { slug: string };
+};
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const product = await getData(params.slug);
 
-const ProductIdRoute = async ({ params }: { params: { id: string } }) => {
-  const product = await getData(params.id);
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: product.metaTitle || product.name,
+    description: product.metaDescription || product.description,
+    openGraph: {
+      title: product.metaTitle || product.name,
+      description: product.metaDescription || product.description,
+      images: [product.images[0], ...previousImages],
+    },
+  };
+}
+
+const ProductIdRoute = async ({ params }: { params: { slug: string } }) => {
+  const product = await getData(params.slug);
 
   return (
     <section className="mt-48">

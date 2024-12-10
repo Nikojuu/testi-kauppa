@@ -16,6 +16,19 @@ import prisma from "@/app/utils/db";
 import Link from "next/link";
 import { ClearCart } from "@/components/Cart/ClearCart";
 import Image from "next/image";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Ostoskori | Pupun Korvat",
+  description: "Hallinnoi ostoskoria ja tee tilaus",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  openGraph: {
+    title: "Ostoskori | Pupun Korvat",
+    type: "website",
+  },
+};
 
 const getData = async (orderId: string) => {
   const data = await prisma.order.findUnique({

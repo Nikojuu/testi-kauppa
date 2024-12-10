@@ -41,6 +41,7 @@ export interface SelectedProduct extends SelectedPriceOption {
   name: string;
   images: string[];
   price: number;
+
   quantity: number | null;
   description: string;
   categories: {
@@ -76,12 +77,25 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
     product,
     selectedVariation
   );
-  const isOnSale = selectedVariation
+  const isCurrentlyOnSale = selectedVariation
     ? isSaleActive(
         selectedVariation.saleStartDate,
         selectedVariation.saleEndDate
       )
     : isSaleActive(product.saleStartDate, product.saleEndDate);
+
+  const isOnSale = (
+    productOrVariation: SelectedProduct | SelectedProductVariation
+  ): boolean => {
+    const { salePrice, price, saleStartDate, saleEndDate } = productOrVariation;
+
+    if (salePrice === null || salePrice >= (price ?? 0)) {
+      return false;
+    }
+
+    return isSaleActive(saleStartDate, saleEndDate);
+  };
+
   return (
     <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <Breadcrumbs categories={product.categories} productName={product.name} />
@@ -107,11 +121,11 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
               <PriceDisplay
                 displayPrice={displayPrice!}
                 originalPrice={
-                  isOnSale
+                  isCurrentlyOnSale
                     ? selectedVariation?.price || product.price
                     : undefined
                 }
-                isOnSale={isOnSale}
+                isOnSale={isOnSale(selectedVariation || product)}
                 salePercent={
                   selectedVariation?.salePercent || product.salePercent
                 }

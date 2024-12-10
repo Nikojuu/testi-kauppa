@@ -62,6 +62,9 @@ export async function GET(request: Request) {
               quantity: {
                 decrement: item.units,
               },
+              soldQuantity: {
+                increment: item.units,
+              },
             },
           });
         } else if (type === "product") {
@@ -70,6 +73,9 @@ export async function GET(request: Request) {
             data: {
               quantity: {
                 decrement: item.units,
+              },
+              soldQuantity: {
+                increment: item.units,
               },
             },
           });

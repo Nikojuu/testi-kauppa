@@ -12,13 +12,14 @@
     --popover-foreground: 20 14.3% 4.1%;
     /* --primary: 47.9 95.8% 53.1%; */
     /* --primary: 337.4 100% 89.6%; */
-    --primary: 42.3 88.8% 79%;
-
+    /* --primary: 42.1, 100%, 88.8%; */
+    --primary: 278.9, 40.7%, 82.2%;
     --primary-foreground: 26 83.3% 14.1%;
     --secondary: 60 4.8% 95.9%;
 
     --secondary-foreground: 24 9.8% 10%;
-    --tertiary: 47.9 95.8% 53.1%;
+    --tertiary: 217.3, 100%, 92.7%;
+    /* --tertiary: 47.9 95.8% 53.1%; */
     --tertiary-foreground: 24 9.8% 10%;
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;

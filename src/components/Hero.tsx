@@ -68,7 +68,7 @@ export function Hero({ carouselData }: { carouselData: CarouselDataProps[] }) {
         <Link href="/products">
           <Button
             variant="gooeyLeft"
-            className=" shadow-lg group w-fit text-lg bg-tertiary"
+            className=" shadow-lg group w-fit text-lg "
             size="lg"
           >
             Tutustu kauppaani!

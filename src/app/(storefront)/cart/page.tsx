@@ -3,11 +3,25 @@
 import Subtitle from "@/components/subtitle";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
-import { cn, getDisplayPriceSelectedProduct, isSaleActive } from "@/lib/utils";
+import { cn, isSaleActive } from "@/lib/utils";
 import { Loader2, Minus, Plus, X } from "lucide-react";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
+export const metadata: Metadata = {
+  title: "Ostoskori | Pupun Korvat",
+  description: "Hallinnoi ostoskoria ja tee tilaus",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  openGraph: {
+    title: "Ostoskori | Pupun Korvat",
+    type: "website",
+  },
+};
 
 export type ShipmentMethods = {
   id: string;
@@ -247,9 +261,7 @@ const CartPage = () => {
             <div className="mt-6">
               {/* <CheckoutButton /> */}
               <Link href="/payment/checkout">
-                <Button className="bg-tertiary" variant="gooeyLeft">
-                  Tee tilaus
-                </Button>
+                <Button variant="gooeyLeft">Tee tilaus</Button>
               </Link>
             </div>
           </section>

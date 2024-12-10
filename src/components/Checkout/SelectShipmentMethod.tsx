@@ -128,7 +128,7 @@ function ShipmentMethod({
       <RadioGroupItem
         value={method.id}
         id={method.id}
-        className="border-gray-500 text-gray-700 bg-tertiary "
+        className="border-gray-500 text-gray-700 bg-white "
       />
       <Label
         htmlFor={method.id}
@@ -150,7 +150,7 @@ function ParchelLockerShipmentMethod({ method }: { method: DropInLocation }) {
       )}
     >
       <RadioGroupItem
-        className="border-gray-500 text-gray-700 bg-tertiary "
+        className="border-gray-500 text-gray-700 bg-white "
         value={method.id}
         id={method.id}
       />

@@ -4,6 +4,14 @@ export const metadata: Metadata = {
   title: "Tietosuojakäytäntö",
   description:
     "Tietosuojakäytäntö kuvaa, kuinka käsittelemme henkilötietoja verkkokaupan yhteydessä.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  openGraph: {
+    title: "Tietosuojakäytäntö | Pupun Korvat",
+    type: "website",
+  },
 };
 
 export default function PrivacyPolicyPage() {

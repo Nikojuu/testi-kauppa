@@ -19,6 +19,20 @@ import { DropInLocation } from "@/app/utils/types";
 import { useToast } from "@/hooks/use-toast";
 import { XCircle } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tilauksen käsittely | Pupun Korvat",
+  description: "Hallinnoi ostoskoria ja tee tilaus",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  openGraph: {
+    title: "Tilauksen käsittely | Pupun Korvat",
+    type: "website",
+  },
+};
 
 const CheckoutPage = () => {
   const items = useCart((state) => state.items);
@@ -168,15 +182,11 @@ const CheckoutPage = () => {
             dropInLocations={dropInLocations}
           />
           <div className="mt-6 flex justify-between items-center mx-auto max-w-2xl">
-            <Button
-              variant="gooeyRight"
-              className="bg-tertiary"
-              onClick={handleGoBack}
-            >
+            <Button variant="gooeyRight" onClick={handleGoBack}>
               Takaisin
             </Button>
             <form action={paytrailPaymentMethods} className="flex items-center">
-              <Button className="bg-tertiary">Siirry maksamaan tilaus</Button>
+              <Button>Siirry maksamaan tilaus</Button>
             </form>
           </div>
         </>
@@ -186,11 +196,7 @@ const CheckoutPage = () => {
         <>
           <PaytrailCheckout paytrailData={paytrailData} />
           <div className="mt-6 flex justify-start mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
-            <Button
-              variant="gooeyRight"
-              className="bg-tertiary"
-              onClick={handleGoBack}
-            >
+            <Button variant="gooeyRight" onClick={handleGoBack}>
               Takaisin
             </Button>
           </div>

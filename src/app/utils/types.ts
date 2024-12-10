@@ -52,6 +52,7 @@ export interface Product {
   description: string;
   price: number;
   images: string[];
+  slug: string;
   quantity: number | null;
   salePrice?: number | null;
   salePercent?: string | null;

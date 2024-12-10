@@ -61,7 +61,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         <CarouselNext className="mr-16" />
       </Carousel>
       <Link
-        href={`/product/${item.id}`}
+        href={`/product/${item.slug}`}
         className="block rounded-lg hover:shadow-sm hover:shadow-primary transition-shadow duration-300 h-full"
       >
         <div className="flex-grow flex flex-col p-3">

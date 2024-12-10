@@ -30,6 +30,8 @@ const getHomePageData = async () => {
         salePercent: true,
         saleEndDate: true,
         saleStartDate: true,
+        slug: true,
+
         quantity: true,
         ProductVariation: {
           select: {
@@ -57,11 +59,14 @@ const getHomePageData = async () => {
 
 export default async function Home() {
   const { bannerData, latestProducts } = await getHomePageData();
+
   return (
     <div>
       <Hero carouselData={bannerData} />
-      <Subtitle subtitle="Uusimmat tuotteet" />
 
+      <Subtitle subtitle="Upeita koruja" />
+      <CategorySection />
+      <Subtitle subtitle="Uusimmat tuotteet" />
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto ">
         {latestProducts.map((item) => (
           <ProductCard item={item} key={item.id} />
@@ -71,8 +76,6 @@ export default async function Home() {
       <div className=" py-8">
         <Subtitle subtitle="Tietoa minusta" />
         <AboutMeSection />
-        <Subtitle subtitle="Upeita koruja" />
-        <CategorySection />
       </div>
     </div>
   );

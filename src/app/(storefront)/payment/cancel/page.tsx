@@ -1,7 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { XCircle } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Ostoskori | Pupun Korvat",
+  description: "Hallinnoi ostoskoria ja tee tilaus",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  openGraph: {
+    title: "Ostoskori | Pupun Korvat",
+    type: "website",
+  },
+};
 
 export default function CancelRoute() {
   return (
@@ -13,14 +27,15 @@ export default function CancelRoute() {
           </div>
 
           <div className="mt-3 text-center sm:mt-5 w-full">
-            <h3 className="text-lg leading-6 font-medium">Payment Cancelled</h3>
+            <h3 className="text-lg leading-6 font-medium">Tilaus peruutettu</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Something went wrong with your payment. You havent been charged.
-              Please try again
+              Jotain meni pieleen tilauksen käsittelyssä. Jos sinulla on
+              kysyttävää, ota yhteyttä asiakaspalveluumme. Tilausta ei ole
+              veloitettu.
             </p>
 
             <Button asChild className="w-full mt-5 sm:mt-6">
-              <Link href="/">Back to Homepage</Link>
+              <Link href="/">Kotisivulle</Link>
             </Button>
           </div>
         </div>

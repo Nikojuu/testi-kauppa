@@ -132,17 +132,6 @@ export default function CustomerDataForm({
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              {/* <Label htmlFor={fields.phone.id}>Puhelinnumero</Label>
-              <Input
-                id={fields.phone.id}
-                name={fields.phone.name}
-                defaultValue={initialData?.phone || ""}
-                type="tel"
-                placeholder="Anna puhelinnumerosi"
-              />
-              {fields.phone.errors && (
-                <p className="text-red-500">{fields.phone.errors}</p>
-              )} */}
               <PhoneInput
                 id={fields.phone.id}
                 name={fields.phone.name}
@@ -158,7 +147,7 @@ export default function CustomerDataForm({
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="bg-tertiary" variant="gooeyLeft">
+          <Button type="submit" variant="gooeyLeft">
             Jatka valitsemaan toimitustapa
           </Button>
         </CardFooter>
