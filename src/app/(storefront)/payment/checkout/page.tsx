@@ -21,19 +21,6 @@ import { XCircle } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Tilauksen käsittely | Pupun Korvat",
-  description: "Hallinnoi ostoskoria ja tee tilaus",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  openGraph: {
-    title: "Tilauksen käsittely | Pupun Korvat",
-    type: "website",
-  },
-};
-
 const CheckoutPage = () => {
   const items = useCart((state) => state.items);
   const { toast } = useToast();

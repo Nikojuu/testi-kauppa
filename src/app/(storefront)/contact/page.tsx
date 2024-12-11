@@ -22,26 +22,6 @@ import { toast } from "@/hooks/use-toast";
 import Subtitle from "@/components/subtitle";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Ota yhteyttä | Pupun Korvat",
-  description:
-    "Ota yhteyttä meihin kysymyksistä koruistamme tai keskustellaksesi räätälöidyistä suunnitelmista.",
-  openGraph: {
-    title: "Ota yhteyttä | Pupun Korvat",
-    description:
-      "Ota yhteyttä meihin kysymyksistä koruistamme tai keskustellaksesi räätälöidyistä suunnitelmista.",
-    type: "website",
-    images: [
-      {
-        url: "/kuva1.jpg", // Replace with an actual image path
-        width: 1200,
-        height: 630,
-        alt: "Ota yhteyttä - Pupun Korvat",
-      },
-    ],
-  },
-};
-
 const FormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().optional(),

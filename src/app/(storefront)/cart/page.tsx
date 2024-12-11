@@ -10,19 +10,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export const metadata: Metadata = {
-  title: "Ostoskori | Pupun Korvat",
-  description: "Hallinnoi ostoskoria ja tee tilaus",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  openGraph: {
-    title: "Ostoskori | Pupun Korvat",
-    type: "website",
-  },
-};
-
 export type ShipmentMethods = {
   id: string;
   name: string;
