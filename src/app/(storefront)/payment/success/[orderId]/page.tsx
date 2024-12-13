@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { notFound } from "next/navigation";
 
 import { CheckCircle, Truck } from "lucide-react";
@@ -89,9 +90,10 @@ export default async function PaymentSuccessPage({
                 optionName: true,
                 optionValue: true,
                 Product: {
+                  // Nested Product object in the case of variation
                   select: {
                     name: true,
-                    images: true,
+                    images: true, // Access the images from the Product object
                   },
                 },
               },
@@ -101,15 +103,25 @@ export default async function PaymentSuccessPage({
               where: { id: item.productCode, storeId: process.env.TENANT_ID },
               select: {
                 name: true,
-                images: true,
+                images: true, // Directly access images for regular products
               },
             });
           } else if (type === "shipping") {
             return null;
           }
 
+          // Now check if product has Product property (for variations)
+          const images =
+            type === "variation"
+              ? (product as any)?.Product?.images || []
+              : (product as any)?.images || [];
+
           return {
-            ...product,
+            name:
+              type === "variation"
+                ? (product as { Product: { name: string } })?.Product?.name
+                : (product as { name: string })?.name, // Handle name from Product if variation
+            images, // Use the correct image property
             quantity: item.units,
             unitPrice: item.unitPrice,
           };
@@ -163,7 +175,9 @@ export default async function PaymentSuccessPage({
                 <div key={index} className="flex items-center space-x-4">
                   <div className="flex-shrink-0 w-16 h-16 relative">
                     <Image
-                      src={item.images[0] || "/placeholder.png"}
+                      src={
+                        (item.images && item.images[0]) || "/placeholder.png"
+                      }
                       alt={item.name || "Product image"}
                       fill
                       className="rounded-md object-cover object-center"
