@@ -81,7 +81,10 @@ export const payTrailCheckout = async (
       select: { defaultVatRate: true },
     });
     if (!storeVatRate) {
-      throw new Error("Kauppiaan asettamaa ALV:tä ei löytynyt");
+      throw new CartError(
+        `Pahoittelut kauppias ei ole asettanut ALV kantaa`,
+        "0"
+      );
     }
 
     if (
@@ -98,7 +101,7 @@ export const payTrailCheckout = async (
         });
 
       if (!DropinLocationToShipmentMethod) {
-        throw new Error("Matching shipment not found on database");
+        throw new CartError(`Pahoitteluni Toimitustapaa ei löytynyt`, "0");
       }
 
       shipmentMethod = DropinLocationToShipmentMethod;
@@ -126,7 +129,10 @@ export const payTrailCheckout = async (
 
           // Check if the product is found
           if (!confirmedProduct) {
-            throw new Error(`Product ${product.name} not found`);
+            throw new CartError(
+              `Pahoitteluni tuotteen ${product.name} ei löutynyt`,
+              product.id
+            );
           }
 
           // Initialize current price based on product price
@@ -260,7 +266,7 @@ export const payTrailCheckout = async (
       });
 
       const totalAmount = confirmedItems.reduce(
-        (total, item) => total + item.unitPrice * item.units,
+        (total, item) => total + item.unitPrice! * item.units!,
         0
       );
 

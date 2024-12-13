@@ -4,6 +4,7 @@ import Subtitle from "@/components/subtitle";
 import AboutMeSection from "@/components/Homepage/AboutMeSection";
 import CategorySection from "@/components/Homepage/CategorySection";
 import { ProductCard } from "@/components/ProductCard";
+import { unstable_noStore as noStore } from "next/cache";
 
 const getHomePageData = async () => {
   const [bannerData, latestProducts] = await Promise.all([
@@ -58,6 +59,7 @@ const getHomePageData = async () => {
 };
 
 export default async function Home() {
+  noStore();
   const { bannerData, latestProducts } = await getHomePageData();
 
   return (
