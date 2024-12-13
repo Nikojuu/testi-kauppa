@@ -284,8 +284,8 @@ export const payTrailCheckout = async (
           email: data.email,
         },
         redirectUrls: {
-          success: "http://localhost:3000/payment/checkout/success-route",
-          cancel: "http://localhost:3000/payment/checkout/cancel-route",
+          success: `${process.env.BASE_URL}/payment/checkout/success-route`,
+          cancel: `${process.env.BASE_URL}/payment/checkout/cancel-route`,
         },
       };
 
