@@ -42,6 +42,12 @@ export interface ShopInfo {
     name: string;
   };
 }
+class EmailError extends Error {
+  constructor(message: string) {
+    super(message); // Pass the message to the parent Error constructor
+    this.name = "EmailError"; // Set the error name
+  }
+}
 
 export async function sendOrderConfirmationEmail(
   customerData: CustomerData,
@@ -68,7 +74,7 @@ export async function sendOrderConfirmationEmail(
           });
 
           if (!productVariation) {
-            throw new Error(`Product variation not found: ${item.id}`);
+            throw new EmailError("Product variation not found");
           }
 
           return {
@@ -88,7 +94,7 @@ export async function sendOrderConfirmationEmail(
           });
 
           if (!product) {
-            throw new Error(`Product not found: ${item.id}`);
+            throw new EmailError("Product not found");
           }
 
           return {
@@ -124,7 +130,7 @@ export async function sendOrderConfirmationEmail(
         }
 
         // Handle unknown types or return item as is
-        throw new Error(`Unknown item type: ${type}`);
+        throw new EmailError("Unknown item type");
       })
     );
 
@@ -142,7 +148,7 @@ export async function sendOrderConfirmationEmail(
     });
 
     if (!shopInfo) {
-      throw new Error("Shop information not found");
+      throw new EmailError("Shop info not found");
     }
 
     const { data, error } = await resend.emails.send({

@@ -31,10 +31,15 @@ export const metadata: Metadata = {
 };
 
 const getData = async (orderId: string) => {
-  const data = await prisma.order.findUnique({
-    where: { id: orderId },
-  });
-  return data;
+  try {
+    const data = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    return data;
+  } catch (error) {
+    console.error("Error fetching order data:", error);
+    throw new Error("Failed to fetch order data.");
+  }
 };
 
 export default async function PaymentSuccessPage({
@@ -43,70 +48,85 @@ export default async function PaymentSuccessPage({
   params: { orderId: string };
 }) {
   const { orderId } = params;
-  const order = await getData(orderId);
-
-  if (!order) {
-    notFound();
+  let order;
+  try {
+    order = await getData(orderId);
+    if (!order) {
+      notFound();
+    }
+  } catch (error) {
+    console.error("Error processing payment success page:", error);
+    return (
+      <div className="container mx-auto px-4 py-8 my-32">
+        <h1 className="text-red-500 text-xl">
+          Tilausta ei löytynyt tai tapahtui virhe.
+        </h1>
+      </div>
+    );
   }
 
   const customerData = JSON.parse(order.customerData as string);
   const shipmentMethod = JSON.parse(order.shipmentMethod as string);
   const orderItems = JSON.parse(order.items as string);
 
-  const items = await Promise.all(
-    orderItems.map(
-      async (item: {
-        stamp: string;
-        productCode: string;
-        units: number;
-        unitPrice: number;
-      }) => {
-        const [type] = item.stamp.split("-");
-        let product = null;
+  let items;
+  try {
+    items = await Promise.all(
+      orderItems.map(
+        async (item: {
+          stamp: string;
+          productCode: string;
+          units: number;
+          unitPrice: number;
+        }) => {
+          const [type] = item.stamp.split("-");
+          let product = null;
 
-        if (type === "variation") {
-          product = await prisma.productVariation.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            select: {
-              optionName: true,
-              optionValue: true,
-              Product: {
-                select: {
-                  name: true,
-                  images: true,
+          if (type === "variation") {
+            product = await prisma.productVariation.findUnique({
+              where: { id: item.productCode, storeId: process.env.TENANT_ID },
+              select: {
+                optionName: true,
+                optionValue: true,
+                Product: {
+                  select: {
+                    name: true,
+                    images: true,
+                  },
                 },
               },
-            },
-          });
-        } else if (type === "product") {
-          product = await prisma.product.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            select: {
-              name: true,
+            });
+          } else if (type === "product") {
+            product = await prisma.product.findUnique({
+              where: { id: item.productCode, storeId: process.env.TENANT_ID },
+              select: {
+                name: true,
+                images: true,
+              },
+            });
+          } else if (type === "shipping") {
+            return null;
+          }
 
-              images: true, // Fetch product's images
-            },
-          });
-        } else if (type === "shipping") {
-          return null;
+          return {
+            ...product,
+            quantity: item.units,
+            unitPrice: item.unitPrice,
+          };
         }
+      )
+    );
+  } catch (error) {
+    console.error("Error fetching product data:", error);
+    items = [];
+  }
 
-        return {
-          ...product,
-          quantity: item.units,
-          unitPrice: item.unitPrice,
-        };
-      }
-    )
-  );
   const totalPrice = items.reduce((total, item) => {
     if (item && item.unitPrice && item.quantity) {
       return total + item.unitPrice * item.quantity;
     }
     return total;
   }, 0);
-
-  console.log(items);
   return (
     <div className="container mx-auto px-4 py-8 my-32">
       <ClearCart />

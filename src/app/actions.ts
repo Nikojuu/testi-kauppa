@@ -130,7 +130,7 @@ export const payTrailCheckout = async (
           // Check if the product is found
           if (!confirmedProduct) {
             throw new CartError(
-              `Pahoitteluni tuotteen ${product.name} ei löutynyt`,
+              `Pahoitteluni tuotteen ${product.name} ei lötynyt`,
               product.id
             );
           }

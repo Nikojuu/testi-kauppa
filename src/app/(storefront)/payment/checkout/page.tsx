@@ -20,8 +20,10 @@ import { useToast } from "@/hooks/use-toast";
 import { XCircle } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
 import { Metadata } from "next";
+import { unstable_noStore } from "next/cache";
 
 const CheckoutPage = () => {
+  unstable_noStore();
   const items = useCart((state) => state.items);
   const { toast } = useToast();
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
