@@ -18,15 +18,16 @@ import Link from "next/link";
 import { ClearCart } from "@/components/Cart/ClearCart";
 import Image from "next/image";
 import { Metadata } from "next";
+
 export const metadata: Metadata = {
-  title: "Ostoskori | Pupun Korvat",
-  description: "Hallinnoi ostoskoria ja tee tilaus",
+  title: "Pupun Korvat | Kiitos tilauksestasi!",
+  description: "Kiitos tilauksestasi! Tässä yhteenveto ostoksestasi.",
   robots: {
     index: false,
     follow: false,
   },
   openGraph: {
-    title: "Ostoskori | Pupun Korvat",
+    title: "Pupun Korvat | Kiitos tilauksestasi!",
     type: "website",
   },
 };

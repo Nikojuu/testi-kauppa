@@ -5,14 +5,14 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Ostoskori | Pupun Korvat",
-  description: "Hallinnoi ostoskoria ja tee tilaus",
+  title: "Pupun Korvat | Tilaus peruutettu",
+  description: "Tilaus peruutettu",
   robots: {
     index: false,
     follow: false,
   },
   openGraph: {
-    title: "Ostoskori | Pupun Korvat",
+    title: "Pupun Korvat | Pupun Korvat",
     type: "website",
   },
 };

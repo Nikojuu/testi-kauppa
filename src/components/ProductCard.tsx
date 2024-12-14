@@ -1,12 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -37,33 +30,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
 
   return (
     <div className="h-full flex flex-col">
-      <Carousel className="w-full mx-auto border border-primary">
-        <CarouselContent>
-          {item.images.map((image, index) => (
-            <CarouselItem key={index}>
-              <div className="relative h-[330px]">
-                <Image
-                  src={image}
-                  alt={`${item.name} - Image ${index + 1}`}
-                  fill
-                  className="object-cover object-center w-full h-full rounded-lg hover:scale-105 transition-transform duration-300"
-                />
-                {hasVariations && (
-                  <div className="absolute bottom-2 right-2 bg-black/40 text-primary px-2 py-1 rounded-lg">
-                    Tuotteella on eri vaihtoehtoja
-                  </div>
-                )}
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="ml-16" />
-        <CarouselNext className="mr-16" />
-      </Carousel>
       <Link
         href={`/product/${item.slug}`}
         className="block rounded-lg hover:shadow-sm hover:shadow-primary transition-shadow duration-300 h-full"
       >
+        <div className="w-full mx-auto border border-primary">
+          <div className="relative h-[330px] overflow-hidden">
+            <Image
+              src={item.images[0]} // Use only the first image
+              alt={`${item.name}`}
+              fill
+              className="object-cover object-center w-full h-full rounded-lg hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        </div>
         <div className="flex-grow flex flex-col p-3">
           <div className="flex justify-between items-start mb-2">
             <h1 className="font-semibold text-xl flex-grow truncate">

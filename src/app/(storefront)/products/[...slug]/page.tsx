@@ -3,7 +3,38 @@ import { PaginationComponent } from "@/components/Product/Pagination";
 import { SortOptions } from "@/components/Product/SortOptions";
 import { ProductCard } from "@/components/ProductCard";
 import Subtitle from "@/components/subtitle";
+import { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string[] };
+}): Promise<Metadata> {
+  const slugs = params.slug;
+
+  // Fetch category based on slug
+  const category = await prisma.category.findFirst({
+    where: {
+      slug: slugs[slugs.length - 1],
+      storeId: process.env.TENANT_ID,
+    },
+  });
+
+  return {
+    title: `Pupun Korvat | ${category?.name || "Tuotteet"} `,
+    description: `Tutustu Pupun Korvien tuotteisiin kategoriassa ${
+      category?.name || "Tuotteet"
+    }.`,
+    openGraph: {
+      title: `Pupun Korvat | ${category?.name || "Tuotteet"} `,
+      description: `Tutustu Pupun Korvien tuotteisiin kategoriassa ${
+        category?.name || "Tuotteet"
+      }.`,
+      type: "website",
+    },
+  };
+}
 
 const getProductsCount = async (slugs?: string[]) => {
   if (!slugs || slugs.length === 0 || slugs[0] === "all-products") {

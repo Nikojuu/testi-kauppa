@@ -1,8 +1,16 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Maksu- ja toimitusehdot",
+  title: "Pupun Korvat | Maksu- ja toimitusehdot",
   description: "Tietoa palautuskäytännöistä, toimituksesta ja maksutavoista.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+  openGraph: {
+    title: "Pupun Korvat | Pupun Korvat",
+    type: "website",
+  },
 };
 
 export default function TermsPage() {
@@ -63,8 +71,13 @@ export default function TermsPage() {
         </ul>
         <h3 className="text-xl font-medium mb-2">Maksunvälittäjä</h3>
         <p className="mb-4">
-          Käytämme maksunvälittäjänä [lisää maksunvälittäjän nimi], joka vastaa
-          maksujen turvallisesta käsittelystä.
+          Maksunvälityspalvelun toteuttajana ja maksupalveluntarjoajana toimii
+          Paytrail Oyj (2122839-7) yhteistyössä suomalaisten pankkien ja
+          luottolaitosten kanssa. Paytrail Oyj näkyy maksun saajana tiliotteella
+          tai korttilaskulla ja välittää maksun kauppiaalle. Paytrail Oyj:llä on
+          maksulaitoksen toimilupa. Reklamaatiotapauksissa pyydämme ottamaan
+          ensisijaisesti yhteyttä tuotteen toimittajaan. Paytrail Oyj, y-tunnus:
+          2122839-7 Innova 2 Lutakonaukio 7 40100 Jyväskylä
         </p>
       </section>
 

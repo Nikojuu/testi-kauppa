@@ -103,3 +103,6 @@ export const getDisplayPriceSelectedProduct = (
     product.salePrice !== null;
   return isProductOnSale ? product.salePrice : product.price;
 };
+
+export const OPEN_GRAPH_IMAGE = "/kuva1.jpg";
+export const TWITTER_IMAGE = "/kuva2.jpg";

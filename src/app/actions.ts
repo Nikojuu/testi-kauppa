@@ -238,7 +238,7 @@ export const payTrailCheckout = async (
             }
           }
           if (!storeVatRate && !confirmedProduct.vatPercentage) {
-            throw new Error("Kauppiaan asettamaa ALV:tä ei löytynyt");
+            throw new CartError("Kauppiaan asettamaa ALV:tä ei löytynyt", "0");
           }
 
           return {
@@ -395,7 +395,7 @@ export const shipitCreateShipment = async (
   });
 
   if (!senderData) {
-    throw new Error("Store settings not found");
+    return { error: "Kauppiasta ei löytynyt" };
   }
 
   const body = {

@@ -130,7 +130,6 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
                   selectedVariation?.salePercent || product.salePercent
                 }
               />
-              ;
             </div>
             <Separator />
 

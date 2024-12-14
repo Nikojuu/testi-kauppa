@@ -13,14 +13,17 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
   isOnSale = false,
   salePercent,
 }) => {
-  const discountPercentage = salePercent
-    ? ((1 - parseFloat(salePercent)) * 100).toFixed(0)
-    : null;
+  const discountPercentage = React.useMemo(() => {
+    if (salePercent && !isNaN(parseFloat(salePercent))) {
+      return ((1 - parseFloat(salePercent)) * 100).toFixed(0);
+    }
+    return null;
+  }, [salePercent]);
 
   return (
     <div className="flex flex-col items-end gap-1">
       <div className="flex items-center gap-2">
-        {isOnSale && discountPercentage ? (
+        {isOnSale && discountPercentage !== null ? (
           <span className="bg-red-100 text-red-500 text-xs font-medium px-2 py-0.5 rounded">
             -{discountPercentage}%
           </span>
