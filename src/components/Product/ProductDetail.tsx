@@ -8,7 +8,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import AddToCartButton from "@/components/Cart/AddToCartButton";
-import { ImageSlider } from "../ImageSlider";
+
 import {
   getDisplayPriceSelectedProduct,
   getPriceInfo,
@@ -18,6 +18,8 @@ import { Check, X } from "lucide-react";
 import { PriceDisplay } from "../PriceDisplay";
 import { Separator } from "../ui/separator";
 import Breadcrumbs from "./Breadcrumbs";
+import { ImageSliderWithZoom } from "../imageSliderWithZoom";
+// import { ImageSlider } from "../ImageSlider";
 
 export interface SelectedPriceOption {
   price: number | null;
@@ -101,13 +103,21 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
       <Breadcrumbs categories={product.categories} productName={product.name} />
       <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
         <div className="md:w-1/2">
-          <ImageSlider
+          {/* you can disable or enable product image zoom by commenting or uncommenting the component */}
+          <ImageSliderWithZoom
             images={
               selectedVariation?.images && selectedVariation.images.length > 0
                 ? selectedVariation.images
                 : product.images
             }
           />
+          {/* <ImageSlider
+            images={
+              selectedVariation?.images && selectedVariation.images.length > 0
+                ? selectedVariation.images
+                : product.images
+            }
+          /> */}
         </div>
 
         <div className="md:w-1/2 flex flex-col justify-between">

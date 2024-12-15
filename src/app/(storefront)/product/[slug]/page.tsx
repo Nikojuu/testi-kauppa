@@ -58,10 +58,10 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: product.metaTitle || product.name,
+    title: `Pupun Korvat | ${product.metaTitle || product.name}`,
     description: product.metaDescription || product.description,
     openGraph: {
-      title: product.metaTitle || product.name,
+      title: `Pupun Korvat | ${product.metaTitle || product.name}`,
       description: product.metaDescription || product.description,
       images: [product.images[0], ...previousImages],
     },
