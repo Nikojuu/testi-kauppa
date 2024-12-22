@@ -25,11 +25,13 @@ export function OrderConfirmationEmail({
   orderItems,
   shopInfo,
   shipmentMethod,
+  orderNumber,
 }: {
   customerData: CustomerData;
   orderItems: Product[];
   shipmentMethod: shipmentMethod;
   shopInfo: ShopInfo;
+  orderNumber: number;
 }) {
   const totalOrderPrice =
     orderItems.reduce((sum, item) => sum + item.unitPrice * item.units, 0) /
@@ -72,7 +74,7 @@ export function OrderConfirmationEmail({
             <Text style={styles.paragraph}>
               Tilauksen päivämäärä: {currentDate}
               <br />
-              Tilauksen numero: #1
+              Tilausnumero: {orderNumber}
             </Text>
             <Section style={styles.orderDetails}>
               <Heading as="h2" style={styles.subheading}>

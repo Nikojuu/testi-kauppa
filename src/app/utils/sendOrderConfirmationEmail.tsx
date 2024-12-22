@@ -52,7 +52,8 @@ class EmailError extends Error {
 export async function sendOrderConfirmationEmail(
   customerData: CustomerData,
   orderItems: Product[],
-  shipmentMethod: shipmentMethod
+  shipmentMethod: shipmentMethod,
+  orderNumber: number
 ) {
   try {
     const items = await Promise.all(
@@ -162,6 +163,7 @@ export async function sendOrderConfirmationEmail(
           orderItems={items}
           shopInfo={shopInfo}
           shipmentMethod={shipmentMethod}
+          orderNumber={orderNumber}
         />
       ),
     });

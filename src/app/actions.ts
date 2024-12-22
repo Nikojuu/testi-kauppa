@@ -291,7 +291,7 @@ export const payTrailCheckout = async (
           success: `${process.env.BASE_URL}/payment/checkout/success-route`,
           cancel: `${process.env.BASE_URL}/payment/checkout/cancel-route`,
         },
-        callbackDelay: 1,
+        callbackDelay: 2,
       };
 
       const signature = calculateHmac(

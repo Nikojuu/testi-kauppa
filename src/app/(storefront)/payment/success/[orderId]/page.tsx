@@ -35,7 +35,10 @@ export const metadata: Metadata = {
 const getData = async (orderId: string) => {
   try {
     const data = await prisma.order.findUnique({
-      where: { id: orderId },
+      where: {
+        storeId: process.env.TENANT_ID,
+        id: orderId,
+      },
     });
     return data;
   } catch (error) {
@@ -134,12 +137,13 @@ export default async function PaymentSuccessPage({
     items = [];
   }
 
-  const totalPrice = items.reduce((total, item) => {
-    if (item && item.unitPrice && item.quantity) {
-      return total + item.unitPrice * item.quantity;
-    }
-    return total;
-  }, 0);
+  const totalPrice =
+    items.reduce((total, item) => {
+      if (item && item.unitPrice && item.quantity) {
+        return total + item.unitPrice * item.quantity;
+      }
+      return total;
+    }, 0) + (shipmentMethod?.price || 0);
   return (
     <div className="container mx-auto px-4 py-8 my-32">
       <ClearCart />
@@ -157,18 +161,11 @@ export default async function PaymentSuccessPage({
         <CardContent className="space-y-6">
           <div>
             <h3 className="font-semibold mb-2">Tilauksen tiedot</h3>
-            <p>Tilausnumero: {order.id}</p>
-
-            <p>Tila: {order.status === "PAID" ? "Maksettu" : order.status}</p>
+            <p>Tilausnumero: {order.orderNumber}</p>
           </div>
 
           <Separator />
-          <div>
-            <h3 className="font-semibold mb-2">Toimitus</h3>
-            <p>{shipmentMethod.name}</p>
-            <p>{shipmentMethod.description}</p>
-          </div>
-          <Separator />
+
           <div>
             <h3 className="font-semibold mb-4">Tuotteet</h3>
             <div className="space-y-4">
@@ -200,7 +197,16 @@ export default async function PaymentSuccessPage({
                   </div>
                 </div>
               ))}
+              <div>
+                <h3 className="font-semibold mb-2">Toimitus</h3>
+                <p>{shipmentMethod.name}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <p>{shipmentMethod.description}</p>
+                  <p>{(shipmentMethod.price / 100).toFixed(2)} €</p>
+                </div>
+              </div>
             </div>
+            <Separator />
             <div className="mt-4 flex justify-between items-center font-semibold">
               <span>Yhteensä:</span>
               <span>{(totalPrice / 100).toFixed(2)} €</span>
