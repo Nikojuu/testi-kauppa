@@ -97,7 +97,7 @@ model Category {
 
 model Order {
   id                     String                @id @default(uuid())
-  storeId                String?
+  storeId                String
   createdAt              DateTime              @default(now())
   totalAmount            Int                   @default(0)
   status                 OrderStatus           @default(PENDING)
@@ -184,6 +184,12 @@ model VariationOption {
   storeId   String
   createdAt DateTime @default(now())
   Store     Store    @relation(fields: [storeId], references: [id])
+}
+
+model StoreOrderNumbers {
+  id          String @id @default(uuid())
+  storeId     String @unique
+  orderNumber Int    @default(0)
 }
 
 enum OrderStatus {

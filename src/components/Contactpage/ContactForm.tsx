@@ -141,7 +141,9 @@ export default function ContactForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Lähetä</Button>
+            <Button className="w-1/2" variant="gooeyLeft" type="submit">
+              Lähetä
+            </Button>
           </form>
         </Form>
         {formStatus && (

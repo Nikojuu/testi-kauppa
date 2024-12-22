@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function StickyNavbar({
@@ -7,39 +8,32 @@ export default function StickyNavbar({
 }: {
   children: React.ReactNode;
 }) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomepage = pathname === "/";
 
   useEffect(() => {
-    const controlNavbar = () => {
-      if (typeof window !== "undefined") {
-        if (window.scrollY > lastScrollY) {
-          // if scroll down hide the navbar
-          setIsVisible(false);
-        } else {
-          // if scroll up show the navbar
-          setIsVisible(true);
-        }
-
-        // remember current page location to use in the next move
-        setLastScrollY(window.scrollY);
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
       }
     };
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", controlNavbar);
+    window.addEventListener("scroll", handleScroll);
 
-      // cleanup function
-      return () => {
-        window.removeEventListener("scroll", controlNavbar);
-      };
-    }
-  }, [lastScrollY]);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 transition-transform duration-300 z-50 ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+        isHomepage && !isScrolled
+          ? "bg-transparent text-white"
+          : "bg-white text-black shadow-md"
       }`}
     >
       {children}

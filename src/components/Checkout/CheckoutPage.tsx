@@ -65,7 +65,7 @@ const CheckoutPage = () => {
   const paytrailPaymentMethods = async () => {
     if (!customerData || !chosenShipmentMethod) {
       toast({
-        title: "Toimitustapaa tai asiakastietoja puuttuu",
+        title: "Toimitustapa tai asiakastietoja puuttuu",
         description:
           "Tarkista että olet valinnut toimitustavan ja täyttänyt asiakastiedot",
         className:

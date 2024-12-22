@@ -29,7 +29,7 @@ export default function RootLayout({
         <StickyNavbar>
           <Navbar />
         </StickyNavbar>
-        <main className="min-h-[75vh] my-28 max-w-[3500px]">{children}</main>
+        <main className="min-h-[75vh]  max-w-[3500px]">{children}</main>
         <Footer />
 
         <Toaster />

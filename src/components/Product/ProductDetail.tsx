@@ -111,18 +111,11 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
                 : product.images
             }
           />
-          {/* <ImageSlider
-            images={
-              selectedVariation?.images && selectedVariation.images.length > 0
-                ? selectedVariation.images
-                : product.images
-            }
-          /> */}
         </div>
 
         <div className="md:w-1/2 flex flex-col justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-4">
+            <h1 className="text-3xl font-secondary font-extrabold tracking-tight text-gray-900 mb-4">
               {product.name}
             </h1>
 

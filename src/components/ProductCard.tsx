@@ -23,10 +23,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
 
   // Set conditional styling
   const statusClass = hasVariations
-    ? " font-semibold" // Variations available
+    ? " " // Variations available
     : isAvailable
-      ? "text-green-600 font-semibold" // Products available
-      : "text-red-600 font-semibold"; // Products not available
+      ? "text-green-600 " // Products available
+      : "text-red-600"; // Products not available
 
   return (
     <div className="h-full flex flex-col">
@@ -46,7 +46,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         </div>
         <div className="flex-grow flex flex-col p-3">
           <div className="flex justify-between items-start mb-2">
-            <h1 className="font-semibold text-xl flex-grow truncate">
+            <h1 className="font-secondary font-bold text-xl flex-grow truncate">
               {item.name}
             </h1>
             <LowestPriceDisplay priceInfo={priceInfo} />

@@ -70,9 +70,19 @@ const config: Config = {
           from: { backgroundPosition: "200% 0" },
           to: { backgroundPosition: "-200% 0" },
         },
+        "shimmer-x": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "shimmer-y": {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(100%)" },
+        },
       },
       animation: {
         shine: "shine 8s ease-in-out infinite",
+        "shimmer-x": "shimmer-x 2s linear infinite",
+        "shimmer-y": "shimmer-y 2s linear infinite",
       },
     },
   },

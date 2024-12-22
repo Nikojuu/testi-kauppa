@@ -8,7 +8,7 @@ const Subtitle = ({ subtitle, dark }: SubtitleProps) => {
     <div className="flex justify-center items-center gap-8 my-12 ">
       <div className={`h-[1px] w-full bg-black`}></div>
       <h2
-        className={`text-3xl font-primary text-nowrap ${
+        className={`text-6xl font-primary text-nowrap ${
           dark ? "text-primary" : ""
         }`}
       >

@@ -10,10 +10,8 @@
     --card-foreground: 20 14.3% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
-    /* --primary: 47.9 95.8% 53.1%; */
-    /* --primary: 337.4 100% 89.6%; */
-    /* --primary: 42.1, 100%, 88.8%; */
-    --primary: 278.9, 40.7%, 82.2%;
+
+    --primary: 251.2, 88.9%, 92.9%;
     --primary-foreground: 26 83.3% 14.1%;
     --secondary: 60 4.8% 95.9%;
 
@@ -111,8 +109,7 @@ h1 {
 .grid figure figcaption {
   padding: 2em;
   color: #fff;
-  text-transform: uppercase;
-  font-size: 1.25em;
+
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
@@ -140,24 +137,11 @@ h1 {
   opacity: 0;
 }
 
-.grid figure h2 {
-  word-spacing: -0.15em;
-  font-weight: 300;
-}
-
-.grid figure h2 span {
-  font-weight: 800;
-}
-
 .grid figure h2,
 .grid figure p {
   margin: 0;
 }
 
-.grid figure p {
-  letter-spacing: 1px;
-  font-size: 68.5%;
-}
 figure.effect-layla {
   background: #0d044d;
 }

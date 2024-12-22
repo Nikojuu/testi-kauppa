@@ -12,17 +12,15 @@ const CategorySection = () => {
             width={500}
             height={500}
             src="https://utfs.io/f/PRCJ5a0N1o4iqmWK4Uec2UhuNQST9VCxAPfv0Eb5skpmMGzI"
-            // src="https://utfs.io/f/PRCJ5a0N1o4iTc81BHzgnxtOo7qma02ZAzHvhDS4UGCyeWTN"
             alt="kaulakorut"
           />
           <figcaption>
-            <h2>Upeita kaulakoruja</h2>
-            <p>Selaa korvakoruvalikoimani ja hanki itsellesi upea kaulakoru</p>
-            <Link href="#">korvakorut</Link>
+            <h2 className="text-5xl font-primary  pb-4">Upeita kaulakoruja</h2>
+            <p>Selaa kaulakoruvalikoimani ja hanki itsellesi upea kaulakoru</p>
+            <Link href="/products/kaulakorut"></Link>
           </figcaption>
         </figure>
         <figure className="effect-layla ">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <Image
             className="w-full object-cover"
             width={500}
@@ -31,9 +29,9 @@ const CategorySection = () => {
             alt="korvakorut"
           />
           <figcaption>
-            <h2>Upeat Korvakorut</h2>
+            <h2 className="text-5xl font-primary  pb-4">Upeat korvakorut</h2>
             <p>Katso mitä ihania korvakoruja minulla on sinulle tai lahjaksi</p>
-            <Link href="#">kaulakorut</Link>
+            <Link href="/products/korvakorut"></Link>
           </figcaption>
         </figure>
         <figure className="effect-layla ">
@@ -45,9 +43,9 @@ const CategorySection = () => {
             alt="rannekorut"
           />
           <figcaption>
-            <h2>Upeat Rannekorut</h2>
+            <h2 className="text-5xl font-primary  pb-4">Upeat Rannekorut</h2>
             <p>Katso mitä ihania rannekkoruja minulla on sinulle</p>
-            <Link href="#">kaulakorut</Link>
+            <Link href="/products/rannekorut"></Link>
           </figcaption>
         </figure>
       </div>

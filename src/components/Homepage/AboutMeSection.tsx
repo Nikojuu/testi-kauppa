@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { ArrowBigLeft, ArrowRight } from "lucide-react";
 
 const AboutMeSection = () => {
   return (
@@ -9,10 +10,8 @@ const AboutMeSection = () => {
         <Image fill alt="" src="/kuva1.jpg" className="object-cover" />
       </div>
 
-      <div className="z-10 mx-1 -mt-32 flex-1 bg-[hsl(0,0%,18.4%)] p-2 text-white sm:mx-8  sm:p-8 lg:-ml-24  lg:mb-24 lg:mt-24">
-        <h3 className="mb-8  font-primary text-tertiary text-2xl ">
-          Minä olen kultainen
-        </h3>
+      <div className="z-10 mx-1 -mt-32 flex-1 bg-primary p-2 text-black sm:mx-8  sm:p-8 lg:-ml-24  lg:mb-24 lg:mt-24">
+        <h3 className="mb-8  font-primary  text-5xl ">Minä olen kultainen</h3>
         <p>
           Muista tämän alle kuva parallax jonka sisällä 2 osainen esittely
           korviksista ja kaulakoruista Lorem ipsum dolor, sit amet consectetur
@@ -36,8 +35,13 @@ const AboutMeSection = () => {
           pariatur ipsam reiciendis ut eius a sequi necessitatibus, dignissimos
           perspiciatis beatae harum.
         </p>
-        <Link href="#">
-          <Button variant="gooeyLeft">Lue lisää minusta...</Button>
+        <Link href="/about">
+          <Button variant="gooeyLeft" className="bg-violet-400">
+            Lue lisää minusta{" "}
+            <span>
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </span>
+          </Button>
         </Link>
       </div>
     </section>

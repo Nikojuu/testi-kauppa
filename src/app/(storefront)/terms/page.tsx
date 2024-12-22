@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-screen-2xl py-8 px-4">
+    <div className="mx-auto max-w-screen-2xl py-8 px-4 mt-48">
       <h1 className="text-3xl font-bold mb-6">Maksu- ja toimitusehdot</h1>
 
       <section className="mb-8">

@@ -56,11 +56,11 @@ export function SelectShipmentMethod({
           }
         }}
         value={chosenShipmentMethod?.id}
-        className="space-y-6 mx-auto max-w-2xl mt-48"
+        className="space-y-6 mx-auto max-w-2xl "
       >
         <Card>
           <CardHeader>
-            <CardTitle>Custom Postipaketti</CardTitle>
+            <CardTitle>Postitus</CardTitle>
           </CardHeader>
           <CardContent>
             {allShipmentMethods.customShipmentMethods.map((method) => (
@@ -68,45 +68,50 @@ export function SelectShipmentMethod({
             ))}
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Shipit Postipaketti</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {allShipmentMethods.shipitShipmentMethods.map((method) => (
-              <ShipmentMethod key={method.id} method={method} />
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Drop In Locations</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
-              {visibleLocations.map((method) => (
-                <ParchelLockerShipmentMethod key={method.id} method={method} />
+        {allShipmentMethods.shipitShipmentMethods.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Shipit Postitus</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {allShipmentMethods.shipitShipmentMethods.map((method) => (
+                <ShipmentMethod key={method.id} method={method} />
               ))}
-            </div>
-            {dropInLocations.length > LOCATIONS_PER_PAGE && (
-              <div className="flex justify-center pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAllLocations(!showAllLocations)}
-                  className="w-full max-w-xs"
-                >
-                  {showAllLocations
-                    ? "Näytä vähemmän automaatteja"
-                    : `Näytä lisää automaatteja (${
-                        dropInLocations.length - LOCATIONS_PER_PAGE
-                      })`}
-                </Button>
+            </CardContent>
+          </Card>
+        )}
+        {dropInLocations.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Pakettiautomaatit</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
+                {visibleLocations.map((method) => (
+                  <ParchelLockerShipmentMethod
+                    key={method.id}
+                    method={method}
+                  />
+                ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
+              {dropInLocations.length > LOCATIONS_PER_PAGE && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAllLocations(!showAllLocations)}
+                    className="w-full max-w-xs"
+                  >
+                    {showAllLocations
+                      ? "Näytä vähemmän automaatteja"
+                      : `Näytä lisää automaatteja (${
+                          dropInLocations.length - LOCATIONS_PER_PAGE
+                        })`}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </RadioGroup>
     </>
   );

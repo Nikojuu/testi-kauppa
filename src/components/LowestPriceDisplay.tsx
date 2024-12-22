@@ -16,7 +16,7 @@ export const LowestPriceDisplay: React.FC<PriceDisplayProps> = ({
     <div className="flex flex-col items-end gap-1">
       <div className="flex items-center gap-2">
         {priceInfo.isOnSale && priceInfo.salePercent ? (
-          <span className="bg-red-100 text-red-500 text-xs font-medium px-2 py-0.5 rounded">
+          <span className="bg-red-600 text-white text-xs font-medium px-2 py-0.5 ">
             -{discountPercentage}%
           </span>
         ) : (
@@ -30,7 +30,9 @@ export const LowestPriceDisplay: React.FC<PriceDisplayProps> = ({
           €{priceInfo.currentPrice.toFixed(2)}
         </span>
       </div>
-      <span className="text-lg font-bold">
+      <span
+        className={`text-lg font-bold ${priceInfo.isOnSale ? "text-red-600" : ""}`}
+      >
         €
         {priceInfo.isOnSale
           ? priceInfo.salePrice!.toFixed(2)

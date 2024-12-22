@@ -1,8 +1,10 @@
 import prisma from "@/app/utils/db";
+import { Product } from "@/app/utils/types";
 import { PaginationComponent } from "@/components/Product/Pagination";
 import { SortOptions } from "@/components/Product/SortOptions";
 import { ProductCard } from "@/components/ProductCard";
 import Subtitle from "@/components/subtitle";
+import { Prisma } from "@prisma/client";
 import { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
 
@@ -81,49 +83,120 @@ const getProducts = async (
   const orderBy = sortOptions[sort]; // No error, type-safe access
 
   if (!slugs || slugs.length === 0 || slugs[0] === "all-products") {
-    return {
-      name: "Kaikki tuotteeni",
-      products: await prisma.product.findMany({
-        where: {
-          storeId: process.env.TENANT_ID,
-        },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          price: true,
-          images: true,
-          slug: true,
-          quantity: true,
-          salePrice: true,
-          salePercent: true,
-          saleEndDate: true,
-          saleStartDate: true,
-          soldQuantity: true,
-          ProductVariation: {
-            select: {
-              id: true,
-              price: true,
-              saleEndDate: true,
-              saleStartDate: true,
-              salePrice: true,
-              salePercent: true,
-            },
+    if (sort === "price_asc" || sort === "price_desc") {
+      // Handle sorting by price for all products
+      const orderByPrice = sort === "price_asc" ? "asc" : "desc";
+
+      const products = await prisma.$queryRaw(
+        Prisma.sql`
+   WITH AllPrices AS (
+  -- Base product prices
+  SELECT
+    p.id as product_id,
+    CASE
+      WHEN p."salePrice" IS NOT NULL AND (
+        -- Either dates are NULL (permanent sale)
+        (p."saleStartDate" IS NULL OR p."saleEndDate" IS NULL) OR
+        -- Or within date range
+        (CURRENT_TIMESTAMP BETWEEN p."saleStartDate" AND p."saleEndDate")
+      )
+      THEN p."salePrice"
+      ELSE p.price
+    END as final_price
+  FROM "Product" p
+  WHERE p."storeId" = ${process.env.TENANT_ID}
+ 
+  UNION ALL
+ 
+  -- Variation prices with same logic
+  SELECT
+    pv."productId" as product_id,
+    CASE
+      WHEN pv."salePrice" IS NOT NULL AND (
+        -- Either dates are NULL (permanent sale)
+        (pv."saleStartDate" IS NULL OR pv."saleEndDate" IS NULL) OR
+        -- Or within date range
+        (CURRENT_TIMESTAMP BETWEEN pv."saleStartDate" AND pv."saleEndDate")
+      )
+      THEN pv."salePrice"
+      ELSE pv.price
+    END as final_price
+  FROM "ProductVariation" pv
+  JOIN "Product" p ON p.id = pv."productId"
+  WHERE p."storeId" = ${process.env.TENANT_ID}
+),
+LowestPrices AS (
+  SELECT
+    product_id,
+    MIN(final_price) as lowest_price
+  FROM AllPrices
+  GROUP BY product_id
+)
+SELECT
+  p.id,
+  p.name,
+  p.description,
+  p.price,
+  p.images,
+  p.slug,
+  p.quantity,
+  p."salePrice",
+  p."salePercent",
+  p."saleEndDate",
+  p."saleStartDate",
+  p."soldQuantity",
+  lp.lowest_price as "lowestPrice",
+  COALESCE(
+    json_agg(
+      CASE
+        WHEN pv.id IS NOT NULL THEN
+          json_build_object(
+            'id', pv.id,
+            'price', pv.price,
+            'saleEndDate', pv."saleEndDate",
+            'saleStartDate', pv."saleStartDate",
+            'salePrice', pv."salePrice",
+            'salePercent', pv."salePercent"
+          )
+      END
+    ) FILTER (WHERE pv.id IS NOT NULL),
+    '[]'
+  ) as "ProductVariation"
+FROM "Product" p
+LEFT JOIN "ProductVariation" pv ON pv."productId" = p.id
+JOIN LowestPrices lp ON lp.product_id = p.id
+WHERE p."storeId" = ${process.env.TENANT_ID}
+GROUP BY
+  p.id,
+  p.name,
+  p.description,
+  p.price,
+  p.images,
+  p.slug,
+  p.quantity,
+  p."salePrice",
+  p."salePercent",
+  p."saleEndDate",
+  p."saleStartDate",
+  p."soldQuantity",
+  lp.lowest_price
+ORDER BY lp.lowest_price ${Prisma.raw(orderByPrice)}
+LIMIT ${take}
+OFFSET ${skip};
+  `
+      );
+
+      return {
+        name: "Kaikki tuotteeni",
+        products,
+      };
+    } else {
+      return {
+        name: "Kaikki tuotteeni",
+        products: await prisma.product.findMany({
+          where: {
+            storeId: process.env.TENANT_ID,
           },
-        },
-        orderBy, // Use dynamic sort option
-        skip,
-        take,
-      }),
-    };
-  } else {
-    const category = await prisma.category.findFirst({
-      where: {
-        slug: slugs[slugs.length - 1],
-        storeId: process.env.TENANT_ID,
-      },
-      include: {
-        products: {
           select: {
             id: true,
             name: true,
@@ -151,14 +224,175 @@ const getProducts = async (
           orderBy, // Use dynamic sort option
           skip,
           take,
+        }),
+      };
+    }
+  } else {
+    if (sort === "price_asc" || sort === "price_desc") {
+      // Handle sorting by price for a specific category
+      const category = await prisma.category.findFirst({
+        where: {
+          slug: slugs[slugs.length - 1],
+          storeId: process.env.TENANT_ID,
         },
-      },
-    });
+      });
 
-    return {
-      name: category?.name || "Tuotteet",
-      products: category?.products || [],
-    };
+      if (!category) {
+        return {
+          name: "Kategoriaa ei löydy",
+          products: [],
+        };
+      }
+
+      const orderByPrice = sort === "price_asc" ? "asc" : "desc";
+
+      const products = await prisma.$queryRaw(
+        Prisma.sql`
+   WITH AllPrices AS (
+      SELECT
+        p.id as product_id,
+        CASE
+          WHEN p."salePrice" IS NOT NULL AND (
+            (p."saleStartDate" IS NULL OR p."saleEndDate" IS NULL) OR
+            (CURRENT_TIMESTAMP BETWEEN p."saleStartDate" AND p."saleEndDate")
+          )
+          THEN p."salePrice"
+          ELSE p.price
+        END as final_price
+      FROM "Product" p
+      JOIN "_CategoryToProduct" ctp ON ctp."B" = p.id
+      WHERE ctp."A" = ${category.id}
+        AND p."storeId" = ${process.env.TENANT_ID}
+
+      UNION ALL
+
+      SELECT
+        pv."productId" as product_id,
+        CASE
+          WHEN pv."salePrice" IS NOT NULL AND (
+            (pv."saleStartDate" IS NULL OR pv."saleEndDate" IS NULL) OR
+            (CURRENT_TIMESTAMP BETWEEN pv."saleStartDate" AND pv."saleEndDate")
+          )
+          THEN pv."salePrice"
+          ELSE pv.price
+        END as final_price
+      FROM "ProductVariation" pv
+      JOIN "Product" p ON p.id = pv."productId"
+      JOIN "_CategoryToProduct" ctp ON ctp."B" = p.id
+      WHERE ctp."A" = ${category.id}
+        AND p."storeId" = ${process.env.TENANT_ID}
+   ),
+   LowestPrices AS (
+      SELECT
+        product_id,
+        MIN(final_price) as lowest_price
+      FROM AllPrices
+      GROUP BY product_id
+   )
+   SELECT
+      p.id,
+      p.name,
+      p.description,
+      p.price,
+      p.images,
+      p.slug,
+      p.quantity,
+      p."salePrice",
+      p."salePercent",
+      p."saleEndDate",
+      p."saleStartDate",
+      p."soldQuantity",
+      lp.lowest_price as "lowestPrice",
+      COALESCE(
+        json_agg(
+          CASE
+            WHEN pv.id IS NOT NULL THEN
+              json_build_object(
+                'id', pv.id,
+                'price', pv.price,
+                'saleEndDate', pv."saleEndDate",
+                'saleStartDate', pv."saleStartDate",
+                'salePrice', pv."salePrice",
+                'salePercent', pv."salePercent"
+              )
+          END
+        ) FILTER (WHERE pv.id IS NOT NULL),
+        '[]'
+      ) as "ProductVariation"
+   FROM "Product" p
+   LEFT JOIN "ProductVariation" pv ON pv."productId" = p.id
+   JOIN LowestPrices lp ON lp.product_id = p.id
+   JOIN "_CategoryToProduct" ctp ON ctp."B" = p.id
+   WHERE ctp."A" = ${category.id}
+     AND p."storeId" = ${process.env.TENANT_ID}
+   GROUP BY
+      p.id,
+      p.name,
+      p.description,
+      p.price,
+      p.images,
+      p.slug,
+      p.quantity,
+      p."salePrice",
+      p."salePercent",
+      p."saleEndDate",
+      p."saleStartDate",
+      p."soldQuantity",
+      lp.lowest_price
+   ORDER BY lp.lowest_price ${Prisma.raw(orderByPrice)}
+   LIMIT ${take}
+   OFFSET ${skip};
+   `
+      );
+
+      return {
+        name: category.name,
+        products,
+      };
+    } else {
+      const category = await prisma.category.findFirst({
+        where: {
+          slug: slugs[slugs.length - 1],
+          storeId: process.env.TENANT_ID,
+        },
+        include: {
+          products: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              price: true,
+              images: true,
+              slug: true,
+              quantity: true,
+              salePrice: true,
+              salePercent: true,
+              saleEndDate: true,
+              saleStartDate: true,
+              soldQuantity: true,
+              ProductVariation: {
+                select: {
+                  id: true,
+                  price: true,
+                  saleEndDate: true,
+                  saleStartDate: true,
+                  salePrice: true,
+                  salePercent: true,
+                },
+              },
+            },
+            orderBy, // Use dynamic sort option
+            skip,
+            take,
+          },
+        },
+      });
+
+      return {
+        name: category?.name || "Tuotteet",
+        products: category?.products || [],
+      };
+    }
   }
 };
 
@@ -181,16 +415,18 @@ const ProductsPage = async ({
   ]);
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  const products: Product[] = data?.products as Product[];
+
   return (
     <section className="mt-48">
       <Subtitle subtitle={data?.name || "Tuotteet"} />
-      {data?.products && data.products.length > 0 ? (
+      {products && products.length > 0 ? (
         <>
           <div className="max-w-screen-xl mx-auto flex justify-end my-4">
             <SortOptions />
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto my-8">
-            {data.products.map((item) => (
+            {products.map((item: Product) => (
               <ProductCard item={item} key={item.id} />
             ))}
           </div>

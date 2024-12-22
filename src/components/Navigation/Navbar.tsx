@@ -2,6 +2,7 @@ import Link from "next/link";
 import { NavbarLinks } from "./NavbarLinks";
 import Cart from "../Cart/Cart";
 import prisma from "@/app/utils/db";
+import MobileLinks from "./MobileLinks";
 
 const getData = async () => {
   const categories = await prisma.category.findMany({
@@ -9,7 +10,15 @@ const getData = async () => {
     include: {
       children: {
         include: {
-          children: true,
+          children: {
+            include: {
+              children: {
+                include: {
+                  children: true,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -21,9 +30,12 @@ const Navbar = async ({ className = "" }: { className?: string }) => {
   const categories = await getData();
   return (
     <nav
-      className={`w-full max-w-[3500px] mx-auto px-4 sm:px-6 lg:px-40 py-5 flex items-center h-28 justify-between bg-white ${className}`}
+      className={`w-full max-w-[3500px] mx-auto px-4 sm:px-6 lg:px-40 py-5 flex items-center h-28 justify-between bg-transparent ${className}  border-b  border-white`}
     >
       <div className="flex items-center">
+        <div className="mr-8">
+          <MobileLinks categories={categories} />
+        </div>
         <Link href="/" className="mr-20">
           <h2 className="text-cyan-600 font-bold text-xl lg:text-3xl">
             Pupun<span className="text-primary">Korvat</span>

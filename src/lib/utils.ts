@@ -106,3 +106,36 @@ export const getDisplayPriceSelectedProduct = (
 
 export const OPEN_GRAPH_IMAGE = "/kuva1.jpg";
 export const TWITTER_IMAGE = "/kuva2.jpg";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// export const sortProductsByPrice = (products: any[], sortKey: string) => {
+//   if (sortKey === "price_asc") {
+//     return products.sort(
+//       (a, b) => calculateActivePrice(a) - calculateActivePrice(b)
+//     );
+//   } else if (sortKey === "price_desc") {
+//     return products.sort(
+//       (a, b) => calculateActivePrice(b) - calculateActivePrice(a)
+//     );
+//   }
+//   return products;
+// };
+
+// function calculateActivePrice(product: Product) {
+//   if (product.ProductVariation && product.ProductVariation.length > 0) {
+//     const prices = product.ProductVariation.map((variation) => {
+//       const saleActive = isSaleActive(
+//         variation.saleStartDate,
+//         variation.saleEndDate
+//       );
+//       return saleActive && variation.salePrice
+//         ? variation.salePrice
+//         : variation.price;
+//     });
+
+//     return Math.min(...(prices as number[]));
+//   }
+
+//   const saleActive = isSaleActive(product.saleStartDate, product.saleEndDate);
+//   return saleActive && product.salePrice ? product.salePrice : product.price;
+// }
