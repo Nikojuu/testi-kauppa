@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  getDropInLocations,
-  getShipmentMethods,
-  payTrailCheckout,
-} from "@/app/actions";
+
 import CustomerDataForm from "@/components/Checkout/CustomerDataForm";
 import { useCart } from "@/hooks/use-cart";
 import { CustomerData } from "@/lib/zodSchemas";
@@ -21,8 +17,13 @@ import { XCircle } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
 
 import { unstable_noStore } from "next/cache";
+import {
+  getDropInLocations,
+  getShipmentMethods,
+} from "@/lib/actions/shipmentActions";
+import { payTrailCheckout } from "@/lib/actions/paytrailActions";
 
-const CheckoutPage = () => {
+const PaytrailCheckoutPage = () => {
   unstable_noStore();
   const items = useCart((state) => state.items);
   const { toast } = useToast();
@@ -93,7 +94,7 @@ const CheckoutPage = () => {
 
         if (productId) {
           toast({
-            title: "Hinta on muuttunut",
+            title: "Jotain meni pieleen",
             description: response.message || "Tuotetta ei ole varastossa",
             className:
               "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
@@ -195,4 +196,4 @@ const CheckoutPage = () => {
   );
 };
 
-export default CheckoutPage;
+export default PaytrailCheckoutPage;

@@ -1,4 +1,6 @@
-import CheckoutPage from "@/components/Checkout/CheckoutPage";
+import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
+import CheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
+import PaytrailCheckout from "@/components/Checkout/PaytrailPayments";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 const CheckoutRoute = () => {
-  return <CheckoutPage />;
+  return <PaytrailCheckoutPage />;
 };
 
 export default CheckoutRoute;

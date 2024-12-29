@@ -97,7 +97,7 @@ model Category {
 
 model Order {
   id                     String                @id @default(uuid())
-  storeId                String
+  storeId                String?
   createdAt              DateTime              @default(now())
   totalAmount            Int                   @default(0)
   status                 OrderStatus           @default(PENDING)
@@ -113,6 +113,7 @@ model Order {
   orderNumber            Int                   @default(autoincrement())
   ShipitShippingMethod   ShipitShippingMethod? @relation(fields: [shipitShippingMethodId], references: [id])
   Store                  Store?                @relation(fields: [storeId], references: [id])
+  OrderLineItems         OrderLineItems[]
 }
 
 model ShipmentMethods {
@@ -192,6 +193,19 @@ model StoreOrderNumbers {
   orderNumber Int    @default(0)
 }
 
+model OrderLineItems {
+  id          String    @id
+  orderId     String
+  itemType    ItemType?
+  quantity    Int
+  price       Int
+  totalAmount Int
+  productCode String
+  Order       Order     @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+}
+
 enum OrderStatus {
   PENDING
   COMPLETED
@@ -205,4 +219,10 @@ enum ShipmentType {
   PACKAGE
   DOCUMENT
   PALLET
+}
+
+enum ItemType {
+  PRODUCT
+  VARIATION
+  SHIPPING
 }

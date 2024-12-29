@@ -1,7 +1,7 @@
-import { shipitCreateShipment } from "@/app/actions";
 import { calculateHmac } from "@/app/utils/calculateHmac";
 import prisma from "@/app/utils/db";
 import { sendOrderConfirmationEmail } from "@/app/utils/sendOrderConfirmationEmail";
+import { shipitCreateShipment } from "@/lib/actions/shipmentActions";
 
 import { NextResponse } from "next/server";
 
@@ -32,6 +32,7 @@ export async function GET(request: Request) {
   try {
     const order = await prisma.order.findUnique({
       where: { id: reference },
+      include: { OrderLineItems: true },
     });
 
     if (!order) {
@@ -60,37 +61,37 @@ export async function GET(request: Request) {
       });
 
       // Parse items from the order
-      const orderItems = JSON.parse(order.items as string);
+      const orderItems = order.OrderLineItems;
 
       // Update product quantities
       for (const item of orderItems) {
-        const [type, id] = item.stamp.split("-"); // Extract type and ID from stamp
+        const type = item.itemType; // Extract type and ID from stamp
 
-        if (type === "variation") {
+        if (type === "VARIATION") {
           await prisma.productVariation.update({
             where: { id: item.productCode },
             data: {
               quantity: {
-                decrement: item.units,
+                decrement: item.quantity,
               },
               soldQuantity: {
-                increment: item.units,
+                increment: item.quantity,
               },
             },
           });
-        } else if (type === "product") {
+        } else if (type === "PRODUCT") {
           await prisma.product.update({
             where: { id: item.productCode },
             data: {
               quantity: {
-                decrement: item.units,
+                decrement: item.quantity,
               },
               soldQuantity: {
-                increment: item.units,
+                increment: item.quantity,
               },
             },
           });
-        } else if (type === "shipping") {
+        } else if (type === "SHIPPING") {
           // No inventory update needed for shipping
           console.log("Shipping cost item processed");
         } else {

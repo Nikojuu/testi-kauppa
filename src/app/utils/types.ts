@@ -7,6 +7,7 @@ export interface confirmedItems {
   vatPercentage: number;
   productCode: string;
   description: string;
+  stamp: string;
 }
 
 export type ShipmentMethodUnion =

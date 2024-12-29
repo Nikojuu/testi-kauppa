@@ -10,7 +10,6 @@ import {
   Heading,
   Text,
   Hr,
-  Button,
   Img,
 } from "@react-email/components";
 import {
@@ -34,15 +33,7 @@ export function OrderConfirmationEmail({
   orderNumber: number;
 }) {
   const totalOrderPrice =
-    orderItems.reduce((sum, item) => sum + item.unitPrice * item.units, 0) /
-    100;
-
-  const totalPriceWithoutVAT =
-    orderItems.reduce(
-      (sum, item) =>
-        sum + (item.unitPrice * item.units) / (1 + item.vatPercentage / 100),
-      0
-    ) / 100;
+    orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0) / 100;
 
   const currentDate = new Date().toLocaleDateString("fi-FI", {
     day: "2-digit",
@@ -97,12 +88,12 @@ export function OrderConfirmationEmail({
                   <Column style={styles.detailsColumn}>
                     <Text style={styles.itemName}>{item.name}</Text>
                     <Text style={styles.itemDetails}>
-                      {item.units} x €{(item.unitPrice / 100).toFixed(2)}
+                      {item.quantity} x €{(item.price / 100).toFixed(2)}
                     </Text>
                   </Column>
                   <Column style={styles.priceColumn}>
                     <Text style={styles.itemTotal}>
-                      €{((item.unitPrice * item.units) / 100).toFixed(2)}
+                      €{((item.price * item.quantity) / 100).toFixed(2)}
                     </Text>
                   </Column>
                 </Row>
@@ -118,7 +109,7 @@ export function OrderConfirmationEmail({
                   </Text>
                 </Column>
               </Row>
-              <Row style={styles.totalRow}>
+              {/* <Row style={styles.totalRow}>
                 <Column>
                   <Text style={styles.totalLabel}>Yhteensä ilman ALV</Text>
                 </Column>
@@ -127,7 +118,7 @@ export function OrderConfirmationEmail({
                     €{totalPriceWithoutVAT.toFixed(2)}
                   </Text>
                 </Column>
-              </Row>
+              </Row> */}
             </Section>
             <Section style={styles.shippingDetails}>
               <Heading as="h2" style={styles.subheading}>

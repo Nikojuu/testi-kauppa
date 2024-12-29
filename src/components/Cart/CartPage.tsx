@@ -4,11 +4,15 @@ import Subtitle from "@/components/subtitle";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { cn, isSaleActive } from "@/lib/utils";
-import { Loader2, Minus, Plus, X } from "lucide-react";
+import { Loader2, Minus, Plus, X, XCircle } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CheckoutButton } from "./CheckoutButton";
+import { createStripeCheckoutSession } from "@/lib/actions/stripeActions";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export type ShipmentMethods = {
   id: string;
@@ -20,6 +24,8 @@ export type ShipmentMethods = {
 
 const CartPage = () => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const router = useRouter();
+  const { toast } = useToast();
 
   const items = useCart((state) => state.items);
   const incrementQuantity = useCart((state) => state.incrementQuantity);
@@ -51,6 +57,40 @@ const CartPage = () => {
     0
   );
 
+  const handleStripeCheckout = async () => {
+    try {
+      const res = await createStripeCheckoutSession(items);
+      if (res === null) {
+        alert("Failed to create Stripe Checkout session");
+        return;
+      }
+
+      if (typeof res === "object" && res.error) {
+        console.error("CartError:", res.message);
+
+        toast({
+          title: "Jotain meni pieleen",
+          description: res.message || "Tuotetta ei ole varastossa",
+          className:
+            "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
+          action: (
+            <div className="flex items-center space-x-2">
+              <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
+              <div className="flex flex-col"></div>
+            </div>
+          ),
+        });
+
+        return;
+      }
+
+      // If res is a string (session URL), redirect or handle success
+
+      router.push(res as string);
+    } catch (error) {
+      alert("Error creating Stripe Checkout session");
+    }
+  };
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -246,7 +286,10 @@ const CartPage = () => {
             </div>
 
             <div className="mt-6">
-              {/* <CheckoutButton /> */}
+              {/* <form action={handleStripeCheckout}>
+                <CheckoutButton />
+              </form> */}
+
               <Link href="/payment/checkout">
                 <Button variant="gooeyLeft">Tee tilaus</Button>
               </Link>

@@ -8,11 +8,16 @@ export function CheckoutButton() {
     <>
       {pending ? (
         <Button disabled size="lg" className="w-full mt-5">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Please Wait
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Odota
         </Button>
       ) : (
-        <Button type="submit" size="lg" className="w-full mt-5">
-          Checkout
+        <Button
+          type="submit"
+          variant="gooeyLeft"
+          size="lg"
+          className="w-full mt-5"
+        >
+          Siirry maksamaan
         </Button>
       )}
     </>

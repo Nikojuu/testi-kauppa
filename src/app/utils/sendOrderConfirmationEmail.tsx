@@ -2,6 +2,7 @@ import OrderConfirmationEmail from "@/components/Email/OrderConfirmation";
 
 import { Resend } from "resend";
 import prisma from "./db";
+import { OrderLineItems } from "@prisma/client";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 export interface CustomerData {
@@ -20,14 +21,11 @@ export interface Product {
   name: string;
 
   productCode: string;
-  stamp: string;
+
   quantity: number;
   images: string | null;
 
-  units: number;
-  unitPrice: number;
-
-  vatPercentage: number;
+  price: number;
 }
 export interface shipmentMethod {
   id: string;
@@ -51,16 +49,16 @@ class EmailError extends Error {
 
 export async function sendOrderConfirmationEmail(
   customerData: CustomerData,
-  orderItems: Product[],
+  orderItems: OrderLineItems[],
   shipmentMethod: shipmentMethod,
   orderNumber: number
 ) {
   try {
     const items = await Promise.all(
       orderItems.map(async (item) => {
-        const [type] = item.stamp.split("-");
+        const type = item.itemType;
 
-        if (type === "variation") {
+        if (type === "VARIATION") {
           const productVariation = await prisma.productVariation.findUnique({
             where: { id: item.productCode, storeId: process.env.TENANT_ID },
             include: {
@@ -84,7 +82,7 @@ export async function sendOrderConfirmationEmail(
 
             images: productVariation.Product.images[0], // Include product images
           };
-        } else if (type === "product") {
+        } else if (type === "PRODUCT") {
           const product = await prisma.product.findUnique({
             where: { id: item.productCode, storeId: process.env.TENANT_ID },
             select: {
@@ -105,7 +103,7 @@ export async function sendOrderConfirmationEmail(
             // Use product price
             images: product.images[0], // Include product images
           };
-        } else if (type === "shipping") {
+        } else if (type === "SHIPPING") {
           const shipitShiptment = await prisma.shipitShippingMethod.findUnique({
             where: { id: item.productCode, storeId: process.env.TENANT_ID },
             select: {
@@ -114,18 +112,29 @@ export async function sendOrderConfirmationEmail(
               logo: true,
             },
           });
+          const shipmentMethod = await prisma.shipmentMethods.findUnique({
+            where: { id: item.productCode, storeId: process.env.TENANT_ID },
+            select: {
+              name: true,
+            },
+          });
           if (!shipitShiptment) {
+            if (shipmentMethod) {
+              return {
+                ...item,
+                name: shipmentMethod.name,
+                images: " https://via.placeholder.com/80x80?text=Toimitus",
+              };
+            }
             return {
               ...item,
               name: "Toimitus",
               images: " https://via.placeholder.com/80x80?text=Toimitus",
             };
           }
-
           return {
             ...item,
             name: shipitShiptment.name,
-
             images: shipitShiptment.logo,
           };
         }

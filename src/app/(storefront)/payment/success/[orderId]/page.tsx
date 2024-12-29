@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { notFound } from "next/navigation";
-
 import { CheckCircle, Truck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +15,7 @@ import Link from "next/link";
 import { ClearCart } from "@/components/Cart/ClearCart";
 import Image from "next/image";
 import { Metadata } from "next";
+import { ItemType } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Kiitos tilauksestasi!",
@@ -39,6 +37,9 @@ const getData = async (orderId: string) => {
         storeId: process.env.TENANT_ID,
         id: orderId,
       },
+      include: {
+        OrderLineItems: true,
+      },
     });
     return data;
   } catch (error) {
@@ -53,14 +54,9 @@ export default async function PaymentSuccessPage({
   params: { orderId: string };
 }) {
   const { orderId } = params;
-  let order;
-  try {
-    order = await getData(orderId);
-    if (!order) {
-      notFound();
-    }
-  } catch (error) {
-    console.error("Error processing payment success page:", error);
+
+  const order = await getData(orderId);
+  if (!order) {
     return (
       <div className="container mx-auto px-4 py-8 my-32">
         <h1 className="text-red-500 text-xl">
@@ -72,22 +68,32 @@ export default async function PaymentSuccessPage({
 
   const customerData = JSON.parse(order.customerData as string);
   const shipmentMethod = JSON.parse(order.shipmentMethod as string);
-  const orderItems = JSON.parse(order.items as string);
+  const orderItems = order.OrderLineItems;
 
-  let items;
+  let items: Array<{
+    optionName: string | null;
+    optionValue: string | null;
+    name: string | null;
+    images: string[];
+    quantity: number;
+    unitPrice: number;
+  } | null>;
   try {
     items = await Promise.all(
       orderItems.map(
         async (item: {
-          stamp: string;
+          id: string;
+          totalAmount: number;
+          orderId: string;
+          itemType: ItemType | null;
+          quantity: number;
+          price: number;
           productCode: string;
-          units: number;
-          unitPrice: number;
         }) => {
-          const [type] = item.stamp.split("-");
+          const type = item.itemType;
           let product = null;
 
-          if (type === "variation") {
+          if (type === "VARIATION") {
             product = await prisma.productVariation.findUnique({
               where: { id: item.productCode, storeId: process.env.TENANT_ID },
               select: {
@@ -102,7 +108,7 @@ export default async function PaymentSuccessPage({
                 },
               },
             });
-          } else if (type === "product") {
+          } else if (type === "PRODUCT") {
             product = await prisma.product.findUnique({
               where: { id: item.productCode, storeId: process.env.TENANT_ID },
               select: {
@@ -110,24 +116,33 @@ export default async function PaymentSuccessPage({
                 images: true, // Directly access images for regular products
               },
             });
-          } else if (type === "shipping") {
+          } else if (type === "SHIPPING") {
             return null;
           }
 
           // Now check if product has Product property (for variations)
           const images =
-            type === "variation"
-              ? (product as any)?.Product?.images || []
-              : (product as any)?.images || [];
+            type === "VARIATION"
+              ? (product as { Product: { images: string[] } })?.Product
+                  ?.images || []
+              : (product as { images: string[] })?.images || [];
 
           return {
+            optionName:
+              type === "VARIATION"
+                ? (product as { optionName: string | null })?.optionName
+                : null,
+            optionValue:
+              type === "VARIATION"
+                ? (product as { optionValue: string | null })?.optionValue
+                : null,
             name:
-              type === "variation"
+              type === "VARIATION"
                 ? (product as { Product: { name: string } })?.Product?.name
                 : (product as { name: string })?.name, // Handle name from Product if variation
             images, // Use the correct image property
-            quantity: item.units,
-            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+            unitPrice: item.price,
           };
         }
       )
@@ -154,8 +169,7 @@ export default async function PaymentSuccessPage({
             <CardTitle>Kiitos tilauksestasi!</CardTitle>
           </div>
           <CardDescription>
-            Tilauksesi on käsitelty onnistuneesti. Tässä yhteenveto
-            ostoksestasi:
+            Tilauksesi on vastaanotettu. Tässä yhteenveto ostoksestasi:
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -169,34 +183,38 @@ export default async function PaymentSuccessPage({
           <div>
             <h3 className="font-semibold mb-4">Tuotteet</h3>
             <div className="space-y-4">
-              {items.filter(Boolean).map((item, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="flex-shrink-0 w-16 h-16 relative">
-                    <Image
-                      src={
-                        (item.images && item.images[0]) || "/placeholder.png"
-                      }
-                      alt={item.name || "Product image"}
-                      fill
-                      className="rounded-md object-cover object-center"
-                    />
-                  </div>
-                  <div className="flex-grow">
-                    <p className="font-medium">{item.name}</p>
-                    {item.optionName && (
-                      <p className="text-sm text-gray-500">
-                        {item.optionName}: {item.optionValue}
+              {items.map((item, index) => {
+                if (!item) return null;
+                return (
+                  <div key={index} className="flex items-center space-x-4">
+                    <div className="flex-shrink-0 w-16 h-16 relative">
+                      <Image
+                        src={
+                          (item.images && item.images[0]) || "/placeholder.png"
+                        }
+                        alt={item.name || "Product image"}
+                        fill
+                        className="rounded-md object-cover object-center"
+                      />
+                    </div>
+                    <div className="flex-grow">
+                      <p className="font-medium">{item.name}</p>
+                      {item.optionName && (
+                        <p className="text-sm text-gray-500">
+                          {item.optionName}: {item.optionValue}
+                        </p>
+                      )}
+                      <p className="text-sm">
+                        {item.quantity} x {(item.unitPrice / 100).toFixed(2)} €
                       </p>
-                    )}
-                    <p className="text-sm">
-                      {item.quantity} x {(item.unitPrice / 100).toFixed(2)} €
-                    </p>
+                    </div>
+                    <div className="flex-shrink-0 font-medium">
+                      {((item.unitPrice * item.quantity) / 100).toFixed(2)} €
+                    </div>
                   </div>
-                  <div className="flex-shrink-0 font-medium">
-                    {((item.unitPrice * item.quantity) / 100).toFixed(2)} €
-                  </div>
-                </div>
-              ))}
+                );
+              })}
+
               <div>
                 <h3 className="font-semibold mb-2">Toimitus</h3>
                 <p>{shipmentMethod.name}</p>
