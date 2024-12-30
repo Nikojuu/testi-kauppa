@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 
   try {
     const order = await prisma.order.findUnique({
-      where: { id: reference },
+      where: { id: reference, storeId: process.env.TENANT_ID },
       include: { OrderLineItems: true },
     });
 

@@ -286,13 +286,13 @@ const CartPage = () => {
             </div>
 
             <div className="mt-6">
-              {/* <form action={handleStripeCheckout}>
+              <form action={handleStripeCheckout}>
                 <CheckoutButton />
-              </form> */}
+              </form>
 
-              <Link href="/payment/checkout">
+              {/* <Link href="/payment/checkout">
                 <Button variant="gooeyLeft">Tee tilaus</Button>
-              </Link>
+              </Link> */}
             </div>
           </section>
         </div>

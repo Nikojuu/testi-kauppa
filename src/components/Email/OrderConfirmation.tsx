@@ -32,8 +32,10 @@ export function OrderConfirmationEmail({
   shopInfo: ShopInfo;
   orderNumber: number;
 }) {
-  const totalOrderPrice =
-    orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0) / 100;
+  const totalOrderPrice = orderItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   const currentDate = new Date().toLocaleDateString("fi-FI", {
     day: "2-digit",
@@ -88,12 +90,12 @@ export function OrderConfirmationEmail({
                   <Column style={styles.detailsColumn}>
                     <Text style={styles.itemName}>{item.name}</Text>
                     <Text style={styles.itemDetails}>
-                      {item.quantity} x €{(item.price / 100).toFixed(2)}
+                      {item.quantity} x €{item.price.toFixed(2)}
                     </Text>
                   </Column>
                   <Column style={styles.priceColumn}>
                     <Text style={styles.itemTotal}>
-                      €{((item.price * item.quantity) / 100).toFixed(2)}
+                      €{(item.price * item.quantity).toFixed(2)}
                     </Text>
                   </Column>
                 </Row>

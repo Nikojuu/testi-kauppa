@@ -107,8 +107,8 @@ model Order {
   trackingNumber         String?
   trackingUrls           String[]
   freightDoc             String[]
-  customerData           Json
-  shipmentMethod         Json
+  customerData           Json?
+  shipmentMethod         Json?
   items                  Json?
   orderNumber            Int                   @default(autoincrement())
   ShipitShippingMethod   ShipitShippingMethod? @relation(fields: [shipitShippingMethodId], references: [id])
@@ -194,7 +194,7 @@ model StoreOrderNumbers {
 }
 
 model OrderLineItems {
-  id          String    @id
+  id          String    @id @default(uuid())
   orderId     String
   itemType    ItemType?
   quantity    Int

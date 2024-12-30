@@ -5,6 +5,8 @@ import { Stripe } from "stripe";
 import { stripe } from "../stripe";
 import prisma from "@/app/utils/db";
 import { isSaleActive } from "../utils";
+import { randomUUID } from "crypto";
+import { ItemType } from "@prisma/client";
 
 class CartError extends Error {
   productId: string;
@@ -24,6 +26,7 @@ export async function createStripeCheckoutSession(
   | null
 > {
   try {
+    const orderId = randomUUID();
     const lineItems = await confirmLineItems(items);
 
     const shipping_options = await getFormattedShippingOptions();
@@ -54,13 +57,15 @@ export async function createStripeCheckoutSession(
       shipping_options: shipping_options,
       mode: "payment",
       metadata: {
-        userId: "123",
-        orderId: "456",
+        orderId: orderId,
       },
 
-      success_url: "http://localhost:3000/success",
-      cancel_url: "http://localhost:3000/cart",
+      success_url: `${process.env.BASE_URL}/payment/success/${orderId}`,
+      cancel_url: `${process.env.BASE_URL}/payment/cancel`,
     });
+
+    // create pending order in database
+    await createPendingOrder(lineItems, orderId);
     return session.url;
     // Create line items for the Stripe Checkout session and make sure cart items matches database items
   } catch (error) {
@@ -94,6 +99,7 @@ async function getFormattedShippingOptions(): Promise<
       storeId: process.env.TENANT_ID,
     },
     select: {
+      id: true,
       name: true,
       price: true,
       min_estimate_delivery_days: true,
@@ -119,6 +125,9 @@ async function getFormattedShippingOptions(): Promise<
             unit: "business_day",
             value: method.max_estimate_delivery_days ?? 1,
           },
+        },
+        metadata: {
+          shipmentMethodId: method.id,
         },
       },
     })
@@ -212,6 +221,7 @@ async function confirmLineItems(
               : product.name,
             images: product.images || [],
             metadata: {
+              type: variation ? "VARIATION" : "PRODUCT",
               productCode: variation ? variation.id : product.id,
             },
           },
@@ -222,4 +232,38 @@ async function confirmLineItems(
       };
     })
   );
+}
+
+async function createPendingOrder(
+  confirmedItems: Stripe.Checkout.SessionCreateParams.LineItem[],
+  orderId: string
+) {
+  // Convert Stripe line items into the required database schema
+  const orderLineItems = confirmedItems.map((item) => ({
+    quantity: item.quantity || 0,
+    price: item.price_data?.unit_amount ? item.price_data.unit_amount / 100 : 0, // Convert cents to euros
+    totalAmount:
+      (item.quantity || 0) * ((item.price_data?.unit_amount ?? 0) / 100),
+    // productCode: item.price_data.product_data.metadata.productCode,
+    productCode: String(
+      item.price_data?.product_data?.metadata?.productCode ?? ""
+    ),
+    itemType: item.price_data?.product_data?.metadata?.type as ItemType,
+  }));
+
+  await prisma.order.create({
+    data: {
+      id: orderId,
+      status: "PENDING",
+      storeId: process.env.TENANT_ID as string,
+      totalAmount: orderLineItems.reduce(
+        (sum, item) => sum + item.totalAmount,
+        0
+      ),
+
+      OrderLineItems: {
+        create: orderLineItems, // Use `create` to attach related items
+      },
+    },
+  });
 }

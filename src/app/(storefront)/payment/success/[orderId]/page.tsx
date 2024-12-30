@@ -158,7 +158,7 @@ export default async function PaymentSuccessPage({
         return total + item.unitPrice * item.quantity;
       }
       return total;
-    }, 0) + (shipmentMethod?.price || 0);
+    }, 0) + (shipmentMethod?.price / 100 || 0);
   return (
     <div className="container mx-auto px-4 py-8 my-32">
       <ClearCart />
@@ -205,11 +205,11 @@ export default async function PaymentSuccessPage({
                         </p>
                       )}
                       <p className="text-sm">
-                        {item.quantity} x {(item.unitPrice / 100).toFixed(2)} €
+                        {item.quantity} x {item.unitPrice.toFixed(2)} €
                       </p>
                     </div>
                     <div className="flex-shrink-0 font-medium">
-                      {((item.unitPrice * item.quantity) / 100).toFixed(2)} €
+                      {(item.unitPrice * item.quantity).toFixed(2)} €
                     </div>
                   </div>
                 );
@@ -227,7 +227,7 @@ export default async function PaymentSuccessPage({
             <Separator />
             <div className="mt-4 flex justify-between items-center font-semibold">
               <span>Yhteensä:</span>
-              <span>{(totalPrice / 100).toFixed(2)} €</span>
+              <span>{totalPrice.toFixed(2)} €</span>
             </div>
           </div>
           <Separator />
