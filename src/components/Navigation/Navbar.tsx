@@ -3,6 +3,7 @@ import { NavbarLinks } from "./NavbarLinks";
 import Cart from "../Cart/Cart";
 import prisma from "@/app/utils/db";
 import MobileLinks from "./MobileLinks";
+import Image from "next/image";
 
 const getData = async () => {
   const categories = await prisma.category.findMany({
@@ -26,27 +27,21 @@ const getData = async () => {
   return categories;
 };
 
-const Navbar = async ({ className = "" }: { className?: string }) => {
+const Navbar = async () => {
   const categories = await getData();
   return (
-    <nav
-      className={`w-full max-w-[3500px] mx-auto px-4 sm:px-6 lg:px-40 py-5 flex items-center h-28 justify-between bg-transparent ${className}  border-b  border-white`}
-    >
-      <div className="flex items-center">
-        <div className="mr-8">
-          <MobileLinks categories={categories} />
-        </div>
-        <Link href="/" className="mr-20">
-          <h2 className="text-cyan-600 font-bold text-xl lg:text-3xl">
-            Pupun<span className="text-primary">Korvat</span>
-          </h2>
-        </Link>
-        <NavbarLinks categories={categories} />
+    <>
+    
+
+      <div className="lg:mr-8">
+        <MobileLinks categories={categories} />
       </div>
-      <div className="flex gap-4">
+      <NavbarLinks categories={categories} />
+
+      <div className="flex gap-4 ml-auto">
         <Cart />
       </div>
-    </nav>
+    </>
   );
 };
 

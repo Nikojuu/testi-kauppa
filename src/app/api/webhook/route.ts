@@ -7,12 +7,10 @@ import { stripe } from "@/lib/stripe";
 import { OrderLineItems } from "@prisma/client";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { send } from "process";
 import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("Received webhook event");
     const body = await req.text();
     const signature = headers().get("stripe-signature");
 
@@ -28,23 +26,12 @@ export async function POST(req: NextRequest) {
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log("payment success Session metadata:", session.metadata);
-      console.log(session);
+
       const { orderId } = session.metadata || {
         orderId: null,
       };
 
-      //we dont need fetch line items from stripe as we already have the order line items in our database
-      // const lineItems = await stripe.checkout.sessions.listLineItems(
-      //   session.id
-      // );
-
-      // for (const item of lineItems.data) {
-      //   const product = await stripe.products.retrieve(
-      //     item.price?.product as string
-      //   );
-      //   console.log("Product metadata:", product.metadata);
-      // }
+      //we dont need fetch line items from stripe as we already have the order line items in our database because we want them to be ready for thank you page
 
       if (!orderId) {
         throw new Error("Invalid session metadata orderId missing");
@@ -112,13 +99,6 @@ export async function POST(req: NextRequest) {
         city: session.shipping_details?.address?.city as string,
         phone: session.customer_details?.phone as string,
       };
-
-      // export interface shipmentMethod {
-      //   id: string;
-      //   name: string;
-      //   price: number;
-      //   logo: string;
-      // }
 
       const chosenShippingRateId = session.shipping_cost
         ?.shipping_rate as string;

@@ -19,7 +19,7 @@ import { PriceDisplay } from "../PriceDisplay";
 import { Separator } from "../ui/separator";
 import Breadcrumbs from "./Breadcrumbs";
 import { ImageSliderWithZoom } from "../imageSliderWithZoom";
-// import { ImageSlider } from "../ImageSlider";
+import { ImageSlider } from "../ImageSlider";
 
 export interface SelectedPriceOption {
   price: number | null;
@@ -104,13 +104,24 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
       <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
         <div className="md:w-1/2">
           {/* you can disable or enable product image zoom by commenting or uncommenting the component */}
-          <ImageSliderWithZoom
-            images={
-              selectedVariation?.images && selectedVariation.images.length > 0
-                ? selectedVariation.images
-                : product.images
-            }
-          />
+          <div className="hidden md:block">
+            <ImageSliderWithZoom
+              images={
+                selectedVariation?.images && selectedVariation.images.length > 0
+                  ? selectedVariation.images
+                  : product.images
+              }
+            />
+          </div>
+          <div className="md:hidden">
+            <ImageSlider
+              images={
+                selectedVariation?.images && selectedVariation.images.length > 0
+                  ? selectedVariation.images
+                  : product.images
+              }
+            />
+          </div>
         </div>
 
         <div className="md:w-1/2 flex flex-col justify-between">

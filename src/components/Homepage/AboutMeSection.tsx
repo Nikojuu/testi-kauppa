@@ -5,38 +5,26 @@ import { ArrowBigLeft, ArrowRight } from "lucide-react";
 
 const AboutMeSection = () => {
   return (
-    <section className=" mx-auto mb-32 flex w-full max-w-screen-2xl  flex-col px-4 lg:flex-row">
-      <div className="relative aspect-square  lg:w-1/2">
-        <Image fill alt="" src="/kuva1.jpg" className="object-cover" />
+    <section className=" mx-auto mb-32 flex w-full mt-32 container max-w-screen-2xl flex-col sm:px-4 lg:flex-row">
+      <div className="relative aspect-square w-full lg:w-1/2 h-96 lg:h-auto">
+        <Image fill alt="" src="/kuva1.jpg" className="object-cover h-auto" />
       </div>
 
-      <div className="z-10 mx-1 -mt-32 flex-1 bg-primary p-2 text-black sm:mx-8  sm:p-8 lg:-ml-24  lg:mb-24 lg:mt-24">
-        <h3 className="mb-8  font-primary  text-5xl ">Minä olen kultainen</h3>
+      <div className="z-10 mx-1 -mt-32 flex-1 bg-pink-50 p-2 text-black sm:mx-8 sm:p-8 lg:-ml-24  lg:mb-24 lg:mt-24">
+        <h3 className="mb-8  font-primary  text-5xl ">
+          Huolellinen suunnittelu{" "}
+        </h3>
         <p>
-          Muista tämän alle kuva parallax jonka sisällä 2 osainen esittely
-          korviksista ja kaulakoruista Lorem ipsum dolor, sit amet consectetur
-          adipisicing elit. Aut quae repellat tilaustyö ja yhteydenotto,
-          valmistus ja materiaalit Kiinnostuitko tilaustyöstä? Mikäli heräsi
-          kysyttävää tai olet kiinnostunut tilaustyöstä, olethan yhteydessä.
-          Seuraamalla Mittumaari Design somekanavia Facebookissa ja
-          Instagramissa, pysyt ajantasalla tarjouksistamme sekä uutisista.
+          Jokainen tuotteeni lähtee liikkeelle huolellisesta
+          suunnitteluprosessista. Luon korkealaatuisia ja ainutlaatuisia
+          tuotteita, jotka erottuvat joukosta. Suunnittelutyössäni yhdistyvät
+          käsityötaidot, luovuus ja huolellinen harkinta. Haluan varmistaa, että
+          jokainen yksityiskohta on harkittu ja että koruni täyttävät
+          korkeimmatkin odotukset niin ulkonäön kuin käytettävyyden suhteen.
         </p>
 
-        <p className="my-8">
-          Erillinen sivu kuinka korut valmistetaan ja mitä materiaaleja
-          käytetään Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-          Aut quae repellat aliquid iusto doloribus fuga dolore, id,
-          voluptatibus pariatur ipsam reiciendis ut eius a sequi necessitatibus,
-          dignissimos perspiciatis beatae harum.
-        </p>
-        <p className="my-8">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aut quae
-          repellat aliquid iusto doloribus fuga dolore, id, voluptatibus
-          pariatur ipsam reiciendis ut eius a sequi necessitatibus, dignissimos
-          perspiciatis beatae harum.
-        </p>
         <Link href="/about">
-          <Button variant="gooeyLeft" className="bg-violet-400">
+          <Button variant="gooeyLeft" className=" mt-4">
             Lue lisää minusta{" "}
             <span>
               <ArrowRight className="h-4 w-4 ml-2" />

@@ -80,7 +80,7 @@ export default function ContactForm() {
   return (
     <div className="w-full mt-48">
       <Subtitle subtitle="Ollaan yhteydessä!" />
-      <div className="max-w-md mx-auto mt-10 ">
+      <div className="max-w-md mx-auto container p-4 mt-10 ">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField

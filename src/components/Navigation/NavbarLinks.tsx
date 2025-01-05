@@ -65,7 +65,7 @@ export function NavbarLinks({ categories }: { categories: Category[] }) {
   return (
     <div className="flex h-24 items-center ">
       {/* Desktop Navigation */}
-      <nav className="hidden md:flex items-center gap-6 ">
+      <nav className="hidden md:flex items-center  ">
         <div
           className="relative "
           onMouseEnter={() => setIsShopHovered(true)}
@@ -74,7 +74,7 @@ export function NavbarLinks({ categories }: { categories: Category[] }) {
           <Link href="/products">
             <Button
               variant="linkHover2"
-              className="flex items-center gap-1  font-primary text-4xl"
+              className="flex items-center gap-1  font-primary text-3xl lg:text-4xl"
             >
               Tuotteet
               <ChevronDown className="h-4 w-4" />
@@ -91,17 +91,27 @@ export function NavbarLinks({ categories }: { categories: Category[] }) {
         </div>
 
         <Link href="/about">
-          <Button variant="linkHover2" className=" font-primary text-4xl">
-            Pupunkorvien tarina
+          <Button
+            variant="linkHover2"
+            className=" font-primary text-3xl lg:text-4xl"
+          >
+            <span className="lg:hidden">Tarina</span>
+            <span className="hidden lg:block">Pupunkorvien tarina</span>
           </Button>
         </Link>
         <Link href="/gallery">
-          <Button variant="linkHover2" className=" text-4xl font-primary">
+          <Button
+            variant="linkHover2"
+            className=" text-3xl lg:text-4xl font-primary"
+          >
             Galleria
           </Button>
         </Link>
         <Link href="/contact">
-          <Button variant="linkHover2" className=" text-4xl font-primary">
+          <Button
+            variant="linkHover2"
+            className=" text-3xl lg:text-4xl font-primary"
+          >
             Yhteydenotto
           </Button>
         </Link>

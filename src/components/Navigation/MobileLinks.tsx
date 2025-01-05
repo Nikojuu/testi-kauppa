@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AnimatePresence, motion } from "framer-motion";
 
 import clsx from "clsx";
+import Image from "next/image";
 
 interface Category {
   id: string;
@@ -103,7 +104,7 @@ const MobileLinks = ({ categories }: { categories: Category[] }) => {
   };
 
   return (
-    <div>
+    <div className="md:hidden">
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetTrigger asChild className="md:hidden">
           <Button variant="ghost" size="icon" aria-label="Open Menu">
@@ -112,6 +113,9 @@ const MobileLinks = ({ categories }: { categories: Category[] }) => {
         </SheetTrigger>
         <SheetContent side="left" className="w-[300px] sm:w-[400px]">
           <nav className="flex flex-col gap-4 mt-4">
+            <Link href="/" className="mx-auto">
+              <Image src="logo-dark.svg" alt="logo" width={100} height={20} />
+            </Link>
             <div className="border-b border-gray-200">
               <Link href="/products" onClick={handleLinkClick}>
                 <Button

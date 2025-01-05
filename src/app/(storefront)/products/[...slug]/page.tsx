@@ -418,7 +418,7 @@ const ProductsPage = async ({
   const products: Product[] = data?.products as Product[];
 
   return (
-    <section className="mt-48">
+    <section className="mt-48 container mx-auto px-4">
       <Subtitle subtitle={data?.name || "Tuotteet"} />
       {products && products.length > 0 ? (
         <>

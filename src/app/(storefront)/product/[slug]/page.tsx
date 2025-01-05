@@ -72,8 +72,8 @@ const ProductIdRoute = async ({ params }: { params: { slug: string } }) => {
   const product = await getData(params.slug);
 
   return (
-    <section className="mt-48">
-      <ProductDetail product={product} />;
+    <section className="mt-48 container mx-auto px-4">
+      <ProductDetail product={product} />
     </section>
   );
 };

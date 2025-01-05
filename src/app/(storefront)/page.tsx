@@ -44,6 +44,8 @@ export const metadata: Metadata = {
     images: [TWITTER_IMAGE], // Main Twitter image
   },
 };
+
+export const revalidate = 3600;
 const getHomePageData = async () => {
   const [bannerData, latestProducts] = await Promise.all([
     prisma.banner.findMany({
@@ -97,7 +99,6 @@ const getHomePageData = async () => {
 };
 
 export default async function Home() {
-  noStore();
   const { bannerData, latestProducts } = await getHomePageData();
 
   return (
@@ -107,7 +108,7 @@ export default async function Home() {
       <Subtitle subtitle="Upeita koruja" />
       <CategorySection />
       <Subtitle subtitle="Uusimmat tuotteet" />
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto ">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto container px-4">
         {latestProducts.map((item) => (
           <ProductCard item={item} key={item.id} />
         ))}

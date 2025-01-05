@@ -25,7 +25,7 @@ const AboutBlock = ({ blockInfo }: { blockInfo: AboutBlockType }) => {
       <div
         className={`z-10  ${
           blockInfo.reverse ? "lg:-mr-24" : "lg:-ml-24"
-        } z-10  mx-1 -mt-32 flex-1 whitespace-pre-line rounded-sm bg-primary  p-8   text-black sm:mx-8 sm:p-8  lg:mb-24 lg:mt-24 `}
+        } z-10  mx-1 -mt-32 flex-1 whitespace-pre-line rounded-sm bg-pink-50  p-8   text-black sm:mx-8 sm:p-8  lg:mb-24 lg:mt-24 `}
       >
         <h3 className="mb-8 font-primary text-black text-5xl ">
           {blockInfo.title}
