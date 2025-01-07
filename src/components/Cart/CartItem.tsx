@@ -88,7 +88,7 @@ export default function CartItem({ product, variation }: CartItemProps) {
                 }
               >
                 <Plus className="h-4 w-4" />
-                <span className="sr-only">Increase quantity</span>
+                <span className="sr-only">Increase quantity by one</span>
               </Button>
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
