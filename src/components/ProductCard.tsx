@@ -51,7 +51,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             </h1>
             <LowestPriceDisplay priceInfo={priceInfo} />
           </div>
-          {/* Conditional information with styling */}
           <p className={`text-sm self-end ${statusClass}`}>
             {hasVariations ? "Tuotteella on eri vaihtoehtoja" : quantityInfo}
           </p>

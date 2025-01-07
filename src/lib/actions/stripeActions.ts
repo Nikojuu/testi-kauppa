@@ -225,7 +225,7 @@ async function confirmLineItems(
               productCode: variation ? variation.id : product.id,
             },
           },
-          unit_amount: currentPrice * 100, // Stripe expects amounts in cents
+          unit_amount: currentPrice, // Stripe expects amounts in cents
           tax_behavior: "inclusive",
         },
         quantity: item.cartQuantity,
@@ -241,10 +241,9 @@ async function createPendingOrder(
   // Convert Stripe line items into the required database schema
   const orderLineItems = confirmedItems.map((item) => ({
     quantity: item.quantity || 0,
-    price: item.price_data?.unit_amount ? item.price_data.unit_amount / 100 : 0, // Convert cents to euros
-    totalAmount:
-      (item.quantity || 0) * ((item.price_data?.unit_amount ?? 0) / 100),
-    // productCode: item.price_data.product_data.metadata.productCode,
+    price: item.price_data?.unit_amount ?? 0,
+    totalAmount: (item.quantity ?? 1) * (item.price_data?.unit_amount ?? 0),
+
     productCode: String(
       item.price_data?.product_data?.metadata?.productCode ?? ""
     ),

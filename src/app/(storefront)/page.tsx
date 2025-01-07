@@ -47,63 +47,49 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 const getHomePageData = async () => {
-  const [bannerData, latestProducts] = await Promise.all([
-    prisma.banner.findMany({
-      where: {
-        storeId: process.env.TENANT_ID,
-      },
-      select: {
-        title: true,
-        imageString: true,
-      },
-    }),
-    prisma.product.findMany({
-      where: {
-        storeId: process.env.TENANT_ID,
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        price: true,
-        images: true,
-        salePrice: true,
-        salePercent: true,
-        saleEndDate: true,
-        saleStartDate: true,
-        slug: true,
-
-        quantity: true,
-        ProductVariation: {
-          select: {
-            id: true,
-            price: true,
-            saleEndDate: true,
-            saleStartDate: true,
-            salePrice: true,
-            salePercent: true,
-          },
+  const latestProducts = await prisma.product.findMany({
+    where: {
+      storeId: process.env.TENANT_ID,
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      price: true,
+      images: true,
+      salePrice: true,
+      salePercent: true,
+      saleEndDate: true,
+      saleStartDate: true,
+      slug: true,
+      quantity: true,
+      ProductVariation: {
+        select: {
+          id: true,
+          price: true,
+          saleEndDate: true,
+          saleStartDate: true,
+          salePrice: true,
+          salePercent: true,
         },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 3, // Limit to 3 latest products
-    }),
-  ]);
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 3, // Limit to 3 latest products
+  });
 
   return {
-    bannerData,
     latestProducts,
   };
 };
-
 export default async function Home() {
-  const { bannerData, latestProducts } = await getHomePageData();
+  const { latestProducts } = await getHomePageData();
 
   return (
     <div>
-      <Hero carouselData={bannerData} />
+      <Hero />
 
       <Subtitle subtitle="Upeita koruja" />
       <CategorySection />

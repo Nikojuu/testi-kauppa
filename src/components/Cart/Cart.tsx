@@ -53,7 +53,7 @@ const Cart = () => {
       }
 
       // Multiply effective price by cart quantity, defaulting to 1 if cartQuantity is not defined
-      return total + effectivePrice * (cartQuantity || 1);
+      return total + (effectivePrice / 100) * (cartQuantity || 1);
     },
     0
   );

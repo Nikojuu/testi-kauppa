@@ -5,17 +5,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GlassySquareButton } from "./ui/cta-button";
 
-interface CarouselDataProps {
-  title: string;
-  imageString: string;
-}
-
-export function Hero({ carouselData }: { carouselData: CarouselDataProps[] }) {
+export function Hero() {
   return (
     <div className="relative w-full h-[90vh]">
       <Image
-        alt="Banner Image"
-        src={carouselData[1].imageString}
+        alt="Hero Image"
+        src="/image.jpg"
         fill
         className="object-cover"
         priority

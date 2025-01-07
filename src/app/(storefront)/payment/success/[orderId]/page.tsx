@@ -142,7 +142,7 @@ export default async function PaymentSuccessPage({
                 : (product as { name: string })?.name, // Handle name from Product if variation
             images, // Use the correct image property
             quantity: item.quantity,
-            unitPrice: item.price,
+            unitPrice: item.price / 100,
           };
         }
       )

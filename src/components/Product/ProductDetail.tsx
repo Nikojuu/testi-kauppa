@@ -136,7 +136,7 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
                 displayPrice={displayPrice!}
                 originalPrice={
                   isCurrentlyOnSale
-                    ? selectedVariation?.price || product.price
+                    ? (selectedVariation?.price ?? product.price) / 100
                     : undefined
                 }
                 isOnSale={isOnSale(selectedVariation || product)}

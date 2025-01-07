@@ -41,14 +41,16 @@ const CartPage = () => {
           isSaleActive(variation.saleStartDate, variation.saleEndDate) &&
           variation.salePrice !== null;
         effectivePrice = isVariationOnSale
-          ? variation.salePrice!
-          : variation.price!;
+          ? (variation.salePrice ?? product.price) / 100
+          : variation.price! / 100;
       } else {
         // Handle product-level pricing logic
         const isProductOnSale =
           isSaleActive(product.saleStartDate, product.saleEndDate) &&
           product.salePrice !== null;
-        effectivePrice = isProductOnSale ? product.salePrice! : product.price!;
+        effectivePrice = isProductOnSale
+          ? product.salePrice! / 100
+          : product.price! / 100;
       }
 
       // Multiply effective price by cart quantity, defaulting to 1 if cartQuantity is not defined
@@ -216,13 +218,19 @@ const CartPage = () => {
                               ) && variation?.salePrice ? (
                                 <>
                                   <span className="line-through text-gray-500 mr-2">
-                                    {variation?.price ?? product.price} €
+                                    {variation?.price !== null
+                                      ? variation.price / 100
+                                      : product.price / 100}
+                                    €
                                   </span>
                                   <span>{variation?.salePrice} €</span>
                                 </>
                               ) : (
                                 <span>
-                                  {variation?.price ?? product.price} €
+                                  {variation?.price !== null
+                                    ? variation.price / 100
+                                    : product.price / 100}{" "}
+                                  €
                                 </span>
                               )
                             ) : isSaleActive(
@@ -231,12 +239,12 @@ const CartPage = () => {
                               ) && product.salePrice ? (
                               <>
                                 <span className="line-through text-gray-500 mr-2">
-                                  {product.price} €
+                                  {product.price / 100} €
                                 </span>
-                                <span>{product.salePrice} €</span>
+                                <span>{product.salePrice / 100} €</span>
                               </>
                             ) : (
-                              <span>{product.price} €</span>
+                              <span>{product.price / 100} €</span>
                             )}
                           </p>
                         </div>
