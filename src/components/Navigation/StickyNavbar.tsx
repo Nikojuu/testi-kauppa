@@ -32,10 +32,7 @@ export default function StickyNavbar({
 
   return (
     <div
-      className={`fixed top-0 flex left-0 right-0 z-50 transition-colors duration-300 ${
-        isHomepage && !isScrolled
-          ? "bg-transparent text-white"
-          : "bg-white text-black shadow-md"
+      className={`fixed top-0 flex left-0 right-0 z-50 transition-colors duration-300 bg-white text-black shadow-md"
       }`}
     >
       <nav
@@ -43,12 +40,7 @@ export default function StickyNavbar({
          flex items-center h-28  bg-transparent   border-b  border-white`}
       >
         <Link href="/" className="lg:mr-20 hidden md:block">
-          <Image
-            src={isHomepage && isScrolled ? "logo-dark.svg" : "logo-light.svg"}
-            alt="logo"
-            width={100}
-            height={20}
-          />
+          <Image src="logo-dark.svg" alt="logo" width={100} height={20} />
         </Link>
         {children}
       </nav>

@@ -10,7 +10,7 @@ export function Hero() {
     <div className="relative w-full h-[90vh]">
       <Image
         alt="Hero Image"
-        src="/testikorvis.jpg"
+        src="/kuva.jpg"
         fill
         className="object-cover"
         priority

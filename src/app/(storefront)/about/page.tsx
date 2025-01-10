@@ -41,15 +41,15 @@ export const metadata: Metadata = {
 };
 
 const aboutPageBlock1 = {
-  imgSrc: "/kuva1.jpg",
+  imgSrc: "/korvakorutesti.jpg",
   title: "Valmistus ja materiaalit",
-  text: 'Minulta usein kysytään "Miten teen koruni" Noh minäpä näytän valmistusprosessin alempana ja samalla kerron hieman itsestäni, Olen kyllä hiukan maukuva miuku ja mutisen mutta kuultainen kuitenkin ja minä tykkään kuultaisesta ja kirkkaasta ja kimaltavasta ja kauniista ja kaikista kauniista asioista ja minä tykkään myös kissoista',
+  text: 'Ah, tervetuloa kurkistamaan korujen taianomaisen maailman kulisseihin! Olen hieman kuin kissa auringonpaisteessa - viihdyn parhaiten kimalluksen ja kauneuden keskellä. Koruni syntyvät kuin kissan kehräys, hellästi ja huolella. Usein minulta kysytään, "Miten ihmeessä nämä pienet taideteokset oikein syntyvät?" No, istahdetaanpa hetkeksi alas, kuin kissa pehmeälle tyynylle, niin kerron teille salaisuuteni.',
   reverse: false,
 };
 const aboutPageBlock2 = {
-  imgSrc: "/kuva2.jpg",
-  title: "Näin teen koruni ja materia",
-  text: 'Minulta usein kysytään "Miten teen koruni" Noh minäpä näytän valmistusprosessin alempana ja samalla kerron hieman itsestäni Minulta usein kysytään "Miten teen koruni" Noh minäpä näytän valmistusprosessin alempana ja samalla kerron hieman itsestäni \n miukumauku Minulta usein kysytään "Miten teen koruni" Noh minäpä näytän valmistusprosessin alempana ja samalla kerron hieman itsestäni',
+  imgSrc: "/rannekorutesti.jpg",
+  title: "Näin teen koruni ja mitä materiaaleja käytän",
+  text: "Jokainen koru on kuin pieni seikkailu. Aloitan materiaalien valinnalla - ne ovat kuin leluhiiriä kissalle, joilla leikitellään kunnes syntyy jotain täydellistä. Käytän kirkkaita helmiä, kuultavia kiviä ja kimaltelevaa metallia. Ne ovat yhtä houkuttelevia kuin kissan silmät pimeässä. Sitten alkaa varsinainen taikuus. Sormet tanssivat kuin kissan tassut, kun punon, liitän ja muotoilen materiaaleja. Joskus työ sujuu kuin kissan leikki, toisinaan se vaatii kissanpäiviä keskittymistä. Mutta lopputulos on aina yhtä ihastuttava kuin kissan kehräys.",
   reverse: true,
 };
 

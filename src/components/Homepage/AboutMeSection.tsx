@@ -7,7 +7,12 @@ const AboutMeSection = () => {
   return (
     <section className=" mx-auto mb-32 flex w-full mt-32 container max-w-screen-2xl flex-col sm:px-4 lg:flex-row">
       <div className="relative aspect-square w-full lg:w-1/2 h-96 lg:h-auto">
-        <Image fill alt="" src="/kuva1.jpg" className="object-cover h-auto" />
+        <Image
+          fill
+          alt=""
+          src="/korvakorutesti.jpg"
+          className="object-cover h-auto"
+        />
       </div>
 
       <div className="z-10 mx-1 -mt-32 flex-1 bg-pink-50 p-2 text-black sm:mx-8 sm:p-8 lg:-ml-24  lg:mb-24 lg:mt-24">

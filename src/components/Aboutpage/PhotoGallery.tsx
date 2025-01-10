@@ -12,9 +12,12 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
 const photos = [
-  { src: "/kuva1.jpg", width: 800, height: 600, alt: "kuva1" },
-  { src: "/kuva2.jpg", width: 1600, height: 900 },
-  { src: "/kuva3.jpg", width: 800, height: 600 },
+  { src: "/kaulakorutesti.jpg", width: 800, height: 600, alt: "kuva1" },
+  { src: "/korvakorutesti.jpg", width: 1600, height: 900 },
+  { src: "/rannekorutesti.jpg", width: 800, height: 600 },
+  { src: "/korvakorutesti.jpg", width: 800, height: 600, alt: "kuva1" },
+  { src: "/kaulakorutesti.jpg", width: 1600, height: 900 },
+  { src: "/korvakorutesti.jpg", width: 800, height: 600 },
 ];
 
 const PhotoGallery = () => {

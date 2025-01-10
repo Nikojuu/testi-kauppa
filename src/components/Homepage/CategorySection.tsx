@@ -70,20 +70,20 @@ const categories = [
   {
     title: "Upeita kaulakoruja",
     description: "Selaa kaulakoruvalikoimani ja hanki itsellesi upea kaulakoru",
-    image: "/kaulakorut.jpg",
+    image: "/kaulakorutesti.jpg",
     link: "/products/kaulakorut",
   },
   {
     title: "Upeat korvakorut",
     description:
       "Katso mitä ihania korvakoruja minulla on sinulle tai lahjaksi",
-    image: "/korvakorut.jpg",
+    image: "/korvakorutesti.jpg",
     link: "/products/korvakorut",
   },
   {
     title: "Upeat Rannekorut",
     description: "Katso mitä ihania rannekkoruja minulla on sinulle",
-    image: "/kuva1.jpg",
+    image: "/rannekorutesti.jpg",
     link: "/products/rannekorut",
   },
 ];
