@@ -162,7 +162,7 @@ export async function sendOrderConfirmationEmail(
     }
 
     const { data, error } = await resend.emails.send({
-      from: `<info@putiikkipalvelu.fi>`,
+      from: `${shopInfo.email} <info@putiikkipalvelu.fi>`,
       to: [customerData.email],
       subject: "Tilausvahvistus",
       replyTo: shopInfo.email,

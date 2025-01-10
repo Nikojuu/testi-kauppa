@@ -139,8 +139,9 @@ export async function POST(req: NextRequest) {
         ...order.OrderLineItems,
         shippingLineItem,
       ];
+      console.log("Order items with shipping sending", orderItemsWithShipping);
 
-      sendOrderConfirmationEmail(
+      await sendOrderConfirmationEmail(
         customerData,
         orderItemsWithShipping,
         shipmentMethod,
