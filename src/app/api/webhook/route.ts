@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
         productCode: shippingRate.id,
 
         quantity: 1,
-        price: (shippingRate.fixed_amount?.amount ?? 0) / 100,
+        price: shippingRate.fixed_amount?.amount ?? 0,
       };
 
       const orderItemsWithShipping = [

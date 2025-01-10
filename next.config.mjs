@@ -17,6 +17,10 @@ const nextConfig = {
         hostname: "resources.paytrail.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "dsh3gv4ve2.ufs.sh",
+      },
     ],
   },
 };

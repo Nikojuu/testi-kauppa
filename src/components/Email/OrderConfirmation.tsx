@@ -95,7 +95,7 @@ export function OrderConfirmationEmail({
                   </Column>
                   <Column style={styles.priceColumn}>
                     <Text style={styles.itemTotal}>
-                      €{(item.price * item.quantity).toFixed(2)}
+                      €{((item.price / 100) * item.quantity).toFixed(2)}
                     </Text>
                   </Column>
                 </Row>
@@ -107,7 +107,7 @@ export function OrderConfirmationEmail({
                 </Column>
                 <Column align="right">
                   <Text style={styles.totalAmount}>
-                    €{totalOrderPrice.toFixed(2)}
+                    €{(totalOrderPrice / 100).toFixed(2)}
                   </Text>
                 </Column>
               </Row>
@@ -136,8 +136,8 @@ export function OrderConfirmationEmail({
             </Section>
             <Hr style={styles.divider} />
             <Text style={styles.paragraph}>
-              Jos sinulla on kysyttävää, ota yhteyttä osoitteeseen{" "}
-              {customerData.email}.
+              Jos sinulla on kysyttävää tilauksestasi, ota yhteyttä osoitteeseen{" "}
+              {shopInfo.email}.
             </Text>
           </Section>
           <Section style={styles.footer}>
