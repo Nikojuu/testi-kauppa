@@ -5,6 +5,7 @@ import {
 } from "@/app/utils/sendOrderConfirmationEmail";
 import { stripe } from "@/lib/stripe";
 import { OrderLineItems } from "@prisma/client";
+import { randomUUID } from "crypto";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -45,10 +46,13 @@ export async function POST(req: NextRequest) {
       if (!order) {
         throw new Error("Order not found");
       }
-      await prisma.storeOrderNumbers.upsert({
-        where: { storeId: order.storeId! },
-        update: { orderNumber: { increment: 1 } },
-        create: { storeId: order.storeId!, orderNumber: 1 },
+      const storeOrderNumbers = await prisma.lastOrderNumber.upsert({
+        where: { storeId: process.env.TENANT_ID },
+        update: { lastOrderNumber: { increment: 1 } },
+        create: {
+          storeId: process.env.TENANT_ID!,
+          lastOrderNumber: 1,
+        },
       });
 
       // Parse items from the order
@@ -119,6 +123,7 @@ export async function POST(req: NextRequest) {
         where: { id: orderId, storeId: process.env.TENANT_ID },
         data: {
           status: "PAID",
+          orderNumber: storeOrderNumbers.lastOrderNumber,
           shipmentMethod: JSON.stringify(shipmentMethod),
           customerData: JSON.stringify(customerData),
         },
@@ -145,7 +150,7 @@ export async function POST(req: NextRequest) {
         customerData,
         orderItemsWithShipping,
         shipmentMethod,
-        order.orderNumber
+        storeOrderNumbers.lastOrderNumber
       );
     }
 

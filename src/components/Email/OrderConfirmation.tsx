@@ -90,7 +90,7 @@ export function OrderConfirmationEmail({
                   <Column style={styles.detailsColumn}>
                     <Text style={styles.itemName}>{item.name}</Text>
                     <Text style={styles.itemDetails}>
-                      {item.quantity} x €{item.price.toFixed(2)}
+                      {item.quantity} x €{(item.price / 100).toFixed(2)}
                     </Text>
                   </Column>
                   <Column style={styles.priceColumn}>

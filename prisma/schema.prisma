@@ -110,7 +110,7 @@ model Order {
   customerData           Json?
   shipmentMethod         Json?
   items                  Json?
-  orderNumber            Int                   @default(autoincrement())
+  orderNumber            Int                   @default(0)
   ShipitShippingMethod   ShipitShippingMethod? @relation(fields: [shipitShippingMethodId], references: [id])
   Store                  Store?                @relation(fields: [storeId], references: [id])
   OrderLineItems         OrderLineItems[]
@@ -187,12 +187,6 @@ model VariationOption {
   Store     Store    @relation(fields: [storeId], references: [id])
 }
 
-model StoreOrderNumbers {
-  id          String @id @default(uuid())
-  storeId     String @unique
-  orderNumber Int    @default(0)
-}
-
 model OrderLineItems {
   id          String    @id @default(uuid())
   orderId     String
@@ -204,6 +198,12 @@ model OrderLineItems {
   Order       Order     @relation(fields: [orderId], references: [id])
 
   @@index([orderId])
+}
+
+model LastOrderNumber {
+  id              String @id @default(uuid())
+  storeId         String @unique
+  lastOrderNumber Int    @default(0)
 }
 
 enum OrderStatus {
