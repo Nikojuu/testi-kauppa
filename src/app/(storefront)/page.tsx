@@ -4,7 +4,6 @@ import Subtitle from "@/components/subtitle";
 import AboutMeSection from "@/components/Homepage/AboutMeSection";
 import CategorySection from "@/components/Homepage/CategorySection";
 import { ProductCard } from "@/components/ProductCard";
-import { unstable_noStore as noStore } from "next/cache";
 import { Metadata } from "next";
 import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
 
