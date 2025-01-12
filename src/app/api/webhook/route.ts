@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         where: { storeId: process.env.TENANT_ID },
         update: { lastOrderNumber: { increment: 1 } },
         create: {
-          storeId: process.env.TENANT_ID!,
+          storeId: order.storeId!,
           lastOrderNumber: 1,
         },
       });
