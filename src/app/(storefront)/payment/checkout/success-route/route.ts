@@ -1,4 +1,8 @@
 //paytrail webhook
+
+export async function POST(request: Request) {
+  return new Response("not implemented", { status: 200 });
+}
 // import { calculateHmac } from "@/app/utils/calculateHmac";
 // import prisma from "@/app/utils/db";
 // import { sendOrderConfirmationEmail } from "@/app/utils/sendOrderConfirmationEmail";
