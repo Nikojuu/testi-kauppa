@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 const CheckoutRoute = () => {
   return notFound();
+  // comment out the line above and uncomment the line below to enable Paytrail payments
   // return <PaytrailCheckoutPage />;
 };
 
