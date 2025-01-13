@@ -16,14 +16,14 @@ export const GlassySquareButton = React.forwardRef<
   return (
     <button
       className={cn(
-        "relative overflow-hidden px-2 sm:px-6  py-1 sm:py-3 group bg-white bg-opacity-15 ml-4",
+        "relative overflow-hidden px-2 sm:px-6  py-1 sm:py-3 group bg-black bg-opacity-60 ml-4",
         "text-white font-semibold text-lg",
-        "border border-white border-opacity-20",
-        "shadow-[0_0_15px_rgba(255,255,255,0.3)]",
+        "border border-black border-opacity-20",
+        "shadow-[0_0_15px_rgba(155,55,200,0.3)]",
         "transition-all duration-300 ease-out",
         "hover:shadow-[0_0_25px_rgba(255,255,255,0.5)]",
-        "hover:bg-opacity-20",
-        "focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50",
+        "hover:bg-opacity-80",
+        "focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50",
         "before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 before:ease-out",
         "hover:before:opacity-20",
         className
@@ -31,15 +31,15 @@ export const GlassySquareButton = React.forwardRef<
       ref={ref}
       {...props}
     >
-      <span className="relative z-10 flex items-center justify-center font-primary   text-xl md:text-3xl lg:text-4xl font-medium">
+      <span className="relative z-10 flex items-center justify-center font-primary   text-xl md:text-4xl lg:text-5xl font-bold">
         {children}
         <ArrowRight className="ml-4 h-5 w-5 transition-transform duration-300 ease-out group-hover:translate-x-1" />
       </span>
       <span className="absolute inset-0 overflow-hidden">
-        <span className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-pink-200 to-transparent opacity-50 animate-shimmer-x"></span>
-        <span className="absolute inset-y-0 right-0 w-[2px] bg-gradient-to-b from-transparent via-pink-200 to-transparent opacity-50 animate-shimmer-y"></span>
-        <span className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-pink-200 to-transparent opacity-50 animate-shimmer-x"></span>
-        <span className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-transparent via-pink-200 to-transparent opacity-50 animate-shimmer-y"></span>
+        <span className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-80 animate-shimmer-x"></span>
+        <span className="absolute inset-y-0 right-0 w-[2px] bg-gradient-to-b from-transparent via-white to-transparent opacity-80 animate-shimmer-y"></span>
+        <span className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-80 animate-shimmer-x"></span>
+        <span className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-transparent via-white to-transparent opacity-80 animate-shimmer-y"></span>
       </span>
     </button>
   );

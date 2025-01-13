@@ -1,3 +1,4 @@
+import prisma from "@/app/utils/db";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,11 +14,27 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+const getData = async () => {
+  try {
+    const result = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: process.env.STORE_ID,
+      },
+      select: { email: true },
+    });
+    return result?.email;
+  } catch (error) {
+    console.log("Error fetching email", error);
+  }
+};
 
-export default function PrivacyPolicyPage() {
+export default async function PrivacyPolicyPage() {
+  const email = await getData();
   return (
     <div className="mx-auto max-w-screen-2xl p-8 mt-48">
-      <h1 className="text-3xl font-bold mb-6">Tietosuojakäytäntö</h1>
+      <h1 className="text-3xl font-secondary font-bold mb-6">
+        Tietosuojakäytäntö
+      </h1>
 
       <section className="mb-6">
         <h2 className="text-2xl font-semibold mb-3">Johdanto</h2>
@@ -146,7 +163,7 @@ export default function PrivacyPolicyPage() {
             href="mailto:info@example.com"
             className="text-blue-600 hover:underline"
           >
-            info@example.com
+            {email}
           </a>
         </p>
       </section>
@@ -158,7 +175,7 @@ export default function PrivacyPolicyPage() {
           tarkistamaan tietosuojakäytännön ajantasaisuus säännöllisesti.
         </p>
         <p className="mt-4">
-          <strong>Viimeisin päivitys:</strong> [Lisää päivämäärä]
+          <strong>Viimeisin päivitys:</strong> 13.1.2025
         </p>
       </section>
     </div>

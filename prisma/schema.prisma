@@ -209,7 +209,7 @@ model LastOrderNumber {
 enum OrderStatus {
   PENDING
   COMPLETED
-  CANCELED
+  CANCELLED
   FAILED
   PAID
   SHIPPED

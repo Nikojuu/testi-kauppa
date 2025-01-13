@@ -1,3 +1,4 @@
+import prisma from "@/app/utils/db";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,10 +14,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function TermsPage() {
+const getData = async () => {
+  try {
+    const result = await prisma.storeSettings.findFirst({
+      where: {
+        storeId: process.env.STORE_ID,
+      },
+      select: { email: true },
+    });
+    return result?.email;
+  } catch (error) {
+    console.log("Error fetching email", error);
+  }
+};
+
+export default async function TermsPage() {
+  const email = await getData();
   return (
     <div className="mx-auto max-w-screen-2xl py-8 px-4 mt-48">
-      <h1 className="text-3xl font-bold mb-6">Maksu- ja toimitusehdot</h1>
+      <h1 className="text-3xl font-secondary font-bold mb-6">
+        Maksu- ja toimitusehdot
+      </h1>
 
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Palautuskäytännöt</h2>
@@ -29,9 +47,13 @@ export default function TermsPage() {
         </p>
         <h3 className="text-xl font-medium mb-2">Miten peruutus tehdään</h3>
         <p className="mb-4">
-          Peruutus tehdään ilmoittamalla siitä selkeästi sähköpostitse
-          osoitteeseen [lisää sähköpostiosoite] tai käyttämällä
-          verkkosivuiltamme löytyvää peruutuslomaketta.
+          Peruuttamisoikeuden käyttämiseksi asiakkaan on ilmoitettava
+          päätöksestä peruuttaa tilaus yksiselitteisellä tavalla (esim.
+          kirjeellä tai sähköpostilla). Sähköpostiosoite on{" "}
+          <a href={`mailto:${email}`} className="text-blue-600">
+            {email}
+          </a>
+          .
         </p>
         <h3 className="text-xl font-medium mb-2">Palautuskulut</h3>
         <p className="mb-4">
@@ -64,27 +86,33 @@ export default function TermsPage() {
         <h3 className="text-xl font-medium mb-2">Hyväksytyt maksutavat</h3>
         <p className="mb-4">Hyväksymme seuraavat maksutavat:</p>
         <ul className="list-disc list-inside ml-4 mb-4">
-          <li>Verkkopankkimaksut</li>
           <li>Luottokortit (Visa, Mastercard)</li>
           <li>MobilePay</li>
           <li>Lasku (Klarna)</li>
         </ul>
         <h3 className="text-xl font-medium mb-2">Maksunvälittäjä</h3>
         <p className="mb-4">
-          Maksunvälityspalvelun toteuttajana ja maksupalveluntarjoajana toimii
+          {/* Maksunvälityspalvelun toteuttajana ja maksupalveluntarjoajana toimii
           Paytrail Oyj (2122839-7) yhteistyössä suomalaisten pankkien ja
           luottolaitosten kanssa. Paytrail Oyj näkyy maksun saajana tiliotteella
           tai korttilaskulla ja välittää maksun kauppiaalle. Paytrail Oyj:llä on
           maksulaitoksen toimilupa. Reklamaatiotapauksissa pyydämme ottamaan
           ensisijaisesti yhteyttä tuotteen toimittajaan. Paytrail Oyj, y-tunnus:
-          2122839-7 Innova 2 Lutakonaukio 7 40100 Jyväskylä
+          2122839-7 Innova 2 Lutakonaukio 7 40100 Jyväskylä */}
+          Maksunvälittäjä Maksunvälityspalvelun toteuttajana ja
+          maksupalveluntarjoajana toimii Stripe. Stripe näkyy maksun saajana
+          tiliotteella tai korttilaskulla ja välittää maksun kauppiaalle1 3 .
+          Stripe on kansainvälinen, laajasti käytetty ja luotettava toimija1 .
+          Kaikki verkkokaupan maksut välittää Stripe1 . Stripellä on
+          maksulaitoksen toimilupa. Reklamaatiotapauksissa pyydämme ottamaan
+          ensisijaisesti yhteyttä tuotteen toimittajaan. Stripen pääkonttorit
+          sijaitsevat San Franciscossa ja Dublinissa2 . Yritys on perustettu
+          vuonna 2010 ja on kasvanut nopeasti2 .
         </p>
       </section>
 
       <section>
-        <p className="italic">
-          Nämä ehdot on päivitetty viimeksi: [lisää päivämäärä]
-        </p>
+        <p className="italic">Nämä ehdot on päivitetty viimeksi: 13.1.2025</p>
       </section>
     </div>
   );
