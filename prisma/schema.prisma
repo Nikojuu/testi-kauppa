@@ -211,7 +211,7 @@ model OrderCustomerData {
   id         String  @id @default(uuid())
   firstName  String
   lastName   String
-  email      String  @unique
+  email      String
   phone      String?
   address    String
   city       String
