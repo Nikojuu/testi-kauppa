@@ -125,7 +125,18 @@ export async function POST(req: NextRequest) {
           status: "PAID",
           orderNumber: storeOrderNumbers.lastOrderNumber,
           shipmentMethod: JSON.stringify(shipmentMethod),
-          customerData: JSON.stringify(customerData),
+          OrderCustomerData: {
+            create: {
+              firstName: customerData.first_name,
+              lastName: customerData.last_name,
+              email: customerData.email,
+              address: customerData.address,
+              postalCode: customerData.postal_code,
+              city: customerData.city,
+
+              phone: customerData.phone || "",
+            },
+          },
         },
       });
 
@@ -152,6 +163,40 @@ export async function POST(req: NextRequest) {
         shipmentMethod,
         storeOrderNumbers.lastOrderNumber
       );
+    } // Handle failed payment intent
+    else if (event.type === "payment_intent.payment_failed") {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      const orderId = paymentIntent.metadata?.orderId;
+
+      if (!orderId)
+        throw new Error("Missing orderId in payment intent metadata");
+
+      await prisma.order.update({
+        where: { id: orderId, storeId: process.env.TENANT_ID },
+        data: {
+          status: "FAILED", // Mark the order as failed
+        },
+      });
+
+      // Optionally, you could send a failure email or notify the customer here.
+      console.log(`Payment failed for order ${orderId}`);
+    }
+    // Handle canceled checkout session
+    else if (event.type === "checkout.session.expired") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const orderId = session.metadata?.orderId;
+
+      if (!orderId) throw new Error("Missing orderId in session metadata");
+
+      await prisma.order.update({
+        where: { id: orderId, storeId: process.env.TENANT_ID },
+        data: {
+          status: "CANCELLED", // Mark the order as canceled
+        },
+      });
+
+      // Optionally, you could send a cancellation email or notify the customer here.
+      console.log(`Order ${orderId} has been canceled.`);
     }
 
     return NextResponse.json({ result: event, ok: true });

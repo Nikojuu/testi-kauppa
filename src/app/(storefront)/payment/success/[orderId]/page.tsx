@@ -15,7 +15,7 @@ import Link from "next/link";
 import { ClearCart } from "@/components/Cart/ClearCart";
 import Image from "next/image";
 import { Metadata } from "next";
-import { ItemType } from "@prisma/client";
+import { ItemType, OrderCustomerData } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Kiitos tilauksestasi!",
@@ -39,6 +39,7 @@ const getData = async (orderId: string) => {
       },
       include: {
         OrderLineItems: true,
+        OrderCustomerData: true,
       },
     });
     return data;
@@ -66,7 +67,7 @@ export default async function PaymentSuccessPage({
     );
   }
 
-  const customerData = JSON.parse(order.customerData as string);
+  const customerData = order.OrderCustomerData;
   const shipmentMethod = JSON.parse(order.shipmentMethod as string);
   const orderItems = order.OrderLineItems;
 
@@ -234,14 +235,14 @@ export default async function PaymentSuccessPage({
           <div>
             <h3 className="font-semibold mb-2">Asiakastiedot</h3>
             <p>
-              {customerData.first_name} {customerData.last_name}
+              {customerData?.firstName} {customerData?.lastName}
             </p>
-            <p>{customerData.address}</p>
+            <p>{customerData?.address}</p>
             <p>
-              {customerData.postal_code} {customerData.city}
+              {customerData?.postalCode} {customerData?.city}
             </p>
-            <p>{customerData.phone}</p>
-            <p>{customerData.email}</p>
+            <p>{customerData?.phone}</p>
+            <p>{customerData?.email}</p>
           </div>
           <Separator />
         </CardContent>

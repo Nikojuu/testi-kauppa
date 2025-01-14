@@ -255,6 +255,7 @@ async function createPendingOrder(
       id: orderId,
       status: "PENDING",
       storeId: process.env.TENANT_ID as string,
+
       totalAmount: orderLineItems.reduce(
         (sum, item) => sum + item.totalAmount,
         0

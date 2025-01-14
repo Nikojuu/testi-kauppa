@@ -107,10 +107,11 @@ model Order {
   trackingNumber         String?
   trackingUrls           String[]
   freightDoc             String[]
-  customerData           Json?
   shipmentMethod         Json?
   items                  Json?
   orderNumber            Int                   @default(0)
+  customerDataId         String? // Make this nullable
+  OrderCustomerData      OrderCustomerData?    @relation(fields: [customerDataId], references: [id])
   ShipitShippingMethod   ShipitShippingMethod? @relation(fields: [shipitShippingMethodId], references: [id])
   Store                  Store?                @relation(fields: [storeId], references: [id])
   OrderLineItems         OrderLineItems[]
@@ -206,6 +207,19 @@ model LastOrderNumber {
   lastOrderNumber Int    @default(0)
 }
 
+model OrderCustomerData {
+  id         String  @id @default(uuid())
+  firstName  String
+  lastName   String
+  email      String  @unique
+  phone      String?
+  address    String
+  city       String
+  postalCode String
+
+  Order Order[]
+}
+
 enum OrderStatus {
   PENDING
   COMPLETED
@@ -213,6 +227,7 @@ enum OrderStatus {
   FAILED
   PAID
   SHIPPED
+  REFUNDED
 }
 
 enum ShipmentType {
