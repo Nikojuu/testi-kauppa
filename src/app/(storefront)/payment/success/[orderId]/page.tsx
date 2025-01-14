@@ -39,7 +39,7 @@ const getData = async (orderId: string) => {
       },
       include: {
         OrderLineItems: true,
-        OrderCustomerData: true,
+        orderCustomerData: true,
       },
     });
     return data;
@@ -67,7 +67,7 @@ export default async function PaymentSuccessPage({
     );
   }
 
-  const customerData = order.OrderCustomerData;
+  const customerData = order.orderCustomerData;
   const shipmentMethod = JSON.parse(order.shipmentMethod as string);
   const orderItems = order.OrderLineItems;
 
