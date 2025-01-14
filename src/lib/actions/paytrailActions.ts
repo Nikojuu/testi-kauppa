@@ -341,20 +341,35 @@ async function createPendingOrder(
       totalAmount: item.unitPrice * item.units,
     };
   });
-
+  // prisma wont allow to create order and orderCustomerData in one query because orderCustomerData is optional on stripe checkout we need to create it in a separate query
   await prisma.order.create({
     data: {
+      storeId: process.env.TENANT_ID!,
       id: referenceId,
-      customerData: JSON.stringify(data),
-
-      storeId: process.env.TENANT_ID,
       status: "PENDING",
       totalAmount,
       OrderLineItems: {
-        create: orderLineItems, // Use Prisma's nested write for related items
+        create: orderLineItems,
       },
       shipmentMethod: JSON.stringify(shipmentMethod),
-      // items: JSON.stringify(items),
+    },
+  });
+
+  await prisma.order.update({
+    where: { id: referenceId, storeId: process.env.TENANT_ID },
+    data: {
+      orderCustomerData: {
+        create: {
+          firstName: data.first_name,
+          lastName: data.last_name,
+          email: data.email,
+          address: data.address,
+          postalCode: data.postal_code,
+          city: data.city,
+
+          phone: data.phone || "",
+        },
+      },
     },
   });
 }

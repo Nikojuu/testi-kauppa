@@ -110,8 +110,8 @@ model Order {
   shipmentMethod         Json?
   items                  Json?
   orderNumber            Int                   @default(0)
-  customerDataId         String? // Make this nullable
-  OrderCustomerData      OrderCustomerData?    @relation(fields: [customerDataId], references: [id])
+  customerDataId         String?
+  orderCustomerData      OrderCustomerData?    @relation(fields: [customerDataId], references: [id])
   ShipitShippingMethod   ShipitShippingMethod? @relation(fields: [shipitShippingMethodId], references: [id])
   Store                  Store?                @relation(fields: [storeId], references: [id])
   OrderLineItems         OrderLineItems[]
@@ -216,8 +216,7 @@ model OrderCustomerData {
   address    String
   city       String
   postalCode String
-
-  Order Order[]
+  Order      Order[]
 }
 
 enum OrderStatus {

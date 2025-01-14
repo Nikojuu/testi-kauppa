@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
           status: "PAID",
           orderNumber: storeOrderNumbers.lastOrderNumber,
           shipmentMethod: JSON.stringify(shipmentMethod),
-          OrderCustomerData: {
+          orderCustomerData: {
             create: {
               firstName: customerData.first_name,
               lastName: customerData.last_name,
