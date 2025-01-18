@@ -156,7 +156,6 @@ export async function POST(req: NextRequest) {
         shipmentMethod,
         storeOrderNumbers.lastOrderNumber
       );
-      return NextResponse.json({ result: event, ok: true });
     } // Handle failed payment intent
     else if (event.type === "payment_intent.payment_failed") {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
@@ -166,8 +165,6 @@ export async function POST(req: NextRequest) {
         throw new Error("Missing orderId in payment intent metadata");
 
       await handleFailedOrExpiredOrder(orderId, "FAILED");
-
-      return NextResponse.json({ result: event, ok: true });
     }
     // Handle canceled checkout session
     else if (event.type === "checkout.session.expired") {
@@ -177,8 +174,30 @@ export async function POST(req: NextRequest) {
       if (!orderId) throw new Error("Missing orderId in session metadata");
 
       await handleFailedOrExpiredOrder(orderId, "CANCELLED");
+    } else {
+      // Handle unrecognized event types
+      console.log(`Unhandled event type: ${event.type}`);
 
-      return NextResponse.json({ result: event, ok: true });
+      // Optionally, you could check if the event is related to an order
+      // and take precautionary actions
+      const session = event.data.object as Stripe.Checkout.Session;
+      const orderId = session.metadata?.orderId;
+
+      if (orderId) {
+        console.log(
+          `Unhandled event for order ${orderId}. Taking precautionary actions.`
+        );
+
+        // Check the current status of the order
+        const order = await prisma.order.findUnique({
+          where: { id: orderId, storeId: process.env.TENANT_ID },
+        });
+
+        // If the order is still in a pending state, we might want to cancel it
+        if (order && order.status === "PENDING") {
+          await handleFailedOrExpiredOrder(orderId, "CANCELLED");
+        }
+      }
     }
 
     return NextResponse.json({ result: event, ok: true });
