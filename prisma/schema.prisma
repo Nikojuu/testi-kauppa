@@ -196,6 +196,7 @@ model OrderLineItems {
   price       Int
   totalAmount Int
   productCode String
+  name        String
   Order       Order     @relation(fields: [orderId], references: [id])
 
   @@index([orderId])

@@ -334,6 +334,7 @@ async function createPendingOrder(
 
     return {
       id: randomUUID(),
+      name: item.description,
       productCode: item.productCode, // Product or variation ID
       itemType: type, // Specify if it's a product or variation or shipping
       quantity: item.units,

@@ -5,7 +5,7 @@ import {
 } from "@/app/utils/sendOrderConfirmationEmail";
 import { stripe } from "@/lib/stripe";
 import { OrderLineItems } from "@prisma/client";
-import { randomUUID } from "crypto";
+
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!signature) {
       return new Response("No signature", { status: 400 });
     }
-
+    console.log("Webhook received", body);
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-
+      console.log("Session", session);
       const { orderId } = session.metadata || {
         orderId: null,
       };
@@ -55,10 +55,8 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // Parse items from the order
       const orderItems = order.OrderLineItems;
 
-      // Update product quantities
       for (const item of orderItems) {
         const type = item.itemType; // Extract type and ID from stamp
 
@@ -66,9 +64,6 @@ export async function POST(req: NextRequest) {
           await prisma.productVariation.update({
             where: { id: item.productCode },
             data: {
-              quantity: {
-                decrement: item.quantity,
-              },
               soldQuantity: {
                 increment: item.quantity,
               },
@@ -78,9 +73,6 @@ export async function POST(req: NextRequest) {
           await prisma.product.update({
             where: { id: item.productCode },
             data: {
-              quantity: {
-                decrement: item.quantity,
-              },
               soldQuantity: {
                 increment: item.quantity,
               },
@@ -143,6 +135,7 @@ export async function POST(req: NextRequest) {
       const shippingLineItem: OrderLineItems = {
         orderId: orderId,
         id: shippingRate.id,
+        name: shippingRate.display_name || "Postitus",
         totalAmount: shippingRate.fixed_amount?.amount ?? 0,
         itemType: "SHIPPING",
         productCode: shippingRate.id,
@@ -163,6 +156,7 @@ export async function POST(req: NextRequest) {
         shipmentMethod,
         storeOrderNumbers.lastOrderNumber
       );
+      return NextResponse.json({ result: event, ok: true });
     } // Handle failed payment intent
     else if (event.type === "payment_intent.payment_failed") {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
@@ -171,15 +165,9 @@ export async function POST(req: NextRequest) {
       if (!orderId)
         throw new Error("Missing orderId in payment intent metadata");
 
-      await prisma.order.update({
-        where: { id: orderId, storeId: process.env.TENANT_ID },
-        data: {
-          status: "FAILED", // Mark the order as failed
-        },
-      });
+      await handleFailedOrExpiredOrder(orderId, "FAILED");
 
-      // Optionally, you could send a failure email or notify the customer here.
-      console.log(`Payment failed for order ${orderId}`);
+      return NextResponse.json({ result: event, ok: true });
     }
     // Handle canceled checkout session
     else if (event.type === "checkout.session.expired") {
@@ -188,15 +176,9 @@ export async function POST(req: NextRequest) {
 
       if (!orderId) throw new Error("Missing orderId in session metadata");
 
-      await prisma.order.update({
-        where: { id: orderId, storeId: process.env.TENANT_ID },
-        data: {
-          status: "CANCELLED", // Mark the order as canceled
-        },
-      });
+      await handleFailedOrExpiredOrder(orderId, "CANCELLED");
 
-      // Optionally, you could send a cancellation email or notify the customer here.
-      console.log(`Order ${orderId} has been canceled.`);
+      return NextResponse.json({ result: event, ok: true });
     }
 
     return NextResponse.json({ result: event, ok: true });
@@ -208,4 +190,45 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+async function handleFailedOrExpiredOrder(
+  orderId: string,
+  status: "FAILED" | "CANCELLED"
+) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId, storeId: process.env.TENANT_ID },
+    include: { OrderLineItems: true },
+  });
+
+  if (!order) {
+    throw new Error(`Order ${orderId} not found`);
+  }
+
+  // Restore quantities
+  for (const item of order.OrderLineItems) {
+    if (item.itemType === "VARIATION") {
+      await prisma.productVariation.update({
+        where: { id: item.productCode },
+        data: {
+          quantity: { increment: item.quantity },
+        },
+      });
+    } else if (item.itemType === "PRODUCT") {
+      await prisma.product.update({
+        where: { id: item.productCode },
+        data: {
+          quantity: { increment: item.quantity },
+        },
+      });
+    }
+  }
+
+  // Update order status
+  await prisma.order.update({
+    where: { id: orderId, storeId: process.env.TENANT_ID },
+    data: { status },
+  });
+
+  console.log(`Order ${orderId} has been ${status.toLowerCase()}.`);
 }

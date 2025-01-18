@@ -189,6 +189,12 @@ async function confirmLineItems(
             variation.id
           );
         }
+        if (confirmedVariation.quantity !== null) {
+          await prisma.productVariation.update({
+            where: { id: confirmedVariation.id },
+            data: { quantity: { decrement: item.cartQuantity } },
+          });
+        }
       } else {
         const isOnSale = isSaleActive(
           confirmedProduct.saleStartDate,
@@ -208,6 +214,12 @@ async function confirmLineItems(
             `Tuotetta ${product.name} ei ole riittävästi varastossa`,
             product.id
           );
+        }
+        if (confirmedProduct.quantity !== null) {
+          await prisma.product.update({
+            where: { id: confirmedProduct.id },
+            data: { quantity: { decrement: item.cartQuantity } },
+          });
         }
       }
 
@@ -240,6 +252,7 @@ async function createPendingOrder(
 ) {
   // Convert Stripe line items into the required database schema
   const orderLineItems = confirmedItems.map((item) => ({
+    name: item.price_data?.product_data?.name ?? "",
     quantity: item.quantity || 0,
     price: item.price_data?.unit_amount ?? 0,
     totalAmount: (item.quantity ?? 1) * (item.price_data?.unit_amount ?? 0),
