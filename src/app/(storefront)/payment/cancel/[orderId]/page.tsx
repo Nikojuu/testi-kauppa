@@ -1,3 +1,5 @@
+import prisma from "@/app/utils/db";
+import { restoreItemQuantitys } from "@/app/utils/restoreItemQuantitys";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { XCircle } from "lucide-react";
@@ -17,7 +19,37 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CancelRoute() {
+const restoreProducts = async (orderId: string) => {
+  try {
+    const order = await prisma.order.findUnique({
+      where: {
+        storeId: process.env.TENANT_ID,
+        id: orderId,
+      },
+      include: {
+        OrderLineItems: true,
+      },
+    });
+
+    if (!order) {
+      return console.log("Order not found");
+    }
+    if (order.status === "PENDING") {
+      restoreItemQuantitys(orderId, "CANCELLED");
+    }
+  } catch (error) {
+    console.error("Error fetching order data:", error);
+    throw new Error("Failed to fetch order data.");
+  }
+};
+
+export default async function CancelPage({
+  params,
+}: {
+  params: { orderId: string };
+}) {
+  const { orderId } = params;
+  await restoreProducts(orderId);
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center">
       <Card className="w-[350px]">

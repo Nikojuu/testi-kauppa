@@ -61,7 +61,7 @@ export async function createStripeCheckoutSession(
       },
 
       success_url: `${process.env.BASE_URL}/payment/success/${orderId}`,
-      cancel_url: `${process.env.BASE_URL}/payment/cancel`,
+      cancel_url: `${process.env.BASE_URL}/payment/cancel/${orderId}`,
     });
 
     // create pending order in database

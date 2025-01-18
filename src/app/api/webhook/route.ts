@@ -1,4 +1,5 @@
 import prisma from "@/app/utils/db";
+import { restoreItemQuantitys } from "@/app/utils/restoreItemQuantitys";
 import {
   CustomerData,
   sendOrderConfirmationEmail,
@@ -164,7 +165,7 @@ export async function POST(req: NextRequest) {
       if (!orderId)
         throw new Error("Missing orderId in payment intent metadata");
 
-      await handleFailedOrExpiredOrder(orderId, "FAILED");
+      await restoreItemQuantitys(orderId, "FAILED");
     }
     // Handle canceled checkout session
     else if (event.type === "checkout.session.expired") {
@@ -173,33 +174,8 @@ export async function POST(req: NextRequest) {
 
       if (!orderId) throw new Error("Missing orderId in session metadata");
 
-      await handleFailedOrExpiredOrder(orderId, "CANCELLED");
-    } else {
-      // Handle unrecognized event types
-      console.log(`Unhandled event type: ${event.type}`);
-
-      // Optionally, you could check if the event is related to an order
-      // and take precautionary actions
-      const session = event.data.object as Stripe.Checkout.Session;
-      const orderId = session.metadata?.orderId;
-
-      if (orderId) {
-        console.log(
-          `Unhandled event for order ${orderId}. Taking precautionary actions.`
-        );
-
-        // Check the current status of the order
-        const order = await prisma.order.findUnique({
-          where: { id: orderId, storeId: process.env.TENANT_ID },
-        });
-
-        // If the order is still in a pending state, we might want to cancel it
-        if (order && order.status === "PENDING") {
-          await handleFailedOrExpiredOrder(orderId, "CANCELLED");
-        }
-      }
+      await restoreItemQuantitys(orderId, "CANCELLED");
     }
-
     return NextResponse.json({ result: event, ok: true });
   } catch (error) {
     console.log(console.error(error));
@@ -209,45 +185,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-async function handleFailedOrExpiredOrder(
-  orderId: string,
-  status: "FAILED" | "CANCELLED"
-) {
-  const order = await prisma.order.findUnique({
-    where: { id: orderId, storeId: process.env.TENANT_ID },
-    include: { OrderLineItems: true },
-  });
-
-  if (!order) {
-    throw new Error(`Order ${orderId} not found`);
-  }
-
-  // Restore quantities
-  for (const item of order.OrderLineItems) {
-    if (item.itemType === "VARIATION") {
-      await prisma.productVariation.update({
-        where: { id: item.productCode },
-        data: {
-          quantity: { increment: item.quantity },
-        },
-      });
-    } else if (item.itemType === "PRODUCT") {
-      await prisma.product.update({
-        where: { id: item.productCode },
-        data: {
-          quantity: { increment: item.quantity },
-        },
-      });
-    }
-  }
-
-  // Update order status
-  await prisma.order.update({
-    where: { id: orderId, storeId: process.env.TENANT_ID },
-    data: { status },
-  });
-
-  console.log(`Order ${orderId} has been ${status.toLowerCase()}.`);
 }
