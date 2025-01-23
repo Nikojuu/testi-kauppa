@@ -40,6 +40,7 @@ const getData = async (orderId: string) => {
       include: {
         OrderLineItems: true,
         orderCustomerData: true,
+        OrderShipmentMethod: true,
       },
     });
     return data;
@@ -68,7 +69,7 @@ export default async function PaymentSuccessPage({
   }
 
   const customerData = order.orderCustomerData;
-  const shipmentMethod = JSON.parse(order.shipmentMethod as string);
+  const shipmentMethod = order.OrderShipmentMethod;
   const orderItems = order.OrderLineItems;
 
   let items: Array<{
@@ -159,7 +160,8 @@ export default async function PaymentSuccessPage({
         return total + item.unitPrice * item.quantity;
       }
       return total;
-    }, 0) + (shipmentMethod?.price / 100 || 0);
+    }, 0) +
+    (shipmentMethod?.price ?? 0) / 100;
   return (
     <div className="container mx-auto px-4 py-8 my-32">
       <ClearCart />
@@ -218,10 +220,10 @@ export default async function PaymentSuccessPage({
 
               <div>
                 <h3 className="font-semibold mb-2">Toimitus</h3>
-                <p>{shipmentMethod.name}</p>
+                <p>{shipmentMethod?.name}</p>
                 <div className="flex justify-between items-center mb-4">
-                  <p>{shipmentMethod.description}</p>
-                  <p>{(shipmentMethod.price / 100).toFixed(2)} €</p>
+                  <p>{shipmentMethod?.description}</p>
+                  <p>{((shipmentMethod?.price ?? 0) / 100).toFixed(2)} €</p>
                 </div>
               </div>
             </div>

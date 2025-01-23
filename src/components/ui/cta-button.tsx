@@ -31,7 +31,7 @@ export const GlassySquareButton = React.forwardRef<
       ref={ref}
       {...props}
     >
-      <span className="relative z-10 flex items-center justify-center font-secondary   text-sm lg:text-xl font-semibold">
+      <span className="relative z-10 flex items-center justify-center font-secondary  text-xs md:text-sm lg:text-xl font-semibold">
         {children}
         <ArrowRight className="ml-4 h-5 w-5 transition-transform duration-300 ease-out group-hover:translate-x-1" />
       </span>

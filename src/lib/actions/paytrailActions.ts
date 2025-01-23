@@ -338,11 +338,14 @@ async function createPendingOrder(
       productCode: item.productCode, // Product or variation ID
       itemType: type, // Specify if it's a product or variation or shipping
       quantity: item.units,
+      vatRate: item.vatPercentage,
       price: item.unitPrice,
       totalAmount: item.unitPrice * item.units,
     };
   });
   // prisma wont allow to create order and orderCustomerData in one query because orderCustomerData is optional on stripe checkout we need to create it in a separate query
+
+  // sama ongelma pitä'ä luoda shipment method erikseen
   await prisma.order.create({
     data: {
       storeId: process.env.TENANT_ID!,
@@ -352,7 +355,6 @@ async function createPendingOrder(
       OrderLineItems: {
         create: orderLineItems,
       },
-      shipmentMethod: JSON.stringify(shipmentMethod),
     },
   });
 
@@ -369,6 +371,15 @@ async function createPendingOrder(
           city: data.city,
 
           phone: data.phone || "",
+        },
+      },
+      OrderShipmentMethod: {
+        create: {
+          id: shipmentMethod.id,
+          name: shipmentMethod.name,
+          price: shipmentMethod.price,
+
+          logo: "",
         },
       },
     },

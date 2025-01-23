@@ -17,8 +17,11 @@ model Store {
   owner_last_name      String
   adminAccessId        String?
   isAdmin              Boolean                @default(false)
+  status               String                 @default("trial")
+  trialExpiresAt       DateTime?
   banners              Banner[]
   Category             Category[]
+  LastOrderNumber      LastOrderNumber?
   Order                Order[]
   products             Product[]
   ProductVariation     ProductVariation[]
@@ -45,7 +48,7 @@ model StoreSettings {
   updatedAt      DateTime @updatedAt
   defaultVatRate Float
   logoUrl        String?
-  Store          Store    @relation(fields: [storeId], references: [id])
+  Store          Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Product {
@@ -68,7 +71,7 @@ model Product {
   metaTitle        String?
   slug             String             @unique
   soldQuantity     Int                @default(0)
-  Store            Store              @relation(fields: [storeId], references: [id])
+  Store            Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
   ProductVariation ProductVariation[]
   categories       Category[]         @relation("CategoryToProduct")
 }
@@ -79,7 +82,7 @@ model Banner {
   imageString String
   createdAt   DateTime @default(now())
   storeId     String
-  Store       Store    @relation(fields: [storeId], references: [id])
+  Store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -107,14 +110,13 @@ model Order {
   trackingNumber         String?
   trackingUrls           String[]
   freightDoc             String[]
-  shipmentMethod         Json?
-  items                  Json?
   orderNumber            Int                   @default(0)
   customerDataId         String?
   orderCustomerData      OrderCustomerData?    @relation(fields: [customerDataId], references: [id])
   ShipitShippingMethod   ShipitShippingMethod? @relation(fields: [shipitShippingMethodId], references: [id])
   Store                  Store?                @relation(fields: [storeId], references: [id])
   OrderLineItems         OrderLineItems[]
+  OrderShipmentMethod    OrderShipmentMethod?
 }
 
 model ShipmentMethods {
@@ -126,7 +128,7 @@ model ShipmentMethods {
   min_estimate_delivery_days Int?
   active                     Boolean @default(true)
   price                      Float
-  Store                      Store?  @relation(fields: [storeId], references: [id])
+  Store                      Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model ShipitShippingMethod {
@@ -154,7 +156,7 @@ model ShipitShippingMethod {
   pickupPoint        Boolean      @default(false)
   onlyParchelLocker  Boolean      @default(true)
   Order              Order[]
-  Store              Store?       @relation(fields: [storeId], references: [id])
+  Store              Store?       @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model ProductVariation {
@@ -176,7 +178,7 @@ model ProductVariation {
   description   String?
   soldQuantity  Int       @default(0)
   Product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  Store         Store     @relation(fields: [storeId], references: [id])
+  Store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model VariationOption {
@@ -185,7 +187,7 @@ model VariationOption {
   values    String[]
   storeId   String
   createdAt DateTime @default(now())
-  Store     Store    @relation(fields: [storeId], references: [id])
+  Store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model OrderLineItems {
@@ -197,6 +199,7 @@ model OrderLineItems {
   totalAmount Int
   productCode String
   name        String
+  vatRate     Float
   Order       Order     @relation(fields: [orderId], references: [id])
 
   @@index([orderId])
@@ -206,6 +209,7 @@ model LastOrderNumber {
   id              String @id @default(uuid())
   storeId         String @unique
   lastOrderNumber Int    @default(0)
+  Store           Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
 
 model OrderCustomerData {
@@ -218,6 +222,17 @@ model OrderCustomerData {
   city       String
   postalCode String
   Order      Order[]
+}
+
+model OrderShipmentMethod {
+  id          String  @id
+  name        String
+  description String?
+  logo        String?
+  vatRate     Float?
+  price       Float
+  orderId     String  @unique
+  Order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 enum OrderStatus {

@@ -4,6 +4,10 @@ import {
   CustomerData,
   sendOrderConfirmationEmail,
 } from "@/app/utils/sendOrderConfirmationEmail";
+import {
+  calculateAverageVat,
+  processInventoryUpdates,
+} from "@/app/utils/stripeWebhookUtils";
 import { stripe } from "@/lib/stripe";
 import { OrderLineItems } from "@prisma/client";
 
@@ -19,7 +23,7 @@ export async function POST(req: NextRequest) {
     if (!signature) {
       return new Response("No signature", { status: 400 });
     }
-    console.log("Webhook received", body);
+
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
@@ -47,45 +51,8 @@ export async function POST(req: NextRequest) {
       if (!order) {
         throw new Error("Order not found");
       }
-      const storeOrderNumbers = await prisma.lastOrderNumber.upsert({
-        where: { storeId: process.env.TENANT_ID },
-        update: { lastOrderNumber: { increment: 1 } },
-        create: {
-          storeId: order.storeId!,
-          lastOrderNumber: 1,
-        },
-      });
 
-      const orderItems = order.OrderLineItems;
-
-      for (const item of orderItems) {
-        const type = item.itemType; // Extract type and ID from stamp
-
-        if (type === "VARIATION") {
-          await prisma.productVariation.update({
-            where: { id: item.productCode },
-            data: {
-              soldQuantity: {
-                increment: item.quantity,
-              },
-            },
-          });
-        } else if (type === "PRODUCT") {
-          await prisma.product.update({
-            where: { id: item.productCode },
-            data: {
-              soldQuantity: {
-                increment: item.quantity,
-              },
-            },
-          });
-        } else if (type === "SHIPPING") {
-          // No inventory update needed for shipping
-          console.log("Shipping cost item processed");
-        } else {
-          throw new Error(`Unknown item type: ${type}`);
-        }
-      }
+      await processInventoryUpdates(order.OrderLineItems);
 
       const customerData: CustomerData = {
         first_name: session.customer_details?.name as string,
@@ -104,6 +71,8 @@ export async function POST(req: NextRequest) {
       const shippingRate =
         await stripe.shippingRates.retrieve(chosenShippingRateId);
 
+      const averageVatRate = calculateAverageVat(order.OrderLineItems);
+
       // Create shipment
       const shipmentMethod = {
         id: shippingRate.id,
@@ -116,8 +85,16 @@ export async function POST(req: NextRequest) {
         where: { id: orderId, storeId: process.env.TENANT_ID },
         data: {
           status: "PAID",
-          orderNumber: storeOrderNumbers.lastOrderNumber,
-          shipmentMethod: JSON.stringify(shipmentMethod),
+
+          OrderShipmentMethod: {
+            create: {
+              id: shippingRate.id,
+              name: shippingRate.display_name || "Postitus",
+              price: shippingRate.fixed_amount?.amount ?? 0,
+              vatRate: averageVatRate,
+              logo: "https://via.placeholder.com/80x80?text=Toimitus",
+            },
+          },
           orderCustomerData: {
             create: {
               firstName: customerData.first_name,
@@ -139,6 +116,8 @@ export async function POST(req: NextRequest) {
         name: shippingRate.display_name || "Postitus",
         totalAmount: shippingRate.fixed_amount?.amount ?? 0,
         itemType: "SHIPPING",
+
+        vatRate: averageVatRate,
         productCode: shippingRate.id,
 
         quantity: 1,
@@ -155,7 +134,7 @@ export async function POST(req: NextRequest) {
         customerData,
         orderItemsWithShipping,
         shipmentMethod,
-        storeOrderNumbers.lastOrderNumber
+        order.orderNumber
       );
     } // Handle failed payment intent
     else if (event.type === "payment_intent.payment_failed") {

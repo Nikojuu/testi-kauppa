@@ -137,6 +137,16 @@ async function getFormattedShippingOptions(): Promise<
 async function confirmLineItems(
   items: CartItem[]
 ): Promise<Stripe.Checkout.SessionCreateParams.LineItem[]> {
+  const storeSettings = await prisma.storeSettings.findUnique({
+    where: { storeId: process.env.TENANT_ID },
+  });
+  if (!storeSettings) {
+    throw new CartError(
+      `Kaupan asetuksia ei löytynyt ota yhteyttä kaupan omistajaan`,
+      "1"
+    );
+  }
+  const defaultVatRate = storeSettings.defaultVatRate;
   return Promise.all(
     items.map(async (item) => {
       const { product, variation } = item;
@@ -235,6 +245,7 @@ async function confirmLineItems(
             metadata: {
               type: variation ? "VARIATION" : "PRODUCT",
               productCode: variation ? variation.id : product.id,
+              vatRate: confirmedProduct.vatPercentage ?? defaultVatRate,
             },
           },
           unit_amount: currentPrice, // Stripe expects amounts in cents
@@ -261,14 +272,24 @@ async function createPendingOrder(
       item.price_data?.product_data?.metadata?.productCode ?? ""
     ),
     itemType: item.price_data?.product_data?.metadata?.type as ItemType,
+    vatRate: Number(item.price_data?.product_data?.metadata?.vatRate) || 24.5,
   }));
+
+  const storeOrderNumbers = await prisma.lastOrderNumber.upsert({
+    where: { storeId: process.env.TENANT_ID },
+    update: { lastOrderNumber: { increment: 1 } },
+    create: {
+      storeId: process.env.TENANT_ID as string,
+      lastOrderNumber: 1,
+    },
+  });
 
   await prisma.order.create({
     data: {
       id: orderId,
       status: "PENDING",
       storeId: process.env.TENANT_ID as string,
-
+      orderNumber: storeOrderNumbers.lastOrderNumber,
       totalAmount: orderLineItems.reduce(
         (sum, item) => sum + item.totalAmount,
         0
