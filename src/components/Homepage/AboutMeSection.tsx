@@ -10,6 +10,7 @@ const AboutMeSection = () => {
         <Image
           fill
           alt=""
+          sizes="(min-width: 1620px) 752px, (min-width: 1060px) calc(-9.81vw + 909px), (min-width: 1020px) calc(-730vw + 8434px), (min-width: 620px) calc(91.58vw + 52px), 552px"
           src="/korvakorutesti.jpg"
           className="object-cover h-auto"
         />

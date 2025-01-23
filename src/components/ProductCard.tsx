@@ -35,11 +35,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         className="block rounded-lg hover:shadow-sm hover:shadow-primary transition-shadow duration-300 h-full"
       >
         <div className="w-full mx-auto border border-primary">
-          <div className="relative h-[330px] overflow-hidden">
+          <div className="relative h-[430px] overflow-hidden">
             <Image
               src={item.images[0]} // Use only the first image
               alt={`${item.name}`}
               fill
+              sizes="(min-width: 1040px) 504px, (min-width: 960px) calc(50vw - 128px), (min-width: 780px) calc(24.38vw + 250px), (min-width: 480px) calc(100vw - 34px), calc(15vw + 457px)"
               className="object-cover object-center w-full h-full rounded-lg hover:scale-105 transition-transform duration-300"
             />
           </div>

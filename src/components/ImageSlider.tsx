@@ -37,6 +37,7 @@ export function ImageSlider({ images }: iAppProps) {
           height={600}
           src={images[mainImageIndex]}
           alt="Product image"
+          sizes="(max-width: 768px) 100vw, 700px"
           className="object-cover w-[600px] h-[600px]"
         />
 
@@ -67,6 +68,7 @@ export function ImageSlider({ images }: iAppProps) {
               alt="Product Image"
               width={100}
               height={100}
+              sizes="130px"
               className="object-cover w-[100px] h-[100px]"
             />
           </div>

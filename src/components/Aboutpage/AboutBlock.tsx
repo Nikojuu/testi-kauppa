@@ -19,6 +19,7 @@ const AboutBlock = ({ blockInfo }: { blockInfo: AboutBlockType }) => {
           fill
           alt={blockInfo.title}
           src={blockInfo.imgSrc}
+          sizes="(min-width: 1040px) 750px, (min-width: 840px) 100vw, 728px"
           className="object-cover"
         />
       </div>
