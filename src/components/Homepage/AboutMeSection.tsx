@@ -1,26 +1,46 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { ArrowBigLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { useRef } from "react";
+import { useInView } from "framer-motion";
 
 const AboutMeSection = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
   return (
-    <section className=" mx-auto mb-32 flex w-full mt-32 container max-w-screen-2xl flex-col sm:px-4 lg:flex-row">
-      <div className="relative aspect-square w-full lg:w-1/2 h-96 lg:h-auto">
+    <section
+      ref={ref}
+      className="mx-auto mb-32 mt-32 flex w-full container max-w-screen-2xl flex-col px-4 sm:px-8 lg:flex-row"
+    >
+      <motion.div
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: isInView ? 0 : -100, opacity: isInView ? 1 : 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative aspect-square w-full lg:w-1/2 h-96 lg:h-auto lg:min-h-[600px]"
+      >
         <Image
           fill
-          alt=""
+          alt="Korukoru design process"
           sizes="(min-width: 1620px) 752px, (min-width: 1060px) calc(-9.81vw + 909px), (min-width: 1020px) calc(-730vw + 8434px), (min-width: 620px) calc(91.58vw + 52px), 552px"
           src="/korvakorutesti.jpg"
-          className="object-cover h-auto"
+          className="object-cover h-auto rounded-lg shadow-2xl transform -rotate-2 "
+          priority
         />
-      </div>
+      </motion.div>
 
-      <div className="z-10 mx-1 -mt-32 flex-1 bg-pink-50 p-2 text-black sm:mx-8 sm:p-8 lg:-ml-24  lg:mb-24 lg:mt-24">
-        <h3 className="mb-8  font-primary  text-5xl ">
-          Huolellinen suunnittelu{" "}
-        </h3>
-        <p>
+      <motion.div
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: isInView ? 0 : 100, opacity: isInView ? 1 : 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+        className="z-10 flex-1 bg-pink-50/95 backdrop-blur-sm p-8 text-black lg:-ml-24 lg:mt-24 rounded-lg shadow-xl border border-white/20"
+      >
+        <h3 className="mb-8 font-primary text-5xl">Huolellinen suunnittelu</h3>
+        <p className="text-lg leading-relaxed text-gray-800 mb-8">
           Jokainen tuotteeni lähtee liikkeelle huolellisesta
           suunnitteluprosessista. Luon korkealaatuisia ja ainutlaatuisia
           tuotteita, jotka erottuvat joukosta. Suunnittelutyössäni yhdistyvät
@@ -30,14 +50,12 @@ const AboutMeSection = () => {
         </p>
 
         <Link href="/about">
-          <Button variant="gooeyLeft" className=" mt-4">
-            Lue lisää minusta{" "}
-            <span>
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </span>
+          <Button variant="gooeyLeft">
+            Lue lisää minusta
+            <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </Link>
-      </div>
+      </motion.div>
     </section>
   );
 };

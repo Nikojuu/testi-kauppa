@@ -272,7 +272,7 @@ async function createPendingOrder(
       item.price_data?.product_data?.metadata?.productCode ?? ""
     ),
     itemType: item.price_data?.product_data?.metadata?.type as ItemType,
-    vatRate: Number(item.price_data?.product_data?.metadata?.vatRate) || 24.5,
+    vatRate: Number(item.price_data?.product_data?.metadata?.vatRate) || 25.5,
   }));
 
   const storeOrderNumbers = await prisma.lastOrderNumber.upsert({

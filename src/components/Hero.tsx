@@ -1,68 +1,65 @@
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
-
+import { motion } from "framer-motion";
 import { GlassySquareButton } from "./ui/cta-button";
-
-// export function Hero() {
-//   return (
-//     <div className="relative w-full h-[90vh] min-h-[30rem] max-h-screen">
-//       <Image
-//         alt="Hero Image"
-//         src="/tausta.jpg"
-//         fill
-//         className="object-cover"
-//         priority
-//       />
-//       {/* Left-to-right gradient overlay */}
-//       <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-transparent" />
-//       <div className="absolute inset-0 flex flex-col items-center justify-start pt-60 text-center">
-//         <h1 className="text-white text-5xl sm:text-7xl font-bold mb-4 tracking-tight">
-//           Pupun korvat
-//         </h1>
-//         <h2 className="text-white font-primary text-4xl md:text-6xl font-medium mb-8">
-//           Upeita käsintehtyjä koruja juhlaan ja arkeen
-//         </h2>
-//         <Link href="/products">
-//           <GlassySquareButton>Tutustu kauppaani!</GlassySquareButton>
-//         </Link>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Hero;
 
 export function Hero() {
   return (
-    <div className="relative w-full h-[80vh] lg:h-[90] min-h-[30rem] max-h-screen">
-      <Image
-        alt="Hero Image"
-        src="/tausta.jpg"
-        fill
-        sizes="(max-width: 640px) 200vw, 100vw"
-        className="object-cover "
-        priority
-      />
-      {/* Left-to-right gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-transparent to-transparent" />
+    <div className="relative w-full h-[80vh] lg:h-[90vh] min-h-[30rem] max-h-screen overflow-hidden">
+      <div>
+        <Image
+          alt="Hero Image"
+          src="/tausta.jpg"
+          fill
+          sizes="(max-width: 640px) 200vw, 100vw"
+          className="object-cover"
+          priority
+        />
+      </div>
       <div className="absolute inset-0 flex flex-col items-center justify-start pt-32 md:pt-52 text-center">
-        <h1 className="text-black text-5xl sm:text-9xl  mb-4 tracking-tight ">
-          Pupun korvat
-        </h1>
-        <h2 className="text-black font-primary text-4xl md:text-6xl  mb-8 ">
-          Upeita käsintehtyjä koruja juhlaan ja arkeen
-        </h2>
-        <Link href="/products">
-          <GlassySquareButton>Tutustu kauppaani!</GlassySquareButton>
-        </Link>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="relative max-w-4xl mx-auto  bg-black/20  p-12 md:p-20 octagon-clip rounded-2xl"
+        >
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-white text-5xl sm:text-9xl tracking-tight"
+            >
+              Pupun korvat
+            </motion.h1>
+            <motion.h2
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="text-white font-primary text-4xl md:text-6xl"
+            >
+              Upeita käsintehtyjä koruja juhlaan ja arkeen
+            </motion.h2>
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="mt-8"
+        >
+          <Link href="/products">
+            <GlassySquareButton>Tutustu kauppaani!</GlassySquareButton>
+          </Link>
+        </motion.div>
       </div>
     </div>
   );
 }
 
 export default Hero;
+
 // const autoplayOptions = Autoplay({
 //   delay: 6000,
 // });
