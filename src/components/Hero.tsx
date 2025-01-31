@@ -10,21 +10,23 @@ export function Hero() {
       <div>
         <Image
           alt="Hero Image"
-          src="/tausta.jpg"
+          src="/kansikuva.jpg"
           fill
           sizes="(max-width: 640px) 200vw, 100vw"
           className="object-cover"
           priority
         />
       </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-start pt-32 md:pt-52 text-center">
+      <div className="absolute inset-0 flex flex-col items-center md:items-start justify-center md:justify-start pt-32 md:pt-64 text-center md:text-left px-4 md:pl-44">
+        {/* Responsive alignment and padding */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="relative max-w-4xl mx-auto  bg-black/20  p-12 md:p-20 octagon-clip rounded-2xl"
+          className="relative max-w-4xl"
         >
-          <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="flex flex-col items-center md:items-start justify-center space-y-4 p-4 backdrop:blur-[2px] rounded-full ">
+            {/* Responsive item alignment */}
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
