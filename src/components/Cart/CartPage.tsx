@@ -166,7 +166,7 @@ const CartPage = () => {
                           <div className="flex justify-between">
                             <h3 className="text-sm">
                               <Link
-                                href={`/product/${product.id}`}
+                                href={`/product/${product.slug}`}
                                 className="font-medium text-gray-700 hover:text-gray-800"
                               >
                                 {product.name}
@@ -229,7 +229,7 @@ const CartPage = () => {
                                       : product.price / 100}
                                     €
                                   </span>
-                                  <span>{variation?.salePrice} €</span>
+                                  <span>{variation?.salePrice / 100} €</span>
                                 </>
                               ) : (
                                 <span>

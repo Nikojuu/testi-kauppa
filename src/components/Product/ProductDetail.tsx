@@ -40,6 +40,7 @@ export interface SelectedProductVariation extends SelectedPriceOption {
 export interface SelectedProduct extends SelectedPriceOption {
   id: string;
   name: string;
+  slug?: string;
   images: string[];
   price: number;
   quantity: number | null;

@@ -42,7 +42,7 @@ export async function createStripeCheckoutSession(
     }
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ["card", "klarna", "mobilepay"],
       line_items: lineItems,
       automatic_tax: {
         enabled: true,
@@ -115,7 +115,8 @@ async function getFormattedShippingOptions(): Promise<
           amount: method.price,
           currency: "eur",
         },
-        display_name: method.name,
+
+        display_name: method.name.substring(0, 50),
         delivery_estimate: {
           minimum: {
             unit: "business_day",

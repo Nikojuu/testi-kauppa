@@ -40,7 +40,13 @@ export default function StickyNavbar({
          flex items-center h-28  bg-transparent   border-b  border-white`}
       >
         <Link href="/" className="lg:mr-20 hidden md:block">
-          <Image src="logo-dark.svg" alt="logo" width={100} height={20} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iH4wT02R1thvKxZPkHXWjecL6T4mYdBpElN3w"
+            alt="logo"
+            width="100"
+            height="20"
+          />
         </Link>
         {children}
       </nav>

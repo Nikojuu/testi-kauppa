@@ -103,13 +103,18 @@ export default async function PaymentSuccessPage({
               Product: {
                 select: {
                   name: true,
+                  images: true, // Get parent product images
                 },
               },
-              images: true,
+              images: true, // Get variation images
             },
           });
 
           if (!product) return null;
+
+          // Use variation images if available, otherwise parent product images
+          const images =
+            product.images.length > 0 ? product.images : product.Product.images;
 
           return {
             options: product.VariantOption.map((vo) => ({
@@ -117,7 +122,7 @@ export default async function PaymentSuccessPage({
               value: vo.value,
             })),
             name: product.Product.name,
-            images: product.images,
+            images,
             quantity: item.quantity,
             unitPrice: item.price / 100,
           };
