@@ -113,7 +113,7 @@ export const payTrailCheckout = async (
             // If the variation is not found, throw an error
             if (!confirmedVariation) {
               throw new CartError(
-                `Variation ${variation.optionName} not found for product ${confirmedProduct.name}`,
+                `Variation  not found for product ${confirmedProduct.name}`,
                 product.id,
                 variation.id
               );
@@ -214,7 +214,7 @@ export const payTrailCheckout = async (
             productCode: variation ? variation.id : product.id,
             stamp,
             description: variation
-              ? `${product.name} - ${variation.optionName} (${variation.optionValue})`
+              ? `${product.name} - "variaatio"`
               : product.name,
           };
         })

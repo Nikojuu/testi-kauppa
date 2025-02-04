@@ -15,8 +15,12 @@ type CartItemProps = {
     salePrice: number | null;
     saleStartDate: Date | null;
     saleEndDate: Date | null;
-    optionName: string;
-    optionValue: string;
+    VariantOption: {
+      value: string;
+      OptionType: {
+        name: string;
+      };
+    }[];
     images?: string[];
     quantity: number | null;
   };
@@ -58,8 +62,12 @@ export default function CartItem({ product, variation }: CartItemProps) {
               {product.name}
             </span>
             {variation && (
-              <span className="line-clamp-1 text-xs text-muted-foreground">
-                {variation.optionName}: {variation.optionValue}
+              <span className="text-xs text-muted-foreground space-y-0.5">
+                {variation.VariantOption.map((opt) => (
+                  <div key={`${opt.OptionType.name}-${opt.value}`}>
+                    {opt.OptionType.name}: {opt.value}
+                  </div>
+                ))}
               </span>
             )}
             <div className="mt-2 flex items-center space-x-2">

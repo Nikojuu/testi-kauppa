@@ -204,9 +204,15 @@ const CartPage = () => {
                           </div>
 
                           {variation && (
-                            <p className="text-sm text-gray-500">
-                              {variation.optionName}: {variation.optionValue}
-                            </p>
+                            <span className="text-xs text-muted-foreground space-y-0.5">
+                              {variation.VariantOption.map((opt) => (
+                                <div
+                                  key={`${opt.OptionType.name}-${opt.value}`}
+                                >
+                                  {opt.OptionType.name}: {opt.value}
+                                </div>
+                              ))}
+                            </span>
                           )}
                           <p className="mt-1 text-sm font-medium text-gray-900">
                             {/* Check if there's a variation and its sale price */}

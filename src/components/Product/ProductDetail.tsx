@@ -8,12 +8,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import AddToCartButton from "@/components/Cart/AddToCartButton";
-
-import {
-  getDisplayPriceSelectedProduct,
-  getPriceInfo,
-  isSaleActive,
-} from "@/lib/utils";
+import { getDisplayPriceSelectedProduct, isSaleActive } from "@/lib/utils";
 import { Check, X } from "lucide-react";
 import { PriceDisplay } from "../PriceDisplay";
 import { Separator } from "../ui/separator";
@@ -34,8 +29,12 @@ export interface SelectedProductVariation extends SelectedPriceOption {
   images: string[];
   description: string | null;
   quantity: number | null;
-  optionName: string;
-  optionValue: string;
+  VariantOption: {
+    value: string;
+    OptionType: {
+      name: string;
+    };
+  }[];
 }
 
 export interface SelectedProduct extends SelectedPriceOption {
@@ -43,7 +42,6 @@ export interface SelectedProduct extends SelectedPriceOption {
   name: string;
   images: string[];
   price: number;
-
   quantity: number | null;
   description: string;
   categories: {
@@ -56,23 +54,21 @@ export interface SelectedProduct extends SelectedPriceOption {
 }
 
 const ProductDetail = ({ product }: { product: SelectedProduct }) => {
-  const hasVariations =
-    product.ProductVariation && product.ProductVariation.length > 0;
+  const hasVariations = product.ProductVariation?.length > 0;
   const [selectedVariation, setSelectedVariation] = useState<
     SelectedProductVariation | undefined
   >(hasVariations ? product.ProductVariation[0] : undefined);
 
-  const handleVariationChange = (optionValue: string) => {
-    if (hasVariations) {
-      const variation = product.ProductVariation.find(
-        (v) => v.optionValue === optionValue
-      );
-      setSelectedVariation(variation || product.ProductVariation[0]);
-    }
+  const handleVariationChange = (variationId: string) => {
+    const variation = product.ProductVariation.find(
+      (v) => v.id === variationId
+    );
+    setSelectedVariation(variation);
   };
-  const isProductInStock = (product.quantity ?? 0) > 0 ? true : null;
+
+  const isProductInStock = product.quantity === null || product.quantity > 0;
   const isVariationInStock = selectedVariation
-    ? (selectedVariation.quantity ?? 0) > 0
+    ? selectedVariation.quantity === null || selectedVariation.quantity > 0
     : null;
 
   const displayPrice = getDisplayPriceSelectedProduct(
@@ -90,11 +86,7 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
     productOrVariation: SelectedProduct | SelectedProductVariation
   ): boolean => {
     const { salePrice, price, saleStartDate, saleEndDate } = productOrVariation;
-
-    if (salePrice === null || salePrice >= (price ?? 0)) {
-      return false;
-    }
-
+    if (salePrice === null || salePrice >= (price ?? 0)) return false;
     return isSaleActive(saleStartDate, saleEndDate);
   };
 
@@ -103,12 +95,11 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
       <Breadcrumbs categories={product.categories} productName={product.name} />
       <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
         <div className="md:w-1/2">
-          {/* you can disable or enable product image zoom by commenting or uncommenting the component */}
           <div className="hidden md:block">
             <ImageSliderWithZoom
               images={
-                selectedVariation?.images && selectedVariation.images.length > 0
-                  ? selectedVariation.images
+                (selectedVariation?.images?.length ?? 0) > 0
+                  ? selectedVariation!.images
                   : product.images
               }
             />
@@ -116,8 +107,8 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
           <div className="md:hidden">
             <ImageSlider
               images={
-                selectedVariation?.images && selectedVariation.images.length > 0
-                  ? selectedVariation.images
+                (selectedVariation?.images?.length ?? 0) > 0
+                  ? selectedVariation!.images
                   : product.images
               }
             />
@@ -155,12 +146,11 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
                 </p>
               </>
             )}
-
-            {isProductInStock !== null && (
+            {!hasVariations && (
               <div
                 className={`flex items-center ${
                   isProductInStock ? "text-green-600" : "text-red-600"
-                } text-sm font-medium mb-6`}
+                } text-sm font-medium my-6`}
               >
                 {isProductInStock ? (
                   <>
@@ -176,54 +166,60 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
               </div>
             )}
 
+            {selectedVariation && (
+              <div
+                className={`flex items-center ${
+                  isVariationInStock ? "text-green-600" : "text-red-600"
+                } text-sm font-medium my-6`}
+              >
+                {isVariationInStock ? (
+                  <>
+                    <Check className="w-5 h-5 mr-2" />
+                    <span>Tuotetta on varastossa</span>
+                  </>
+                ) : (
+                  <>
+                    <X className="w-5 h-5 mr-2" />
+                    <span>Tuote on loppu</span>
+                  </>
+                )}
+              </div>
+            )}
+
             {hasVariations && (
               <div className="mb-6">
-                <h3 className="font-semibold my-4">Kuvaus:</h3>
-                <p className="text-base text-gray-700 mb-4">
-                  {selectedVariation?.description}
-                </p>
+                {selectedVariation?.description && (
+                  <>
+                    <h3 className="font-semibold my-4">Kuvaus:</h3>
+                    <p className="text-base text-gray-700 mb-4">
+                      {selectedVariation.description}
+                    </p>
+                  </>
+                )}
+
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {selectedVariation?.optionName}:
+                  {selectedVariation?.VariantOption[0]?.OptionType.name}:
                 </label>
 
                 <Select
                   onValueChange={handleVariationChange}
-                  defaultValue={selectedVariation?.optionValue}
+                  value={selectedVariation?.id}
                 >
                   <SelectTrigger className="w-full">
-                    {selectedVariation?.optionValue}
+                    {selectedVariation?.VariantOption.map(
+                      (opt) => opt.value
+                    ).join(" / ")}
                   </SelectTrigger>
                   <SelectContent>
                     {product.ProductVariation.map((variation) => (
-                      <SelectItem
-                        key={variation.id}
-                        value={variation.optionValue}
-                      >
-                        {variation.optionValue}
+                      <SelectItem key={variation.id} value={variation.id}>
+                        {variation.VariantOption.map((opt) => opt.value).join(
+                          " / "
+                        )}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-
-                {isVariationInStock !== null && (
-                  <div
-                    className={`flex items-center ${
-                      isVariationInStock ? "text-green-600" : "text-red-600"
-                    } text-sm font-medium mt-2`}
-                  >
-                    {isVariationInStock ? (
-                      <>
-                        <Check className="w-5 h-5 mr-2" />
-                        <span>Tuotetta on varastossa</span>
-                      </>
-                    ) : (
-                      <>
-                        <X className="w-5 h-5 mr-2" />
-                        <span>Tuote on loppu</span>
-                      </>
-                    )}
-                  </div>
-                )}
               </div>
             )}
           </div>

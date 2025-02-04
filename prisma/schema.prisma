@@ -22,13 +22,13 @@ model Store {
   banners              Banner[]
   Category             Category[]
   LastOrderNumber      LastOrderNumber?
+  OptionType           OptionType[]
   Order                Order[]
   products             Product[]
   ProductVariation     ProductVariation[]
   ShipitShippingMethod ShipitShippingMethod[]
   ShipmentMethods      ShipmentMethods[]
   storeSettings        StoreSettings?
-  VariationOption      VariationOption[]
 }
 
 model StoreSettings {
@@ -74,6 +74,8 @@ model Product {
   Store            Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
   ProductVariation ProductVariation[]
   categories       Category[]         @relation("CategoryToProduct")
+
+  @@index([storeId])
 }
 
 model Banner {
@@ -96,6 +98,8 @@ model Category {
   children  Category[] @relation("CategoryToSubcategories")
   store     Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
   products  Product[]  @relation("CategoryToProduct")
+
+  @@index([storeId])
 }
 
 model Order {
@@ -117,6 +121,8 @@ model Order {
   Store                  Store?                @relation(fields: [storeId], references: [id])
   OrderLineItems         OrderLineItems[]
   OrderShipmentMethod    OrderShipmentMethod?
+
+  @@index([storeId])
 }
 
 model ShipmentMethods {
@@ -129,6 +135,8 @@ model ShipmentMethods {
   active                     Boolean @default(true)
   price                      Float
   Store                      Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
 }
 
 model ShipitShippingMethod {
@@ -157,37 +165,29 @@ model ShipitShippingMethod {
   onlyParchelLocker  Boolean      @default(true)
   Order              Order[]
   Store              Store?       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
 }
 
 model ProductVariation {
-  id            String    @id
+  id            String          @id
   sku           String?
   price         Int?
   images        String[]
   productId     String
-  createdAt     DateTime  @default(now())
-  optionName    String
-  optionValue   String
+  createdAt     DateTime        @default(now())
   storeId       String
   saleEndDate   DateTime?
   salePercent   String?
   salePrice     Int?
   saleStartDate DateTime?
-  showOnStore   Boolean   @default(true)
+  showOnStore   Boolean         @default(true)
   quantity      Int?
   description   String?
-  soldQuantity  Int       @default(0)
-  Product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  Store         Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
-}
-
-model VariationOption {
-  id        String   @id
-  name      String
-  values    String[]
-  storeId   String
-  createdAt DateTime @default(now())
-  Store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  soldQuantity  Int             @default(0)
+  Product       Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  Store         Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  VariantOption VariantOption[]
 }
 
 model OrderLineItems {
@@ -229,10 +229,29 @@ model OrderShipmentMethod {
   name        String
   description String?
   logo        String?
-  vatRate     Float?
   price       Float
   orderId     String  @unique
+  vatRate     Float?
   Order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model OptionType {
+  id            String          @id
+  name          String
+  values        String[]
+  storeId       String
+  createdAt     DateTime        @default(now())
+  Store         Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  VariantOption VariantOption[]
+}
+
+model VariantOption {
+  id               String           @id
+  variantId        String
+  optionTypeId     String
+  value            String
+  OptionType       OptionType       @relation(fields: [optionTypeId], references: [id], onDelete: Cascade)
+  ProductVariation ProductVariation @relation(fields: [variantId], references: [id], onDelete: Cascade)
 }
 
 enum OrderStatus {

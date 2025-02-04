@@ -232,6 +232,13 @@ async function confirmLineItems(
           });
         }
       }
+      const variationOptionName = variation?.VariantOption.map(
+        (o) => o.OptionType.name
+      ).join(", ");
+
+      const variationOptionValue = variation?.VariantOption.map(
+        (o) => o.value
+      ).join(", ");
 
       return {
         price_data: {
@@ -239,7 +246,7 @@ async function confirmLineItems(
           product_data: {
             name: product.name,
             description: variation
-              ? `${product.name} - ${variation.optionName} (${variation.optionValue})`
+              ? `${product.name} - ${variationOptionName} (${variationOptionValue})`
               : product.name,
             images: product.images || [],
             metadata: {

@@ -30,12 +30,20 @@ const getData = async (productId: string) => {
           price: true,
           description: true,
           quantity: true,
-          optionName: true,
-          optionValue: true,
           salePercent: true,
           salePrice: true,
           saleStartDate: true,
           saleEndDate: true,
+          VariantOption: {
+            select: {
+              value: true, // Add this line
+              OptionType: {
+                select: {
+                  name: true, // Ensure name is selected
+                },
+              },
+            },
+          },
         },
       },
     },
