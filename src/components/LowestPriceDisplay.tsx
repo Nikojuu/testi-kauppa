@@ -13,7 +13,7 @@ export const LowestPriceDisplay: React.FC<PriceDisplayProps> = ({
     : null;
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-start md:items-end gap-1">
       <div className="flex items-center gap-2">
         {priceInfo.isOnSale && priceInfo.salePercent ? (
           <span className="bg-red-600 text-white text-xs font-medium px-2 py-0.5 ">
@@ -31,7 +31,7 @@ export const LowestPriceDisplay: React.FC<PriceDisplayProps> = ({
         </span>
       </div>
       <span
-        className={`text-lg font-bold ${priceInfo.isOnSale ? "text-red-600" : ""}`}
+        className={`text-sm md:text-xl font-bold ${priceInfo.isOnSale ? "text-red-600" : ""}`}
       >
         €
         {priceInfo.isOnSale

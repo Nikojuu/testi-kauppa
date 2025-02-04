@@ -29,7 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
       : "text-red-600"; // Products not available
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col  ">
       <Link
         href={`/product/${item.slug}`}
         className="block rounded-lg hover:shadow-sm hover:shadow-primary transition-shadow duration-300 h-full"
@@ -41,13 +41,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
               alt={`${item.name}`}
               fill
               sizes="(min-width: 1040px) 504px, (min-width: 960px) calc(50vw - 128px), (min-width: 780px) calc(24.38vw + 250px), (min-width: 480px) calc(100vw - 34px), calc(15vw + 457px)"
-              className="object-cover object-center w-full h-full rounded-lg hover:scale-105 transition-transform duration-300"
+              className="object-cover  object-center w-full h-full rounded-lg md:hover:scale-105 md:transition-transform md:duration-300"
             />
           </div>
         </div>
         <div className="flex-grow flex flex-col p-3">
-          <div className="flex justify-between items-start mb-2">
-            <h1 className="font-secondary font-bold text-xl flex-grow truncate">
+          <div className="flex justify-between items-start mb-2 flex-col md:flex-row">
+            <h1 className="font-secondary font-bold text-sm md:text-xl flex-grow truncate">
               {item.name}
             </h1>
             <LowestPriceDisplay priceInfo={priceInfo} />

@@ -55,7 +55,7 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
           height={600}
           src={images[mainImageIndex]}
           alt="Product image"
-          sizes="(max-width: 768px) 100vw, 700px"
+          sizes="(max-width: 768px) 150vw, 1000px"
           className="object-cover w-[600px] h-[600px]"
         />
 
@@ -81,7 +81,7 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
                 src={images[mainImageIndex]}
                 alt="Zoomed image"
                 layout="fill"
-                sizes="1200px"
+                sizes="1500px"
                 className="object-cover"
               />
             </div>

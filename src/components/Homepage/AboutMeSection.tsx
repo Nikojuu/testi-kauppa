@@ -15,39 +15,67 @@ const AboutMeSection = () => {
   return (
     <section
       ref={ref}
-      className="mx-auto mb-32 mt-32 flex w-full container max-w-screen-2xl flex-col px-4 sm:px-8 lg:flex-row"
+      className="mx-auto mb-32 mt-32 flex w-full container max-w-screen-2xl flex-col px-4 sm:px-8 lg:flex-row overflow-x-hidden"
     >
+      {/* Mobile-only static image */}
+      <div className="relative aspect-square w-full h-96 lg:hidden">
+        <Image
+          fill
+          alt="Korukoru design process"
+          sizes="100vw"
+          src="/korvakorutesti.jpg"
+          className="object-cover rounded-lg shadow-2xl -rotate-2"
+          priority
+        />
+      </div>
+
+      {/* Desktop animated image */}
       <motion.div
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: isInView ? 0 : -100, opacity: isInView ? 1 : 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative aspect-square w-full lg:w-1/2 h-96 lg:h-auto lg:min-h-[600px]"
+        className="relative hidden lg:block lg:w-1/2 lg:min-h-[600px]"
       >
         <Image
           fill
           alt="Korukoru design process"
-          sizes="(min-width: 1620px) 752px, (min-width: 1060px) calc(-9.81vw + 909px), (min-width: 1020px) calc(-730vw + 8434px), (min-width: 620px) calc(91.58vw + 52px), 552px"
+          sizes="50vw"
           src="/korvakorutesti.jpg"
-          className="object-cover h-auto rounded-lg shadow-2xl transform -rotate-2 "
-          priority
+          className="object-cover rounded-lg shadow-2xl -rotate-2"
         />
       </motion.div>
 
-      <motion.div
-        initial={{ x: 100, opacity: 0 }}
-        animate={{ x: isInView ? 0 : 100, opacity: isInView ? 1 : 0 }}
-        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-        className="z-10 flex-1 bg-pink-50/95 backdrop-blur-sm p-8 text-black lg:-ml-24 lg:mt-24 rounded-lg shadow-xl border border-white/20"
-      >
-        <h3 className="mb-8 font-primary text-5xl">Huolellinen suunnittelu</h3>
-        <p className="text-lg leading-relaxed text-gray-800 mb-8">
-          Jokainen tuotteeni lähtee liikkeelle huolellisesta
-          suunnitteluprosessista. Luon korkealaatuisia ja ainutlaatuisia
-          tuotteita, jotka erottuvat joukosta. Suunnittelutyössäni yhdistyvät
-          käsityötaidot, luovuus ja huolellinen harkinta. Haluan varmistaa, että
-          jokainen yksityiskohta on harkittu ja että koruni täyttävät
-          korkeimmatkin odotukset niin ulkonäön kuin käytettävyyden suhteen.
-        </p>
+      {/* Content wrapper */}
+      <div className="z-10 flex-1 bg-pink-50/95 backdrop-blur-sm p-8 text-black lg:-ml-24 lg:mt-24 rounded-lg shadow-xl border border-white/20">
+        {/* Mobile-only static content */}
+        <div className="lg:hidden">
+          <h3 className="mb-8 font-primary text-5xl">
+            Huolellinen suunnittelu
+          </h3>
+          <p className="text-sm leading-relaxed text-gray-800 mb-8">
+            Jokainen tuotteeni lähtee liikkeelle huolellisesta
+            suunnitteluprosessista. Luon korkealaatuisia ja ainutlaatuisia
+            tuotteita, jotka erottuvat joukosta.
+          </p>
+        </div>
+
+        {/* Desktop animated content */}
+        <motion.div
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: isInView ? 0 : 100, opacity: isInView ? 1 : 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="hidden lg:block"
+        >
+          <h3 className="mb-8 font-primary text-5xl">
+            Huolellinen suunnittelu
+          </h3>
+          <p className="text-lg leading-relaxed text-gray-800 mb-8">
+            Jokainen tuotteeni lähtee liikkeelle huolellisesta
+            suunnitteluprosessista. Luon korkealaatuisia ja ainutlaatuisia
+            tuotteita, jotka erottuvat joukosta. Suunnittelutyössäni yhdistyvät
+            käsityötaidot, luovuus ja huolellinen harkinta.
+          </p>
+        </motion.div>
 
         <Link href="/about">
           <Button variant="gooeyLeft">
@@ -55,7 +83,7 @@ const AboutMeSection = () => {
             <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </Link>
-      </motion.div>
+      </div>
     </section>
   );
 };

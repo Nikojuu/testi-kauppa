@@ -32,7 +32,7 @@ export default function StickyNavbar({
 
   return (
     <div
-      className={`fixed top-0 flex left-0 right-0 z-50 transition-colors duration-300 bg-white text-black shadow-md"
+      className={`fixed top-0 flex left-0 right-0 z-50 transition-colors  duration-300 bg-white text-black shadow-md"
       }`}
     >
       <nav

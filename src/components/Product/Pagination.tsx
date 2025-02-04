@@ -36,7 +36,7 @@ export function PaginationComponent({
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
         pageLinks.push(
-          <PaginationItem key={i}>
+          <PaginationItem key={i} className="hidden md:list-item">
             <PaginationLink
               href={createPageURL(i)}
               isActive={currentPage === i}
@@ -49,12 +49,12 @@ export function PaginationComponent({
     } else {
       if (showEllipsisStart) {
         pageLinks.push(
-          <PaginationItem key={1}>
+          <PaginationItem key={1} className="hidden md:list-item">
             <PaginationLink href={createPageURL(1)}>1</PaginationLink>
           </PaginationItem>
         );
         pageLinks.push(
-          <PaginationItem key="ellipsis-start">
+          <PaginationItem key="ellipsis-start" className="hidden md:list-item">
             <PaginationEllipsis />
           </PaginationItem>
         );
@@ -68,7 +68,7 @@ export function PaginationComponent({
 
       for (let i = startPage; i <= endPage; i++) {
         pageLinks.push(
-          <PaginationItem key={i}>
+          <PaginationItem key={i} className="hidden md:list-item">
             <PaginationLink
               href={createPageURL(i)}
               isActive={currentPage === i}
@@ -81,12 +81,12 @@ export function PaginationComponent({
 
       if (showEllipsisEnd) {
         pageLinks.push(
-          <PaginationItem key="ellipsis-end">
+          <PaginationItem key="ellipsis-end" className="hidden md:list-item">
             <PaginationEllipsis />
           </PaginationItem>
         );
         pageLinks.push(
-          <PaginationItem key={totalPages}>
+          <PaginationItem key={totalPages} className="hidden md:list-item">
             <PaginationLink href={createPageURL(totalPages)}>
               {totalPages}
             </PaginationLink>

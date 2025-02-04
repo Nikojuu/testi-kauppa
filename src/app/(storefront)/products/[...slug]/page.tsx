@@ -431,7 +431,7 @@ const ProductsPage = async ({
             ))}
           </div>
           {totalPages > 1 && (
-            <div className="my-8">
+            <div className="my-8 ">
               <PaginationComponent
                 totalPages={totalPages}
                 currentPage={currentPage}

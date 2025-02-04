@@ -51,7 +51,7 @@ export function ImageSlider({ images }: iAppProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {images.map((image, index) => (
           <div
             className={cn(
@@ -66,10 +66,10 @@ export function ImageSlider({ images }: iAppProps) {
             <Image
               src={image}
               alt="Product Image"
-              width={100}
-              height={100}
+              width={200}
+              height={200}
               sizes="130px"
-              className="object-cover w-[100px] h-[100px]"
+              className="object-cover "
             />
           </div>
         ))}
