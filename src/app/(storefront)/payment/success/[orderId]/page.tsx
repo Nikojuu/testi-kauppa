@@ -15,7 +15,14 @@ import Link from "next/link";
 import { ClearCart } from "@/components/Cart/ClearCart";
 import Image from "next/image";
 import { Metadata } from "next";
-import { ItemType, OrderCustomerData } from "@prisma/client";
+
+type OrderItem = {
+  options: { name: string; value: string }[];
+  name: string | null;
+  images: string[];
+  quantity: number;
+  unitPrice: number;
+} | null;
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Kiitos tilauksestasi!",
@@ -72,82 +79,70 @@ export default async function PaymentSuccessPage({
   const shipmentMethod = order.OrderShipmentMethod;
   const orderItems = order.OrderLineItems;
 
-  let items: Array<{
-    optionName: string | null;
-    optionValue: string | null;
-    name: string | null;
-    images: string[];
-    quantity: number;
-    unitPrice: number;
-  } | null>;
+  let items: OrderItem[];
   try {
     items = await Promise.all(
-      orderItems.map(
-        async (item: {
-          id: string;
-          totalAmount: number;
-          orderId: string;
-          itemType: ItemType | null;
-          quantity: number;
-          price: number;
-          productCode: string;
-        }) => {
-          const type = item.itemType;
-          let product = null;
+      orderItems.map(async (item) => {
+        const type = item.itemType;
+        let product = null;
 
-          if (type === "VARIATION") {
-            product = await prisma.productVariation.findUnique({
-              where: { id: item.productCode, storeId: process.env.TENANT_ID },
-              select: {
-                optionName: true,
-                optionValue: true,
-                Product: {
-                  // Nested Product object in the case of variation
-                  select: {
-                    name: true,
-                    images: true, // Access the images from the Product object
+        if (type === "VARIATION") {
+          product = await prisma.productVariation.findUnique({
+            where: { id: item.productCode, storeId: process.env.TENANT_ID },
+            select: {
+              VariantOption: {
+                select: {
+                  value: true,
+                  OptionType: {
+                    select: {
+                      name: true,
+                    },
                   },
                 },
               },
-            });
-          } else if (type === "PRODUCT") {
-            product = await prisma.product.findUnique({
-              where: { id: item.productCode, storeId: process.env.TENANT_ID },
-              select: {
-                name: true,
-                images: true, // Directly access images for regular products
+              Product: {
+                select: {
+                  name: true,
+                },
               },
-            });
-          } else if (type === "SHIPPING") {
-            return null;
-          }
+              images: true,
+            },
+          });
 
-          // Now check if product has Product property (for variations)
-          const images =
-            type === "VARIATION"
-              ? (product as { Product: { images: string[] } })?.Product
-                  ?.images || []
-              : (product as { images: string[] })?.images || [];
+          if (!product) return null;
 
           return {
-            optionName:
-              type === "VARIATION"
-                ? (product as { optionName: string | null })?.optionName
-                : null,
-            optionValue:
-              type === "VARIATION"
-                ? (product as { optionValue: string | null })?.optionValue
-                : null,
-            name:
-              type === "VARIATION"
-                ? (product as { Product: { name: string } })?.Product?.name
-                : (product as { name: string })?.name, // Handle name from Product if variation
-            images, // Use the correct image property
+            options: product.VariantOption.map((vo) => ({
+              name: vo.OptionType.name,
+              value: vo.value,
+            })),
+            name: product.Product.name,
+            images: product.images,
             quantity: item.quantity,
             unitPrice: item.price / 100,
           };
+        } else if (type === "PRODUCT") {
+          product = await prisma.product.findUnique({
+            where: { id: item.productCode, storeId: process.env.TENANT_ID },
+            select: {
+              name: true,
+              images: true,
+            },
+          });
+
+          return {
+            options: [],
+            name: product?.name ?? null,
+            images: product?.images || [],
+            quantity: item.quantity,
+            unitPrice: item.price / 100,
+          };
+        } else if (type === "SHIPPING") {
+          return null;
         }
-      )
+
+        return null;
+      })
     );
   } catch (error) {
     console.error("Error fetching product data:", error);
@@ -202,17 +197,14 @@ export default async function PaymentSuccessPage({
                     </div>
                     <div className="flex-grow">
                       <p className="font-medium">{item.name}</p>
-                      {item.optionName && (
-                        <p className="text-sm text-gray-500">
-                          {item.optionName}: {item.optionValue}
+                      {item.options?.map((opt, idx) => (
+                        <p key={idx} className="text-sm text-gray-500">
+                          {opt.name}: {opt.value}
                         </p>
-                      )}
+                      ))}
                       <p className="text-sm">
                         {item.quantity} x {item.unitPrice.toFixed(2)} €
                       </p>
-                    </div>
-                    <div className="flex-shrink-0 font-medium">
-                      {(item.unitPrice * item.quantity).toFixed(2)} €
                     </div>
                   </div>
                 );
