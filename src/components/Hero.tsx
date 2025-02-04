@@ -18,7 +18,7 @@ export function Hero() {
         />
       </div>
       <div className="absolute inset-0 flex flex-col items-center md:items-start justify-center md:justify-start pt-32 md:pt-64 text-center md:text-left px-4 md:pl-44">
-        {/* Responsive alignment and padding */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -26,12 +26,11 @@ export function Hero() {
           className="relative max-w-4xl"
         >
           <div className="flex flex-col items-center md:items-start justify-center space-y-4 p-4 backdrop:blur-[2px] rounded-full ">
-            {/* Responsive item alignment */}
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-white text-5xl sm:text-9xl tracking-tight"
+              className="text-white text-5xl sm:text-9xl tracking-tight drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
             >
               Pupun korvat
             </motion.h1>
