@@ -7,6 +7,7 @@ import { Product } from "@/app/utils/types";
 import { getPriceInfo } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 import { LowestPriceDisplay } from "./LowestPriceDisplay";
+import ImageKitImage from "./ImageKitImage";
 
 interface ProductCardProps {
   item: Product;
@@ -36,12 +37,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
       >
         <div className="w-full mx-auto border border-primary">
           <div className="relative h-[430px] overflow-hidden">
-            <Image
+            <ImageKitImage
               src={item.images[0]} // Use only the first image
               alt={`${item.name}`}
               fill
+              quality={90}
               sizes="(min-width: 1040px) 504px, (min-width: 960px) calc(50vw - 128px), (min-width: 780px) calc(24.38vw + 250px), (min-width: 480px) calc(100vw - 34px), calc(15vw + 457px)"
-              className="object-cover  object-center w-full h-full rounded-lg md:hover:scale-105 md:transition-transform md:duration-300"
+              className="object-cover object-center w-full h-full rounded-lg md:hover:scale-105 md:transition-transform md:duration-300"
+              transformations="tr=w-500,h-500" // Add appropriate transformations
+              placeholder="blur"
+              blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(item.images[0])}?tr=w-10,h-10,bl-6,q-20`}
             />
           </div>
         </div>

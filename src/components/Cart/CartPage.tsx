@@ -13,6 +13,7 @@ import { CheckoutButton } from "./CheckoutButton";
 import { createStripeCheckoutSession } from "@/lib/actions/stripeActions";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import ImageKitImage from "../ImageKitImage";
 
 export type ShipmentMethods = {
   id: string;
@@ -98,10 +99,10 @@ const CartPage = () => {
   }, []);
 
   return (
-    <section className="mt-48">
+    <section className="md:mt-48 mt-36">
       <Subtitle subtitle="Ostoskori" />
       <div className="mx-auto max-w-screen-2xl">
-        <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+        <div className="md:mt-12 mt-0 p-8 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <div
             className={cn("lg:col-span-7", {
               "rounded-lg border-2 border-dashed border-zinc-200 p-12":
@@ -152,11 +153,14 @@ const CartPage = () => {
                   <li className="flex py-6 sm:py-10" key={i}>
                     <div className="flex-shrink-0">
                       <div className="relative h-24 w-24">
-                        <Image
-                          alt={product.name}
-                          fill
+                        <ImageKitImage
                           src={variation?.images[0] || product.images[0]}
-                          className="h-full w-full rounded-md object-cover object-center sm:h-48 sm:w-48"
+                          alt={product.name}
+                          width={96}
+                          height={96}
+                          className="h-full w-full rounded-md object-cover object-center "
+                          transformations="w-96,h-96"
+                          quality={90}
                         />
                       </div>
                     </div>

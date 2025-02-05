@@ -6,6 +6,7 @@ import Image from "next/image";
 import { getDisplayPriceSelectedProduct } from "@/lib/utils";
 import { SelectedProduct } from "../Product/ProductDetail";
 import { Button } from "@/components/ui/button";
+import ImageKitImage from "../ImageKitImage";
 
 type CartItemProps = {
   product: SelectedProduct;
@@ -50,11 +51,14 @@ export default function CartItem({ product, variation }: CartItemProps) {
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center space-x-4">
           <div className="relative aspect-square h-16 w-16 min-w-fit overflow-hidden rounded">
-            <Image
+            <ImageKitImage
               src={variation?.images?.[0] ?? product.images[0]}
               alt={product.name}
-              fill
+              width={64}
+              height={64}
               className="absolute object-cover"
+              transformations="w-64,h-64"
+              quality={90}
             />
           </div>
           <div className="flex flex-col self-start">

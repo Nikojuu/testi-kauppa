@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import ImageKitImage from "./ImageKitImage";
 
 interface iAppProps {
   images: string[];
@@ -32,13 +33,17 @@ export function ImageSlider({ images }: iAppProps) {
   return (
     <div className="grid gap-6 md:gap-3 items-start">
       <div className="relative overflow-hidden rounded-lg">
-        <Image
-          width={600}
-          height={600}
+        <ImageKitImage
           src={images[mainImageIndex]}
           alt="Product image"
+          width={600}
+          height={600}
           sizes="(max-width: 768px) 100vw, 700px"
           className="object-cover w-[600px] h-[600px]"
+          transformations="tr=w-600,h-600"
+          quality={90}
+          placeholder="blur"
+          blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(images[mainImageIndex])}?tr=w-10,h-10,bl-6,q-20`}
         />
 
         <div className="absolute inset-0 flex items-center justify-between px-4">
@@ -63,13 +68,16 @@ export function ImageSlider({ images }: iAppProps) {
             key={index}
             onClick={() => handleImageClick(index)}
           >
-            <Image
+            <ImageKitImage
               src={image}
               alt="Product Image"
               width={200}
               height={200}
-              sizes="130px"
-              className="object-cover "
+              sizes="200px"
+              className="object-cover"
+              transformations="tr=w-200,h-200,f-auto,q-80"
+              placeholder="blur"
+              blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(image)}?tr=w-10,h-10,bl-6,q-20`}
             />
           </div>
         ))}

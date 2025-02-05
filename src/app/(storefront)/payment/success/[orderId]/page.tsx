@@ -15,6 +15,7 @@ import Link from "next/link";
 import { ClearCart } from "@/components/Cart/ClearCart";
 import Image from "next/image";
 import { Metadata } from "next";
+import ImageKitImage from "@/components/ImageKitImage";
 
 type OrderItem = {
   options: { name: string; value: string }[];
@@ -191,13 +192,15 @@ export default async function PaymentSuccessPage({
                 return (
                   <div key={index} className="flex items-center space-x-4">
                     <div className="flex-shrink-0 w-16 h-16 relative">
-                      <Image
+                      <ImageKitImage
                         src={
                           (item.images && item.images[0]) || "/placeholder.png"
                         }
                         alt={item.name || "Product image"}
-                        fill
-                        className="rounded-md object-cover object-center"
+                        width={64}
+                        height={64}
+                        className="h-full w-full rounded-md object-cover object-center "
+                        transformations="w-64,h-64"
                       />
                     </div>
                     <div className="flex-grow">

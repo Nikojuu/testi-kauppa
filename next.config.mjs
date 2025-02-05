@@ -25,6 +25,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "ik.imagekit.io",
+      },
     ],
   },
 };

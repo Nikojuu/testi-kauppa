@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import ImageKitImage from "./ImageKitImage";
 
 export function ImageSliderWithZoom({ images }: { images: string[] }) {
   const [mainImageIndex, setMainImageIndex] = useState(0);
@@ -50,13 +51,17 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove}
       >
-        <Image
-          width={600}
-          height={600}
+        <ImageKitImage
           src={images[mainImageIndex]}
           alt="Product image"
+          width={600}
+          height={600}
           sizes="(max-width: 768px) 150vw, 1000px"
           className="object-cover w-[600px] h-[600px]"
+          transformations="w-600,h-600"
+          quality={90}
+          placeholder="blur"
+          blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(images[mainImageIndex])}?tr=w-10,h-10,bl-6,q-20`}
         />
 
         {zoomActive && (
@@ -77,12 +82,14 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
                 height: 1200,
               }}
             >
-              <Image
+              <ImageKitImage
                 src={images[mainImageIndex]}
                 alt="Zoomed image"
-                layout="fill"
+                fill
                 sizes="1500px"
                 className="object-cover"
+                transformations="tr=w-1200,h-1200"
+                quality={90}
               />
             </div>
           </div>
@@ -110,13 +117,16 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
             key={index}
             onClick={() => handleImageClick(index)}
           >
-            <Image
+            <ImageKitImage
               src={image}
               alt="Product Image"
               width={100}
               height={100}
               sizes="130px"
               className="object-cover w-[100px] h-[100px]"
+              transformations="tr=w-100,h-100,f-auto,q-80"
+              placeholder="blur"
+              blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(image)}?tr=w-10,h-10,bl-6,q-20`}
             />
           </div>
         ))}
