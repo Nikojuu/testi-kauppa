@@ -23,7 +23,7 @@ const photos = [
 const PhotoGallery = () => {
   const [index, setIndex] = useState(-1);
   return (
-    <div className="mx-auto mt-32  mb-12 w-[80vw]">
+    <div className="mx-auto   mb-12 ">
       <PhotoAlbum
         photos={photos}
         layout="masonry"

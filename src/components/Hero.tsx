@@ -10,7 +10,7 @@ export function Hero() {
       <div>
         <Image
           alt="Hero Image"
-          src="/kansikuva.jpg"
+          src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4imUy9z6a7Tl2NA59idJ6mPQpotYxuWSZErnMa"
           fill
           sizes="(max-width: 640px) 200vw, 100vw"
           className="object-cover"

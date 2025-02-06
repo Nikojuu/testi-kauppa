@@ -60,8 +60,6 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
           className="object-cover w-[600px] h-[600px]"
           transformations="w-600,h-600"
           quality={90}
-          placeholder="blur"
-          blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(images[mainImageIndex])}?tr=w-10,h-10,bl-6,q-20`}
         />
 
         {zoomActive && (
@@ -95,7 +93,7 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
           </div>
         )}
 
-        <div className="absolute inset-0 flex items-center justify-between px-4">
+        <div className="absolute inset-0 flex items-center justify-between px-4 ">
           <Button onClick={handlePreviousClick} variant="ghost" size="icon">
             <ChevronLeft className="w-6 h-6" />
           </Button>
@@ -124,9 +122,7 @@ export function ImageSliderWithZoom({ images }: { images: string[] }) {
               height={100}
               sizes="130px"
               className="object-cover w-[100px] h-[100px]"
-              transformations="tr=w-100,h-100,f-auto,q-80"
-              placeholder="blur"
-              blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(image)}?tr=w-10,h-10,bl-6,q-20`}
+              transformations="tr=w-100,h-100"
             />
           </div>
         ))}

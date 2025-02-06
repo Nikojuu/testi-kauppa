@@ -99,7 +99,7 @@ const CartPage = () => {
   }, []);
 
   return (
-    <section className="md:mt-48 mt-36">
+    <section className="mt-24 md:mt-48">
       <Subtitle subtitle="Ostoskori" />
       <div className="mx-auto max-w-screen-2xl">
         <div className="md:mt-12 mt-0 p-8 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">

@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 
 const GalleryPage = () => {
   return (
-    <div className="mt-48">
+    <div className="mt-24 md:mt-48 mx-auto max-w-screen-2xl px-4">
       <Subtitle subtitle="Galleria" />
       <PhotoGallery />
     </div>

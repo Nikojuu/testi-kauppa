@@ -18,6 +18,8 @@ const ImageKitImage = ({
   transformations,
   ...props
 }: ImageKitProps) => {
+  const BLUR_DATA_URL =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2U1ZTdlYiIvPgo8L3N2Zz4=";
   const params = new URLSearchParams();
   if (transformations) params.set("tr", transformations);
   if (quality) params.set("q", quality.toString());
@@ -31,6 +33,8 @@ const ImageKitImage = ({
       src={imageKitUrl}
       width={width}
       height={height}
+      placeholder="blur"
+      blurDataURL={BLUR_DATA_URL}
       {...props}
     />
   );

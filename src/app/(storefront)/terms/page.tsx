@@ -31,7 +31,7 @@ const getData = async () => {
 export default async function TermsPage() {
   const email = await getData();
   return (
-    <div className="mx-auto max-w-screen-2xl py-8 px-4 mt-48">
+    <div className="mx-auto max-w-screen-2xl py-8 px-4 mt-24 md:mt-48">
       <h1 className="text-3xl font-secondary font-bold mb-6">
         Maksu- ja toimitusehdot
       </h1>

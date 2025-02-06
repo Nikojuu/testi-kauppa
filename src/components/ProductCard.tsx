@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Product } from "@/app/utils/types";
 import { getPriceInfo } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
-import { LowestPriceDisplay } from "./LowestPriceDisplay";
+
 import ImageKitImage from "./ImageKitImage";
 
 interface ProductCardProps {
@@ -28,6 +28,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
     : isAvailable
       ? "text-green-600 " // Products available
       : "text-red-600"; // Products not available
+  const discountPercentage = priceInfo.salePercent
+    ? ((1 - parseFloat(priceInfo.salePercent)) * 100).toFixed(0)
+    : null;
 
   return (
     <div className="h-full flex flex-col  ">
@@ -35,33 +38,53 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         href={`/product/${item.slug}`}
         className="block rounded-lg hover:shadow-sm hover:shadow-primary transition-shadow duration-300 h-full"
       >
-        <div className="w-full mx-auto border border-primary">
-          <div className="relative h-[430px] overflow-hidden">
+        <div className="w-full mx-auto border border-primary ">
+          <div className="relative  overflow-hidden aspect-square ">
             <ImageKitImage
               src={item.images[0]} // Use only the first image
               alt={`${item.name}`}
               fill
               quality={90}
               sizes="(min-width: 1040px) 504px, (min-width: 960px) calc(50vw - 128px), (min-width: 780px) calc(24.38vw + 250px), (min-width: 480px) calc(100vw - 34px), calc(15vw + 457px)"
-              className="object-cover object-center w-full h-full rounded-lg md:hover:scale-105 md:transition-transform md:duration-300"
-              transformations="tr=w-500,h-500" // Add appropriate transformations
-              placeholder="blur"
-              blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(item.images[0])}?tr=w-10,h-10,bl-6,q-20`}
+              className="object-cover object-center w-full h-full rounded-lg md:hover:scale-105 md:transition-transform md:duration-300 "
+              transformations="w-500,h-500" // Add appropriate transformations
             />
+            <div className="absolute left-1 bottom-2  ">
+              {priceInfo.isOnSale && priceInfo.salePercent && (
+                <span className="bg-red-600 text-white text-sm md:text-lg font-semibold rounded-md px-2 py-2 ">
+                  -{discountPercentage}%
+                </span>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex-grow flex flex-col p-3">
-          <div className="flex justify-between items-start mb-2 flex-col md:flex-row">
-            <h1 className="font-secondary font-bold text-sm md:text-xl flex-grow truncate">
+        <div className="flex-grow flex flex-col md:py-3">
+          <div className="flex justify-between items-start mb-2 sm:flex-row flex-col">
+            <h1 className="font-secondary font-semibold text-xs md:text-base flex-grow line-clamp-1  ">
               {item.name}
             </h1>
-            <LowestPriceDisplay priceInfo={priceInfo} />
+            <div className="flex gap-1 items-center">
+              {priceInfo.isOnSale && (
+                <span className="text-gray-400 text-xs line-through">
+                  €{priceInfo.currentPrice.toFixed(2)}
+                </span>
+              )}
+
+              <span
+                className={`text-xs md:text-base font-bold ${priceInfo.isOnSale ? "text-red-600" : ""}`}
+              >
+                €
+                {priceInfo.isOnSale
+                  ? priceInfo.salePrice!.toFixed(2)
+                  : priceInfo.currentPrice.toFixed(2)}
+              </span>
+            </div>
           </div>
-          <p className={`text-sm self-end ${statusClass}`}>
-            {hasVariations ? "Tuotteella on eri vaihtoehtoja" : quantityInfo}
+          <p className={`text-xs self-end ${statusClass}`}>
+            {hasVariations ? "Useita vaihtoehtoja" : quantityInfo}
           </p>
         </div>
-        <Button variant="gooeyLeft" className="w-full">
+        <Button variant="gooeyLeft" className="w-full text-xs">
           Näytä lisätietoja
         </Button>
       </Link>

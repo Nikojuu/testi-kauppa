@@ -60,10 +60,10 @@ const Cart = () => {
 
   return (
     <Sheet>
-      <SheetTrigger className="group -m-2 flex items-center p-2">
+      <SheetTrigger className="group -m-2 flex items-center p-2 bg-white md:bg-transparent rounded-lg">
         <ShoppingCart
           aria-hidden="true"
-          className="h-6 w-6 flex-shrink-0  group-hover:text-primary"
+          className="h-6 w-6 flex-shrink-0   group-hover:text-primary"
         />
         <span className="ml-2 text-sm font-medium  group-hover:text-primary">
           {isMounted ? itemCount : 0}

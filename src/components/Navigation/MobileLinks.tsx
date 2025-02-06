@@ -131,9 +131,9 @@ const MobileLinks = memo(({ categories }: { categories: Category[] }) => {
   return (
     <div className="md:hidden">
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetTrigger asChild className="md:hidden">
+        <SheetTrigger asChild className="md:hidden m-2 rounded-lg bg-white">
           <Button variant="ghost" size="icon" aria-label="Open Menu">
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5 " />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-[300px] sm:w-[400px]">

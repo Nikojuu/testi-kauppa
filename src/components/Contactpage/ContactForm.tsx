@@ -78,7 +78,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="w-full mt-48">
+    <div className="w-full mt-24 md:mt-48">
       <Subtitle subtitle="Ollaan yhteydessä!" />
       <div className="max-w-md mx-auto container p-4 mt-10 ">
         <Form {...form}>

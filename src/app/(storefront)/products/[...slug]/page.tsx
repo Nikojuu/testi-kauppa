@@ -418,14 +418,14 @@ const ProductsPage = async ({
   const products: Product[] = data?.products as Product[];
 
   return (
-    <section className="mt-48 container mx-auto px-4">
+    <section className="mt-24 md:mt-48 container mx-auto px-4">
       <Subtitle subtitle={data?.name || "Tuotteet"} />
       {products && products.length > 0 ? (
         <>
           <div className="max-w-screen-xl mx-auto flex justify-end my-4">
             <SortOptions />
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto my-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto my-8">
             {products.map((item: Product) => (
               <ProductCard item={item} key={item.id} />
             ))}

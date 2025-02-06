@@ -153,7 +153,7 @@ const PaytrailCheckoutPage = () => {
   };
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 mt-48">
+    <div className="max-w-screen-2xl mx-auto px-4 mt-24 md:mt-48">
       <CheckoutSteps currentStep={step} />
 
       {step === 1 && (

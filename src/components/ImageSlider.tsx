@@ -42,8 +42,6 @@ export function ImageSlider({ images }: iAppProps) {
           className="object-cover w-[600px] h-[600px]"
           transformations="tr=w-600,h-600"
           quality={90}
-          placeholder="blur"
-          blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(images[mainImageIndex])}?tr=w-10,h-10,bl-6,q-20`}
         />
 
         <div className="absolute inset-0 flex items-center justify-between px-4">
@@ -76,8 +74,6 @@ export function ImageSlider({ images }: iAppProps) {
               sizes="200px"
               className="object-cover"
               transformations="tr=w-200,h-200,f-auto,q-80"
-              placeholder="blur"
-              blurDataURL={`https://ik.imagekit.io/putiikkipalvelu/${encodeURIComponent(image)}?tr=w-10,h-10,bl-6,q-20`}
             />
           </div>
         ))}

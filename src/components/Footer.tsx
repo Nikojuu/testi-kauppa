@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { Facebook, Instagram, Twitter } from "lucide-react";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -8,12 +9,12 @@ export function Footer() {
       <div className="mx-auto max-w-screen-2xl flex flex-col md:flex-row items-center justify-between py-8">
         <div className="mb-4 md:mb-0">
           <Link href="/" className="text-2xl font-bold">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iH4wT02R1thvKxZPkHXWjecL6T4mYdBpElN3w"
+            <Image
+              src="https://ik.imagekit.io/putiikkipalvelu/tr:w-80,h-80/https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
               alt="logo"
-              width="100"
-              height="20"
+              width="80"
+              sizes="80px"
+              height="80"
             />
           </Link>
         </div>
@@ -28,7 +29,7 @@ export function Footer() {
             Yhteystiedot
           </Link>
         </nav>
-        <div className="flex space-x-4">
+        {/* <div className="flex space-x-4">
           <Link
             href="https://facebook.com"
             className="text-muted-foreground hover:text-foreground"
@@ -50,11 +51,11 @@ export function Footer() {
             <Twitter className="h-5 w-5" />
             <span className="sr-only">Twitter</span>
           </Link>
-        </div>
+        </div> */}
       </div>
       <Separator />
       <div className="py-6 text-center text-sm">
-        © {new Date().getFullYear()} Your Company Name. All rights reserved.
+        © {new Date().getFullYear()} Pupun korvat.Kaikki oikeudet pidätetään.
       </div>
     </footer>
   );

@@ -65,7 +65,7 @@ const aboutPageBlock3 = {
 
 const AboutPage = () => {
   return (
-    <section className="md:mt-48 mt-32">
+    <section className="mt-24 md:mt-48">
       <Subtitle subtitle="Vähän minusta" />
       <div className="md:mt-32"></div>
       <AboutBlock blockInfo={aboutPageBlock1} />
