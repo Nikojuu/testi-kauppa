@@ -1,61 +1,57 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
-import { Facebook, Instagram, Twitter } from "lucide-react";
 import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="bg-background ">
-      <div className="mx-auto max-w-screen-2xl flex flex-col md:flex-row items-center justify-between py-8">
-        <div className="mb-4 md:mb-0">
-          <Link href="/" className="text-2xl font-bold">
-            <Image
-              src="https://ik.imagekit.io/putiikkipalvelu/tr:w-80,h-80/https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
-              alt="logo"
-              width="80"
-              sizes="80px"
-              height="80"
-            />
-          </Link>
+    <footer className="bg-background border-t">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row md:justify-between gap-8 py-12">
+          {/* Logo Section */}
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <Link href="/" className="flex-shrink-0">
+              <Image
+                src="https://ik.imagekit.io/putiikkipalvelu/tr:w-80,h-80/https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
+                alt="logo"
+                width={80}
+                height={80}
+                className="w-16 h-16 md:w-20 md:h-20"
+              />
+            </Link>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-col md:flex-row items-center md:items-start gap-6 flex-wrap justify-center">
+            <Link
+              href="/privacy-policy"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Tietosuojakäytäntö
+            </Link>
+            <Link
+              href="/terms"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Maksu- ja toimitusehdot
+            </Link>
+            <Link
+              href="/about"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Yhteystiedot
+            </Link>
+          </nav>
         </div>
-        <nav className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 mb-4 md:mb-0">
-          <Link href="/privacy-policy" className="text-sm hover:underline">
-            Tietosuojakäytäntö
-          </Link>
-          <Link href="/terms" className="text-sm hover:underline">
-            Maksu- ja toimitusehdot
-          </Link>
-          <Link href="/about" className="text-sm hover:underline">
-            Yhteystiedot
-          </Link>
-        </nav>
-        {/* <div className="flex space-x-4">
-          <Link
-            href="https://facebook.com"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Facebook className="h-5 w-5" />
-            <span className="sr-only">Facebook</span>
-          </Link>
-          <Link
-            href="https://instagram.com"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Instagram className="h-5 w-5" />
-            <span className="sr-only">Instagram</span>
-          </Link>
-          <Link
-            href="https://twitter.com"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Twitter className="h-5 w-5" />
-            <span className="sr-only">Twitter</span>
-          </Link>
-        </div> */}
-      </div>
-      <Separator />
-      <div className="py-6 text-center text-sm">
-        © {new Date().getFullYear()} Pupun korvat.Kaikki oikeudet pidätetään.
+
+        <Separator className="my-4" />
+
+        {/* Copyright */}
+        <div className="py-6 text-center md:text-left">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} Pupun korvat. Kaikki oikeudet
+            pidätetään.
+          </p>
+        </div>
       </div>
     </footer>
   );
