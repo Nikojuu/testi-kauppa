@@ -52,7 +52,7 @@ export function OrderConfirmationEmail({
           <Section style={styles.logoSection}>
             {/* Replace the placeholder with your company logo field in database */}
             <img
-              src="https://via.placeholder.com/150x50?text=Your+Logo"
+              src="https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
               alt="Your Company Logo"
               width={150}
               height={50}

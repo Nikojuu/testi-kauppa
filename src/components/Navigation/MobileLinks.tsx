@@ -139,7 +139,13 @@ const MobileLinks = memo(({ categories }: { categories: Category[] }) => {
         <SheetContent side="left" className="w-[300px] sm:w-[400px]">
           <nav className="flex flex-col gap-4 mt-4">
             <Link href="/" className="mx-auto" onClick={handleLinkClick}>
-              <Image src="/logo-dark.svg" alt="logo" width={100} height={20} />
+              <Image
+                src="https://ik.imagekit.io/putiikkipalvelu/tr:w-80,h-80/https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
+                alt="logo"
+                width={80}
+                height={80}
+                className="w-16 h-16 md:w-20 md:h-20"
+              />
             </Link>
             <div className="border-b border-gray-200 flex items-center">
               <Link

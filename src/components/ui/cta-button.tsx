@@ -16,10 +16,10 @@ export const GlassySquareButton = React.forwardRef<
   return (
     <button
       className={cn(
-        "relative overflow-hidden px-2 sm:px-6  py-1 sm:py-3 group bg-black bg-opacity-50 ml-4",
+        "relative overflow-hidden px-4 sm:px-6  py-3  group bg-black bg-opacity-50 ml-4",
         "text-white ",
         "border border-black border-opacity-20",
-        "shadow-[0_0_15px_rgba(155,55,200,0.3)]",
+        "shadow-[0_0_15px_rgba(255,255,255,0.5)]",
         "transition-all duration-300 ease-out",
         "hover:shadow-[0_0_25px_rgba(255,255,255,0.5)]",
         "hover:bg-opacity-80",
@@ -31,7 +31,7 @@ export const GlassySquareButton = React.forwardRef<
       ref={ref}
       {...props}
     >
-      <span className="relative z-10 flex items-center justify-center font-secondary  text-xs md:text-sm lg:text-xl font-semibold">
+      <span className="relative z-10 flex items-center justify-center font-secondary  text-sm lg:text-xl font-semibold">
         {children}
         <ArrowRight className="ml-4 h-5 w-5 transition-transform duration-300 ease-out group-hover:translate-x-1" />
       </span>
