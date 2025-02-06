@@ -93,10 +93,30 @@ export default async function Home() {
       <Subtitle subtitle="Upeita koruja" />
       <CategorySection />
       <Subtitle subtitle="Uusimmat tuotteet" />
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto container px-4">
-        {latestProducts.map((item) => (
-          <ProductCard item={item} key={item.id} />
-        ))}
+      <div className="container px-4 mx-auto max-w-screen-xl">
+        {/* On mobile: horizontal scroll, On md/lg: grid */}
+        <div className="md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-5">
+          {/* Horizontal scroll container for mobile */}
+          <div className="flex overflow-x-auto md:hidden space-x-4 pb-4 -mx-4 px-4 snap-x snap-mandatory">
+            {latestProducts.map((item) => (
+              <div
+                key={item.id}
+                className="flex-none w-[85%] snap-start first:pl-4 last:pr-4"
+              >
+                <ProductCard item={item} />
+              </div>
+            ))}
+          </div>
+
+          {/* Grid layout for tablet/desktop */}
+          <div className="hidden md:contents">
+            {latestProducts.map((item) => (
+              <div key={item.id}>
+                <ProductCard item={item} />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className=" py-8">
