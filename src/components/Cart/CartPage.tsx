@@ -306,6 +306,9 @@ const CartPage = () => {
             <div className="mt-6">
               <form action={handleStripeCheckout}>
                 <CheckoutButton />
+                <p className="text-red-500">
+                  Checkout is currently in test mode no payments are accepted
+                </p>
               </form>
 
               {/* <Link href="/payment/checkout">
