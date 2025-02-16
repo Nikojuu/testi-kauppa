@@ -32,16 +32,15 @@ export function ImageSlider({ images }: iAppProps) {
 
   return (
     <div className="grid gap-6 md:gap-3 items-start">
-      <div className="relative overflow-hidden rounded-lg">
+      <div className="relative overflow-hidden rounded-lg aspect-square w-full">
         <ImageKitImage
           src={images[mainImageIndex]}
           alt="Product image"
-          width={600}
-          height={600}
-          sizes="(max-width: 768px) 100vw, 700px"
-          className="object-cover w-[600px] h-[600px]"
-          transformations="tr=w-600,h-600"
-          quality={90}
+          fill
+          sizes="100vw, 700px"
+          className="object-cover"
+          transformations="w-600,h-600"
+          quality={100}
         />
 
         <div className="absolute inset-0 flex items-center justify-between px-4">
