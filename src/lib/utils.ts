@@ -84,7 +84,7 @@ export const getPriceInfo = (item: Product): PriceInfo => {
     cents !== null ? Number((cents / 100).toFixed(2)) : null;
 
   // Handle product without variations
-  if (!item.ProductVariation || item.ProductVariation.length === 0) {
+  if (!item.variations || item.variations.length === 0) {
     const isActive = isSaleActive(item.saleStartDate, item.saleEndDate);
 
     return {
@@ -97,7 +97,7 @@ export const getPriceInfo = (item: Product): PriceInfo => {
   }
 
   // Find variation with lowest effective price among active sales
-  const variations = item.ProductVariation.map((variation) => {
+  const variations = item.variations.map((variation) => {
     const isActive = isSaleActive(
       variation.saleStartDate,
       variation.saleEndDate
