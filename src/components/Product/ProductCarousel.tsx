@@ -8,31 +8,10 @@ import {
 } from "@/components/ui/carousel";
 import { Product } from "@prisma/client";
 import { ProductCard } from "../ProductCard";
+import { ApiResponseProductCardType } from "@/app/utils/types";
 
-// types/product.ts
-export type ProductCardType = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  images: string[];
-  salePrice: number | null;
-  salePercent: string | null;
-  saleEndDate: Date | null;
-  saleStartDate: Date | null;
-  slug: string;
-  quantity: number | null;
-  ProductVariation: {
-    id: string;
-    price: number | null;
-    saleEndDate: Date | null;
-    saleStartDate: Date | null;
-    salePrice: number | null;
-    salePercent: string | null;
-  }[];
-};
 interface ProductCarouselProps {
-  products: ProductCardType[];
+  products: ApiResponseProductCardType[];
 }
 
 export function ProductCarousel({ products }: ProductCarouselProps) {

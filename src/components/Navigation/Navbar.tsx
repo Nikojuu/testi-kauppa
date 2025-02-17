@@ -1,32 +1,29 @@
 import { NavbarLinks } from "./NavbarLinks";
 import Cart from "../Cart/Cart";
-import prisma from "@/app/utils/db";
 import MobileLinks from "./MobileLinks";
+import { ApiCategory } from "@/app/utils/types";
 
-const getData = async () => {
-  const categories = await prisma.category.findMany({
-    where: { parentId: null, storeId: process.env.TENANT_ID },
-    include: {
-      children: {
-        include: {
-          children: {
-            include: {
-              children: {
-                include: {
-                  children: true,
-                },
-              },
-            },
-          },
-        },
+const getCategoryData = async (): Promise<ApiCategory[]> => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL || "https://putiikkipalvelu.fi"}/api/storefront/v1/categories`,
+    {
+      headers: {
+        "x-api-key": process.env.STOREFRONT_API_KEY || "",
       },
-    },
-  });
+    }
+  );
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to fetch categories");
+  }
+
+  const categories: ApiCategory[] = await res.json();
   return categories;
 };
 
 const Navbar = async () => {
-  const categories = await getData();
+  const categories = await getCategoryData();
   return (
     <>
       <div className="lg:mr-8">

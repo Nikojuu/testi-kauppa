@@ -6,10 +6,8 @@ import CategorySection from "@/components/Homepage/CategorySection";
 import { ProductCard } from "@/components/ProductCard";
 import { Metadata } from "next";
 import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
-import {
-  ProductCardType,
-  ProductCarousel,
-} from "@/components/Product/ProductCarousel";
+import { ProductCarousel } from "@/components/Product/ProductCarousel";
+import { ApiResponseProductCardType } from "../utils/types";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Käsintehtyjen korujen verkkokauppa",
@@ -49,48 +47,30 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 3600;
-const getHomePageData = async (): Promise<{
-  latestProducts: ProductCardType[];
-}> => {
-  const latestProducts = await prisma.product.findMany({
-    where: {
-      storeId: process.env.TENANT_ID,
-    },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      price: true,
-      images: true,
-      salePrice: true,
-      salePercent: true,
-      saleEndDate: true,
-      saleStartDate: true,
-      slug: true,
-      quantity: true,
-      ProductVariation: {
-        select: {
-          id: true,
-          price: true,
-          saleEndDate: true,
-          saleStartDate: true,
-          salePrice: true,
-          salePercent: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 3, // Limit to 3 latest products
-  });
 
-  return {
-    latestProducts,
-  };
+const getHomePageData = async (
+  take: number
+): Promise<{ latestProducts: ApiResponseProductCardType[] }> => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL || "https://putiikkipalvelu.fi"}/api/storefront/v1/latest-products?take=${take}`,
+    {
+      headers: {
+        "x-api-key": process.env.STOREFRONT_API_KEY || "", // Provide a default value or handle missing key.
+      },
+    }
+  );
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to fetch products"); // Throw an error for the component to handle
+  }
+
+  const latestProducts: ApiResponseProductCardType[] = await res.json();
+  console.log(latestProducts);
+  return { latestProducts };
 };
 export default async function Home() {
-  const { latestProducts } = await getHomePageData();
+  const { latestProducts } = await getHomePageData(3);
 
   return (
     <div>

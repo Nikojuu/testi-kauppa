@@ -1,13 +1,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 
-import { Product } from "@/app/utils/types";
 import { getPriceInfo } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 
 import ImageKitImage from "./ImageKitImage";
+import { Product } from "@/app/utils/types";
 
 interface ProductCardProps {
   item: Product;
@@ -15,7 +14,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   const priceInfo = getPriceInfo(item);
-  const hasVariations = (item.ProductVariation ?? []).length > 0;
+  const hasVariations = (item.variations ?? []).length > 0;
 
   // Determine availability status
   const isAvailable = item.quantity !== 0;

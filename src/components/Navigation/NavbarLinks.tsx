@@ -4,16 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  children?: Category[];
-}
+import { ApiCategory } from "@/app/utils/types";
 
 const getCategoryPath = (
-  category: Category,
+  category: ApiCategory,
   parentPath: string = ""
 ): string => {
   const path = `${parentPath}/${category.slug}`;
@@ -21,7 +15,7 @@ const getCategoryPath = (
 };
 
 const DesktopDropdown: React.FC<{
-  category: Category;
+  category: ApiCategory;
   parentPath?: string;
 }> = ({ category, parentPath = "" }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -59,7 +53,7 @@ const DesktopDropdown: React.FC<{
   );
 };
 
-export function NavbarLinks({ categories }: { categories: Category[] }) {
+export function NavbarLinks({ categories }: { categories: ApiCategory[] }) {
   const [isShopHovered, setIsShopHovered] = useState(false);
 
   return (

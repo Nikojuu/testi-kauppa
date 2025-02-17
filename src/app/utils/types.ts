@@ -1,4 +1,3 @@
-import { CartItem } from "@/hooks/use-cart";
 import { ShipitShippingMethod, ShipmentMethods } from "@prisma/client";
 
 export interface confirmedItems {
@@ -60,7 +59,7 @@ export interface Product {
   salePercent?: string | null;
   saleEndDate?: Date | null;
   saleStartDate?: Date | null;
-  ProductVariation?: ProductVariation[];
+  variations: ProductVariation[];
 }
 
 export interface PriceInfo {
@@ -69,3 +68,34 @@ export interface PriceInfo {
   salePercent: string | null;
   isOnSale: boolean;
 }
+
+export type ApiResponseProductCardType = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  images: string[];
+  salePrice: number | null;
+  salePercent: string | null;
+  saleEndDate: Date | null;
+  saleStartDate: Date | null;
+  slug: string;
+  quantity: number | null;
+  variations: {
+    id: string;
+    price: number | null;
+    saleEndDate: Date | null;
+    saleStartDate: Date | null;
+    salePrice: number | null;
+    salePercent: string | null;
+  }[];
+};
+export type ApiCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  storeId: string;
+  parentId: string | null;
+  createdAt: string;
+  children: ApiCategory[];
+};

@@ -7,16 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  children?: Category[];
-}
+import { ApiCategory } from "@/app/utils/types";
 
 const getCategoryPath = (
-  category: Category,
+  category: ApiCategory,
   parentPath: string = ""
 ): string => {
   const path = `${parentPath}/${category.slug}`;
@@ -35,7 +29,7 @@ const MobileCategory = memo(
     depth,
     onLinkClick,
   }: {
-    category: Category;
+    category: ApiCategory;
     parentPath?: string;
     depth: number;
     onLinkClick: () => void;
@@ -116,7 +110,7 @@ const MobileCategory = memo(
 
 MobileCategory.displayName = "MobileCategory";
 
-const MobileLinks = memo(({ categories }: { categories: Category[] }) => {
+const MobileLinks = memo(({ categories }: { categories: ApiCategory[] }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
 
