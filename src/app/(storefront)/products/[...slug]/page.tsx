@@ -1,4 +1,8 @@
-import { Category, Product } from "@/app/utils/types";
+import {
+  ApiResponseProductCardType,
+  Category,
+  Product,
+} from "@/app/utils/types";
 import { PaginationComponent } from "@/components/Product/Pagination";
 import { SortOptions } from "@/components/Product/SortOptions";
 import { ProductCard } from "@/components/ProductCard";
@@ -476,7 +480,10 @@ const ProductsPage = async ({
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 max-w-screen-xl mx-auto my-8">
             {products.map((item: Product) => (
-              <ProductCard item={item} key={item.id} />
+              <ProductCard
+                item={item as ApiResponseProductCardType}
+                key={item.id}
+              />
             ))}
           </div>
           {totalPages > 1 && (
