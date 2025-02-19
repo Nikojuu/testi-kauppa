@@ -1,5 +1,4 @@
-import prisma from "@/app/utils/db";
-import { Product } from "@/app/utils/types";
+import { Category, Product } from "@/app/utils/types";
 import { PaginationComponent } from "@/components/Product/Pagination";
 import { SortOptions } from "@/components/Product/SortOptions";
 import { ProductCard } from "@/components/ProductCard";
@@ -12,6 +11,9 @@ export async function generateMetadata({
 }: {
   params: { slug: string[] };
 }): Promise<Metadata> {
+  type CategoryMetadata = {
+    category: Category;
+  };
   const slugs = params.slug;
   const categorySlug = slugs[slugs.length - 1]; // Get the last slug for category
 
@@ -19,8 +21,10 @@ export async function generateMetadata({
 
   if (categorySlug && categorySlug !== "all-products") {
     try {
-      const categoryMetadata = await getCategoryMetadataFromApi(categorySlug); // Fetch category metadata from API
-      categoryName = categoryMetadata.name || "Tuotteet"; // Use fetched name or default
+      const categoryMetadata: CategoryMetadata =
+        await getCategoryMetadataFromApi(categorySlug); // Fetch category metadata from API
+
+      categoryName = categoryMetadata.category.name || "Tuotteet"; // Use fetched name or default
     } catch (error) {
       console.error("Error fetching category metadata for SEO:", error);
       // Fallback to default name if API call fails -  important to have fallback for SEO
@@ -39,14 +43,13 @@ export async function generateMetadata({
 }
 
 const getCategoryMetadataFromApi = async (slug: string) => {
-  const params = new URLSearchParams({ slug });
-
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/category-by-slug?${params.toString()}`,
+    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/categories/${slug}`,
     {
       headers: {
         "x-api-key": process.env.STOREFRONT_API_KEY || "",
       },
+      next: { revalidate: 86400 },
     }
   );
 
@@ -58,7 +61,6 @@ const getCategoryMetadataFromApi = async (slug: string) => {
   const categoryData = await res.json();
   return categoryData;
 };
-
 type SortKey = "newest" | "price_asc" | "price_desc" | "popularity";
 
 // const getProducts = async (
@@ -405,6 +407,7 @@ const getProductsDataFromApi = async (
       headers: {
         "x-api-key": process.env.STOREFRONT_API_KEY || "",
       },
+      cache: "no-store",
     }
   );
 
@@ -427,6 +430,7 @@ const getProductsCountFromApi = async (slugs: string[]): Promise<number> => {
       headers: {
         "x-api-key": process.env.STOREFRONT_API_KEY || "",
       },
+      cache: "no-store",
     }
   );
 

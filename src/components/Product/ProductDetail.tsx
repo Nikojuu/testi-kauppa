@@ -15,55 +15,20 @@ import { Separator } from "../ui/separator";
 import Breadcrumbs from "./Breadcrumbs";
 import { ImageSliderWithZoom } from "../imageSliderWithZoom";
 import { ImageSlider } from "../ImageSlider";
+import {
+  ProductFromApi,
+  ProductVariation,
+  ProductVariationFromApi,
+} from "@/app/utils/types";
 
-export interface SelectedPriceOption {
-  price: number | null;
-  salePrice: number | null;
-  salePercent: string | null;
-  saleStartDate: Date | null;
-  saleEndDate: Date | null;
-}
-
-export interface SelectedProductVariation extends SelectedPriceOption {
-  id: string;
-  images: string[];
-  description: string | null;
-  quantity: number | null;
-  VariantOption: {
-    value: string;
-    OptionType: {
-      name: string;
-    };
-  }[];
-}
-
-export interface SelectedProduct extends SelectedPriceOption {
-  id: string;
-  name: string;
-  slug?: string;
-  images: string[];
-  price: number;
-  quantity: number | null;
-  description: string;
-  categories: {
-    id: string;
-    name: string;
-    slug: string;
-    parentId: string | null;
-  }[];
-  ProductVariation: SelectedProductVariation[];
-}
-
-const ProductDetail = ({ product }: { product: SelectedProduct }) => {
-  const hasVariations = product.ProductVariation?.length > 0;
+const ProductDetail = ({ product }: { product: ProductFromApi }) => {
+  const hasVariations = product.variations?.length > 0;
   const [selectedVariation, setSelectedVariation] = useState<
-    SelectedProductVariation | undefined
-  >(hasVariations ? product.ProductVariation[0] : undefined);
+    ProductVariationFromApi | undefined
+  >(hasVariations ? product.variations[0] : undefined);
 
   const handleVariationChange = (variationId: string) => {
-    const variation = product.ProductVariation.find(
-      (v) => v.id === variationId
-    );
+    const variation = product.variations.find((v) => v.id === variationId);
     setSelectedVariation(variation);
   };
 
@@ -84,13 +49,13 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
     : isSaleActive(product.saleStartDate, product.saleEndDate);
 
   const isOnSale = (
-    productOrVariation: SelectedProduct | SelectedProductVariation
+    productOrVariation: ProductFromApi | ProductVariation
   ): boolean => {
     const { salePrice, price, saleStartDate, saleEndDate } = productOrVariation;
-    if (salePrice === null || salePrice >= (price ?? 0)) return false;
+    if (salePrice == null || salePrice >= (price ?? 0)) return false;
     return isSaleActive(saleStartDate, saleEndDate);
   };
-
+  console.log(selectedVariation);
   return (
     <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <Breadcrumbs categories={product.categories} productName={product.name} />
@@ -199,7 +164,7 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
                 )}
 
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {selectedVariation?.VariantOption[0]?.OptionType.name}:
+                  {selectedVariation?.options[0]?.optionType.name}:
                 </label>
 
                 <Select
@@ -207,16 +172,14 @@ const ProductDetail = ({ product }: { product: SelectedProduct }) => {
                   value={selectedVariation?.id}
                 >
                   <SelectTrigger className="w-full">
-                    {selectedVariation?.VariantOption.map(
-                      (opt) => opt.value
-                    ).join(" / ")}
+                    {selectedVariation?.options
+                      .map((opt) => opt.value)
+                      .join(" / ")}
                   </SelectTrigger>
                   <SelectContent>
-                    {product.ProductVariation.map((variation) => (
+                    {product.variations.map((variation) => (
                       <SelectItem key={variation.id} value={variation.id}>
-                        {variation.VariantOption.map((opt) => opt.value).join(
-                          " / "
-                        )}
+                        {variation.options.map((opt) => opt.value).join(" / ")}
                       </SelectItem>
                     ))}
                   </SelectContent>

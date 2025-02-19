@@ -1,23 +1,20 @@
-import {
-  SelectedProduct,
-  SelectedProductVariation,
-} from "@/components/Product/ProductDetail";
+import { ProductFromApi, ProductVariationFromApi } from "@/app/utils/types";
 import { create } from "zustand";
 
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export type CartItem = {
-  product: SelectedProduct;
+  product: ProductFromApi;
   cartQuantity: number;
-  variation?: SelectedProductVariation;
+  variation?: ProductVariationFromApi;
 };
 
 type CartState = {
   items: CartItem[];
   addItem: (
-    product: SelectedProduct,
+    product: ProductFromApi,
 
-    variation?: SelectedProductVariation
+    variation?: ProductVariationFromApi
   ) => void;
   removeItem: (productId: string, variationId: string | undefined) => void;
   clearCart: () => void;
@@ -69,8 +66,8 @@ export const useCart = create<CartState>()(
       clearCart: () => set({ items: [] }),
 
       incrementQuantity: (id, variationId) =>
-        set((state) => ({
-          items: state.items.map((item) =>
+        set((state: CartState) => ({
+          items: state.items.map((item: CartItem) =>
             item.product.id === id && item.variation?.id === variationId
               ? { ...item, cartQuantity: item.cartQuantity + 1 }
               : item
@@ -78,8 +75,8 @@ export const useCart = create<CartState>()(
         })),
 
       decrementQuantity: (id, variationId) =>
-        set((state) => ({
-          items: state.items.map((item) =>
+        set((state: CartState) => ({
+          items: state.items.map((item: CartItem) =>
             item.product.id === id &&
             item.variation?.id === variationId &&
             item.cartQuantity > 1

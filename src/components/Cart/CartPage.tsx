@@ -61,8 +61,10 @@ const CartPage = () => {
   );
 
   const handleStripeCheckout = async () => {
+    console.log("handleStripeCheckout");
     try {
       const res = await createStripeCheckoutSession(items);
+
       if (res === null) {
         alert("Failed to create Stripe Checkout session");
         return;
@@ -209,11 +211,11 @@ const CartPage = () => {
 
                           {variation && (
                             <span className="text-xs text-muted-foreground space-y-0.5">
-                              {variation.VariantOption.map((opt) => (
+                              {variation.options.map((opt) => (
                                 <div
-                                  key={`${opt.OptionType.name}-${opt.value}`}
+                                  key={`${opt.optionType.name}-${opt.value}`}
                                 >
-                                  {opt.OptionType.name}: {opt.value}
+                                  {opt.optionType.name}: {opt.value}
                                 </div>
                               ))}
                             </span>

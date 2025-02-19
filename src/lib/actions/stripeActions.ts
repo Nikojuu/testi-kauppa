@@ -3,10 +3,14 @@
 import { CartItem } from "@/hooks/use-cart";
 import { Stripe } from "stripe";
 import { stripe } from "../stripe";
-import prisma from "@/app/utils/db";
 import { isSaleActive } from "../utils";
 import { randomUUID } from "crypto";
-import { ItemType } from "@prisma/client";
+import {
+  ApiResponseShipmentMethods,
+  ProductFromApi,
+  ShipmentMethods,
+} from "@/app/utils/types";
+import { default as nodeFetch } from "node-fetch";
 
 class CartError extends Error {
   productId: string;
@@ -94,68 +98,100 @@ export async function createStripeCheckoutSession(
 async function getFormattedShippingOptions(): Promise<
   Stripe.Checkout.SessionCreateParams.ShippingOption[]
 > {
-  const shipmentMethods = await prisma.shipmentMethods.findMany({
-    where: {
-      storeId: process.env.TENANT_ID,
-    },
-    select: {
-      id: true,
-      name: true,
-      price: true,
-      min_estimate_delivery_days: true,
-      max_estimate_delivery_days: true,
-    },
-  });
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/shipment-methods`,
+      {
+        method: "GET", // Use GET method to fetch shipment methods
+        headers: {
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+        },
+      }
+    );
 
-  return shipmentMethods.map(
-    (method): Stripe.Checkout.SessionCreateParams.ShippingOption => ({
-      shipping_rate_data: {
-        type: "fixed_amount",
-        fixed_amount: {
-          amount: method.price,
-          currency: "eur",
-        },
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        errorData.error || "Failed to fetch shipment methods from API"
+      );
+    }
 
-        display_name: method.name.substring(0, 50),
-        delivery_estimate: {
-          minimum: {
-            unit: "business_day",
-            value: method.min_estimate_delivery_days ?? 1,
+    const apiResponse: ApiResponseShipmentMethods = await res.json(); // Type the API response
+    const shipmentMethods: ShipmentMethods[] = apiResponse.shipmentMethods; // Extract shipmentMethods array
+
+    return shipmentMethods.map(
+      (method): Stripe.Checkout.SessionCreateParams.ShippingOption => ({
+        shipping_rate_data: {
+          type: "fixed_amount",
+          fixed_amount: {
+            amount: method.price,
+            currency: "eur",
           },
-          maximum: {
-            unit: "business_day",
-            value: method.max_estimate_delivery_days ?? 1,
+          display_name: method.name.substring(0, 50),
+          delivery_estimate: {
+            minimum: {
+              unit: "business_day",
+              value: method.min_estimate_delivery_days ?? 1,
+            },
+            maximum: {
+              unit: "business_day",
+              value: method.max_estimate_delivery_days ?? 1,
+            },
+          },
+          metadata: {
+            shipmentMethodId: method.id,
           },
         },
-        metadata: {
-          shipmentMethodId: method.id,
-        },
-      },
-    })
-  );
+      })
+    );
+  } catch (error) {
+    console.error("Error fetching and formatting shipment options:", error);
+    return []; // Or handle error in a way appropriate for your application (e.g., display error message to user)
+  }
 }
-
 async function confirmLineItems(
   items: CartItem[]
 ): Promise<Stripe.Checkout.SessionCreateParams.LineItem[]> {
-  const storeSettings = await prisma.storeSettings.findUnique({
-    where: { storeId: process.env.TENANT_ID },
-  });
-  if (!storeSettings) {
-    throw new CartError(
-      `Kaupan asetuksia ei löytynyt ota yhteyttä kaupan omistajaan`,
-      "1"
-    );
-  }
-  const defaultVatRate = storeSettings.defaultVatRate;
+  const defaultVatRate = await (async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/default-vat-rate`,
+        {
+          headers: {
+            "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          },
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch VAT rate");
+      }
+      return data;
+    } catch (error) {
+      console.error("Error fetching default VAT rate:", error);
+      throw error;
+    }
+  })();
+
   return Promise.all(
     items.map(async (item) => {
       const { product, variation } = item;
 
-      const confirmedProduct = await prisma.product.findUnique({
-        where: { id: product.id, storeId: process.env.TENANT_ID },
-        include: { ProductVariation: true },
-      });
+      const productResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/product-by-id/${product.id}`,
+        {
+          headers: {
+            "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          },
+        }
+      );
+      if (!productResponse.ok) {
+        throw new CartError(
+          `Pahoittelut tuotetta ${product.name || ""} ei löytynyt`,
+          product.id
+        );
+      }
+      const confirmedProduct: ProductFromApi = await productResponse.json();
 
       if (!confirmedProduct) {
         throw new CartError(
@@ -168,7 +204,7 @@ async function confirmLineItems(
       let confirmedVariation;
 
       if (variation) {
-        confirmedVariation = confirmedProduct.ProductVariation.find(
+        confirmedVariation = confirmedProduct.variations.find(
           (v) => v.id === variation.id
         );
 
@@ -200,12 +236,6 @@ async function confirmLineItems(
             variation.id
           );
         }
-        if (confirmedVariation.quantity !== null) {
-          await prisma.productVariation.update({
-            where: { id: confirmedVariation.id },
-            data: { quantity: { decrement: item.cartQuantity } },
-          });
-        }
       } else {
         const isOnSale = isSaleActive(
           confirmedProduct.saleStartDate,
@@ -226,20 +256,14 @@ async function confirmLineItems(
             product.id
           );
         }
-        if (confirmedProduct.quantity !== null) {
-          await prisma.product.update({
-            where: { id: confirmedProduct.id },
-            data: { quantity: { decrement: item.cartQuantity } },
-          });
-        }
       }
-      const variationOptionName = variation?.VariantOption.map(
-        (o) => o.OptionType.name
-      ).join(", ");
+      const variationOptionName = variation?.options
+        .map((o) => o.optionType.name)
+        .join(", ");
 
-      const variationOptionValue = variation?.VariantOption.map(
-        (o) => o.value
-      ).join(", ");
+      const variationOptionValue = variation?.options
+        .map((o) => o.value)
+        .join(", ");
 
       return {
         price_data: {
@@ -275,37 +299,36 @@ async function createPendingOrder(
     quantity: item.quantity || 0,
     price: item.price_data?.unit_amount ?? 0,
     totalAmount: (item.quantity ?? 1) * (item.price_data?.unit_amount ?? 0),
-
     productCode: String(
       item.price_data?.product_data?.metadata?.productCode ?? ""
     ),
-    itemType: item.price_data?.product_data?.metadata?.type as ItemType,
+    itemType: item.price_data?.product_data?.metadata?.type,
     vatRate: Number(item.price_data?.product_data?.metadata?.vatRate) || 25.5,
   }));
 
-  const storeOrderNumbers = await prisma.lastOrderNumber.upsert({
-    where: { storeId: process.env.TENANT_ID },
-    update: { lastOrderNumber: { increment: 1 } },
-    create: {
-      storeId: process.env.TENANT_ID as string,
-      lastOrderNumber: 1,
-    },
-  });
-
-  await prisma.order.create({
-    data: {
-      id: orderId,
-      status: "PENDING",
-      storeId: process.env.TENANT_ID as string,
-      orderNumber: storeOrderNumbers.lastOrderNumber,
-      totalAmount: orderLineItems.reduce(
-        (sum, item) => sum + item.totalAmount,
-        0
-      ),
-
-      OrderLineItems: {
-        create: orderLineItems, // Use `create` to attach related items
-      },
-    },
-  });
+  try {
+    const res = await nodeFetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order`,
+      {
+        method: "POST",
+        headers: {
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          confirmedItems: orderLineItems,
+          totalAmount: orderLineItems.reduce(
+            (acc, item) => acc + item.totalAmount,
+            0
+          ),
+        }),
+      }
+    );
+    console.log("res", res);
+    console.log(await res.json());
+  } catch (error) {
+    console.error("Error in createPendingOrder:", error);
+    throw error;
+  }
 }

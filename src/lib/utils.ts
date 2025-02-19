@@ -1,5 +1,9 @@
-import { PriceInfo, Product } from "@/app/utils/types";
-import { SelectedProduct } from "@/components/Product/ProductDetail";
+import {
+  PriceInfo,
+  Product,
+  ProductFromApi,
+  ProductVariationFromApi,
+} from "@/app/utils/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -126,13 +130,8 @@ export const getPriceInfo = (item: Product): PriceInfo => {
 };
 
 export const getDisplayPriceSelectedProduct = (
-  product: SelectedProduct,
-  variation?: {
-    price: number | null;
-    salePrice: number | null;
-    saleStartDate: Date | null;
-    saleEndDate: Date | null;
-  }
+  product: ProductFromApi,
+  variation?: ProductVariationFromApi
 ) => {
   if (variation) {
     // Handle variation-specific pricing logic

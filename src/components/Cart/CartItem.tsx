@@ -4,27 +4,13 @@ import { useCart } from "@/hooks/use-cart";
 import { X, Plus, Minus } from "lucide-react";
 import Image from "next/image";
 import { getDisplayPriceSelectedProduct } from "@/lib/utils";
-import { SelectedProduct } from "../Product/ProductDetail";
 import { Button } from "@/components/ui/button";
 import ImageKitImage from "../ImageKitImage";
+import { ProductFromApi, ProductVariationFromApi } from "@/app/utils/types";
 
 type CartItemProps = {
-  product: SelectedProduct;
-  variation?: {
-    id: string;
-    price: number | null;
-    salePrice: number | null;
-    saleStartDate: Date | null;
-    saleEndDate: Date | null;
-    VariantOption: {
-      value: string;
-      OptionType: {
-        name: string;
-      };
-    }[];
-    images?: string[];
-    quantity: number | null;
-  };
+  product: ProductFromApi;
+  variation?: ProductVariationFromApi;
 };
 
 export default function CartItem({ product, variation }: CartItemProps) {
@@ -67,9 +53,9 @@ export default function CartItem({ product, variation }: CartItemProps) {
             </span>
             {variation && (
               <span className="text-xs text-muted-foreground space-y-0.5">
-                {variation.VariantOption.map((opt) => (
-                  <div key={`${opt.OptionType.name}-${opt.value}`}>
-                    {opt.OptionType.name}: {opt.value}
+                {variation.options.map((opt) => (
+                  <div key={`${opt.optionType.name}-${opt.value}`}>
+                    {opt.optionType.name}: {opt.value}
                   </div>
                 ))}
               </span>

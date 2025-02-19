@@ -1,5 +1,3 @@
-import { ShipitShippingMethod, ShipmentMethods } from "@prisma/client";
-
 export interface confirmedItems {
   unitPrice: number;
   units: number;
@@ -44,6 +42,9 @@ export interface ProductVariation {
   saleStartDate?: Date | null;
   salePrice?: number | null;
   salePercent?: string | null;
+  images: string[];
+  description?: string | null;
+  quantity: number | null;
 }
 
 export interface Product {
@@ -53,6 +54,8 @@ export interface Product {
   price: number;
   images: string[];
   slug: string;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
 
   quantity: number | null;
   salePrice?: number | null;
@@ -61,6 +64,48 @@ export interface Product {
   saleStartDate?: Date | null;
   variations: ProductVariation[];
 }
+export interface ProductFromApi {
+  id: string;
+  name: string;
+  slug?: string;
+  images: string[];
+  price: number;
+  quantity: number | null;
+  description: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  salePercent: string | null;
+  salePrice: number | null;
+  saleStartDate: Date | null;
+  saleEndDate: Date | null;
+  vatPercentage: number | null;
+  categories: {
+    id: string;
+    name: string;
+    slug: string;
+    parentId: string | null;
+  }[];
+  variations: {
+    id: string;
+    images: string[];
+    price: number;
+    description: string | null;
+    quantity: number | null;
+    salePercent: string | null;
+    salePrice: number | null;
+    saleStartDate: Date | null;
+    saleEndDate: Date | null;
+    options: {
+      value: string;
+      optionType: {
+        name: string;
+      };
+    }[];
+  }[];
+}
+
+// We can also define a type alias for the variation for easier use
+export type ProductVariationFromApi = ProductFromApi["variations"][0];
 
 export interface PriceInfo {
   currentPrice: number;
@@ -98,4 +143,56 @@ export type ApiCategory = {
   parentId: string | null;
   createdAt: string;
   children: ApiCategory[];
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  storeId: string;
+  parentId: string | null;
+  createdAt: Date;
+  children: Category[];
+};
+
+export interface ShipmentMethods {
+  id: string;
+  name: string;
+  description: string | null; // description is nullable in your schema
+  storeId: string | null;
+  max_estimate_delivery_days: number | null; // nullable
+  min_estimate_delivery_days: number | null; // nullable
+  active: boolean;
+  price: number;
+}
+
+export interface ApiResponseShipmentMethods {
+  // To type the API response
+  shipmentMethods: ShipmentMethods[];
+}
+
+type ShipitShippingMethod = {
+  id: string;
+  serviceId: string;
+  name: string;
+  carrier: string;
+  logo: string;
+  pickUpIncluded: boolean;
+  homeDelivery: boolean;
+  worldwideDelivery: boolean;
+  fragile: boolean;
+  domesticDeliveries: boolean;
+  information?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  storeId?: string | null;
+  description: string;
+  height: number;
+  length: number;
+
+  width: number;
+  price: number;
+  weight: number;
+  pickupPoint: boolean;
+  onlyParchelLocker: boolean;
 };

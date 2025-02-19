@@ -1,5 +1,4 @@
 import { Hero } from "@/components/Hero";
-import prisma from "../utils/db";
 import Subtitle from "@/components/subtitle";
 import AboutMeSection from "@/components/Homepage/AboutMeSection";
 import CategorySection from "@/components/Homepage/CategorySection";
@@ -55,8 +54,9 @@ const getHomePageData = async (
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL || "https://putiikkipalvelu.fi"}/api/storefront/v1/latest-products?take=${take}`,
     {
       headers: {
-        "x-api-key": process.env.STOREFRONT_API_KEY || "", // Provide a default value or handle missing key.
+        "x-api-key": process.env.STOREFRONT_API_KEY || "",
       },
+      next: { revalidate: 3600 },
     }
   );
 
@@ -66,7 +66,7 @@ const getHomePageData = async (
   }
 
   const latestProducts: ApiResponseProductCardType[] = await res.json();
-  console.log(latestProducts);
+
   return { latestProducts };
 };
 export default async function Home() {

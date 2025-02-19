@@ -2,17 +2,14 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useCart } from "@/hooks/use-cart";
-import {
-  SelectedProduct,
-  SelectedProductVariation,
-} from "../Product/ProductDetail";
+import { ProductFromApi, ProductVariationFromApi } from "@/app/utils/types";
 
 const AddToCartButton = ({
   product,
   selectedVariation,
 }: {
-  product: SelectedProduct;
-  selectedVariation?: SelectedProductVariation;
+  product: ProductFromApi;
+  selectedVariation?: ProductVariationFromApi;
 }) => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const addItem = useCart((state) => state.addItem);
