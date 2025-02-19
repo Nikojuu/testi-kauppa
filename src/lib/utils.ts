@@ -1,4 +1,5 @@
 import {
+  ApiResponseProductCardType,
   PriceInfo,
   Product,
   ProductFromApi,
@@ -83,7 +84,7 @@ export const isSaleActive = (
 
 //   return lowestPriceVariation;
 // };
-export const getPriceInfo = (item: Product): PriceInfo => {
+export const getPriceInfo = (item: ApiResponseProductCardType): PriceInfo => {
   const convertToEuros = (cents: number | null): number | null =>
     cents !== null ? Number((cents / 100).toFixed(2)) : null;
 

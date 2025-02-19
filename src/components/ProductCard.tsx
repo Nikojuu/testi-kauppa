@@ -6,10 +6,10 @@ import { getPriceInfo } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
 
 import ImageKitImage from "./ImageKitImage";
-import { Product } from "@/app/utils/types";
+import { ApiResponseProductCardType, ProductFromApi } from "@/app/utils/types";
 
 interface ProductCardProps {
-  item: Product;
+  item: ApiResponseProductCardType;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
