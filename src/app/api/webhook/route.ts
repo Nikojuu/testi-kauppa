@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
         },
       };
       try {
-        const res = await fetch(
+        await fetch(
           `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
           {
             method: "PATCH",
@@ -115,9 +115,6 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify(orderData),
           }
         );
-        if (!res.ok) {
-          throw new Error(`Failed to update order data. Status: ${res.status}`);
-        }
       } catch (error) {
         console.error("Error updating order data:", error);
       }

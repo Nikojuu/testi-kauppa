@@ -64,9 +64,6 @@ export async function sendOrderConfirmationEmail(
       }
     );
     const items = await res.json();
-    if (!res.ok) {
-      throw new EmailError("Failed to fetch order items");
-    }
 
     const infoResponse = await fetch(
       `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/store-settings`,
@@ -79,9 +76,6 @@ export async function sendOrderConfirmationEmail(
       }
     );
     const shopInfo = (await infoResponse.json()) as StoreSettingsWithName;
-    if (!infoResponse.ok) {
-      throw new EmailError("Failed to fetch shop info");
-    }
 
     const { data, error } = await resend.emails.send({
       from: `${shopInfo.Store.name} <info@putiikkipalvelu.fi>`,
