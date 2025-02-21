@@ -1,8 +1,7 @@
 import OrderConfirmationEmail from "@/components/Email/OrderConfirmation";
 
 import { Resend } from "resend";
-import prisma from "./db";
-import { OrderLineItems } from "@prisma/client";
+import { OrderLineItems, StoreSettingsWithName } from "./types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 export interface CustomerData {
@@ -33,13 +32,7 @@ export interface shipmentMethod {
   price: number;
   logo: string;
 }
-export interface ShopInfo {
-  phone: string;
-  email: string;
-  Store: {
-    name: string;
-  };
-}
+
 class EmailError extends Error {
   constructor(message: string) {
     super(message); // Pass the message to the parent Error constructor
@@ -54,111 +47,40 @@ export async function sendOrderConfirmationEmail(
   orderNumber: number
 ) {
   try {
-    const items = await Promise.all(
-      orderItems.map(async (item) => {
-        const type = item.itemType;
-
-        if (type === "VARIATION") {
-          const productVariation = await prisma.productVariation.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            include: {
-              Product: {
-                select: {
-                  name: true,
-
-                  images: true, // Fetch the product's images
-                },
-              },
-            },
-          });
-
-          if (!productVariation) {
-            throw new EmailError("Product variation not found");
-          }
-
-          return {
-            ...item,
-            name: productVariation.Product.name,
-
-            images: productVariation.Product.images[0], // Include product images
-          };
-        } else if (type === "PRODUCT") {
-          const product = await prisma.product.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            select: {
-              name: true,
-
-              images: true, // Fetch product's images
-            },
-          });
-
-          if (!product) {
-            throw new EmailError("Product not found");
-          }
-
-          return {
-            ...item,
-            name: product.name,
-
-            // Use product price
-            images: product.images[0], // Include product images
-          };
-        } else if (type === "SHIPPING") {
-          const shipitShiptment = await prisma.shipitShippingMethod.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            select: {
-              name: true,
-
-              logo: true,
-            },
-          });
-          const shipmentMethod = await prisma.shipmentMethods.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            select: {
-              name: true,
-            },
-          });
-          if (!shipitShiptment) {
-            if (shipmentMethod) {
-              return {
-                ...item,
-                name: shipmentMethod.name,
-                images: " https://via.placeholder.com/80x80?text=Toimitus",
-              };
-            }
-            return {
-              ...item,
-              name: "Toimitus",
-              images: " https://via.placeholder.com/80x80?text=Toimitus",
-            };
-          }
-          return {
-            ...item,
-            name: shipitShiptment.name,
-            images: shipitShiptment.logo,
-          };
-        }
-
-        // Handle unknown types or return item as is
-        throw new EmailError("Unknown item type");
-      })
-    );
-
-    const shopInfo = await prisma.storeSettings.findFirst({
-      where: { storeId: process.env.TENANT_ID },
-      select: {
-        phone: true,
-        email: true,
-        Store: {
-          select: {
-            name: true,
-          },
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/email-order-items`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
         },
-      },
-    });
+        body: JSON.stringify({
+          orderItems: orderItems.map((item) => ({
+            productCode: item.productCode,
+            itemType: item.itemType,
+          })),
+        }),
+      }
+    );
+    const items = await res.json();
+    if (!res.ok) {
+      throw new EmailError("Failed to fetch order items");
+    }
 
-    if (!shopInfo) {
-      throw new EmailError("Shop info not found");
+    const infoResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/store-settings`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+        },
+      }
+    );
+    const shopInfo = (await infoResponse.json()) as StoreSettingsWithName;
+    if (!infoResponse.ok) {
+      throw new EmailError("Failed to fetch shop info");
     }
 
     const { data, error } = await resend.emails.send({
@@ -179,8 +101,6 @@ export async function sendOrderConfirmationEmail(
 
     if (error) {
       console.error("Error sending email:", error);
-    } else {
-      console.log("Email sent successfully:", data);
     }
   } catch (error) {
     console.error("Error sending email:", error);

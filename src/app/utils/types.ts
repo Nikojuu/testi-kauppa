@@ -243,3 +243,28 @@ export enum ItemType {
   PRODUCT = "PRODUCT",
   // add other item types as needed
 }
+
+export type StoreName = {
+  name: string;
+};
+
+// Define the type for the StoreSettings object with the nested StoreName
+export type StoreSettingsWithName = {
+  id: string;
+  storeId: string;
+  ownerFirstName: string;
+  ownerLastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  currency: string;
+  businessId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  defaultVatRate: number; // Assuming defaultVatRate is a number, adjust if needed
+  logoUrl: string | null;
+  Store: StoreName; // Assuming Store can be null, adjust if needed
+};

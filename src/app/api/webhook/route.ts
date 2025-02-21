@@ -5,9 +5,8 @@ import {
   sendOrderConfirmationEmail,
 } from "@/app/utils/sendOrderConfirmationEmail";
 import { calculateAverageVat } from "@/app/utils/stripeWebhookUtils";
-import { Order } from "@/app/utils/types";
+import { ItemType, Order, OrderLineItems } from "@/app/utils/types";
 import { stripe } from "@/lib/stripe";
-import { OrderLineItems } from "@prisma/client";
 
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -57,9 +56,6 @@ export async function POST(req: NextRequest) {
 
       const order = (await orderResponse.json()) as Order;
 
-      // Process inventory updates later with same endpoint as updating order
-      // await processInventoryUpdates(order.OrderLineItems);
-
       const customerData: CustomerData = {
         first_name: session.customer_details?.name as string,
         last_name: session.customer_details?.name as string,
@@ -107,55 +103,31 @@ export async function POST(req: NextRequest) {
           phone: customerData.phone || "",
         },
       };
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.STOREFRONT_API_KEY || "",
-          },
-          body: JSON.stringify(orderData),
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.STOREFRONT_API_KEY || "",
+            },
+            body: JSON.stringify(orderData),
+          }
+        );
+        if (!res.ok) {
+          throw new Error(`Failed to update order data. Status: ${res.status}`);
         }
-      );
-      console.log("response", response.json());
-
-      // await prisma.order.update({
-      //   where: { id: orderId, storeId: process.env.TENANT_ID },
-      //   data: {
-      //     status: "PAID",
-
-      //     OrderShipmentMethod: {
-      //       create: {
-      //         id: shippingRate.id,
-      //         name: shippingRate.display_name || "Postitus",
-      //         price: shippingRate.fixed_amount?.amount ?? 0,
-      //         vatRate: averageVatRate,
-      //         logo: "https://via.placeholder.com/80x80?text=Toimitus",
-      //       },
-      //     },
-      //     orderCustomerData: {
-      //       create: {
-      //         firstName: customerData.first_name,
-      //         lastName: customerData.last_name,
-      //         email: customerData.email,
-      //         address: customerData.address,
-      //         postalCode: customerData.postal_code,
-      //         city: customerData.city,
-
-      //         phone: customerData.phone || "",
-      //       },
-      //     },
-      //   },
-      // });
+      } catch (error) {
+        console.error("Error updating order data:", error);
+      }
 
       const shippingLineItem: OrderLineItems = {
         orderId: orderId,
         id: shippingRate.id,
         name: shippingRate.display_name || "Postitus",
         totalAmount: shippingRate.fixed_amount?.amount ?? 0,
-        itemType: "SHIPPING",
+        itemType: ItemType.SHIPPING,
 
         vatRate: averageVatRate,
         productCode: shippingRate.id,

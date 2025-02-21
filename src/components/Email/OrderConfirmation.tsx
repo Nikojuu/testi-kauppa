@@ -16,8 +16,8 @@ import {
   CustomerData,
   Product,
   shipmentMethod,
-  ShopInfo,
 } from "@/app/utils/sendOrderConfirmationEmail";
+import { StoreSettingsWithName } from "@/app/utils/types";
 
 export function OrderConfirmationEmail({
   customerData,
@@ -29,7 +29,7 @@ export function OrderConfirmationEmail({
   customerData: CustomerData;
   orderItems: Product[];
   shipmentMethod: shipmentMethod;
-  shopInfo: ShopInfo;
+  shopInfo: StoreSettingsWithName;
   orderNumber: number;
 }) {
   const totalOrderPrice = orderItems.reduce(
@@ -52,7 +52,10 @@ export function OrderConfirmationEmail({
           <Section style={styles.logoSection}>
             {/* Replace the placeholder with your company logo field in database */}
             <img
-              src="https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
+              src={
+                shopInfo.logoUrl ||
+                "https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
+              }
               alt="Your Company Logo"
               width={150}
               height={50}
