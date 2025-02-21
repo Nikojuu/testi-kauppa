@@ -14,7 +14,7 @@ import {
 } from "@react-email/components";
 import {
   CustomerData,
-  Product,
+  OrderItem,
   shipmentMethod,
 } from "@/app/utils/sendOrderConfirmationEmail";
 import { StoreSettingsWithName } from "@/app/utils/types";
@@ -27,7 +27,7 @@ export function OrderConfirmationEmail({
   orderNumber,
 }: {
   customerData: CustomerData;
-  orderItems: Product[];
+  orderItems: OrderItem[];
   shipmentMethod: shipmentMethod;
   shopInfo: StoreSettingsWithName;
   orderNumber: number;

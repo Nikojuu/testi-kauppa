@@ -15,22 +15,19 @@ export interface CustomerData {
   phone: string;
 }
 
-export interface Product {
-  id: string;
-  name: string;
-
-  productCode: string;
-
-  quantity: number;
-  images: string | null;
-
-  price: number;
-}
 export interface shipmentMethod {
   id: string;
   name: string;
   price: number;
   logo: string;
+}
+export interface OrderItem {
+  productCode: string;
+  name: string;
+  itemType: string;
+  price: number;
+  images: string;
+  quantity: number;
 }
 
 class EmailError extends Error {
@@ -59,11 +56,13 @@ export async function sendOrderConfirmationEmail(
           orderItems: orderItems.map((item) => ({
             productCode: item.productCode,
             itemType: item.itemType,
+            price: item.price,
+            quantity: item.quantity,
           })),
         }),
       }
     );
-    const items = await res.json();
+    const items = (await res.json()) as OrderItem[];
 
     const infoResponse = await fetch(
       `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/store-settings`,
