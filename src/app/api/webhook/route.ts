@@ -119,9 +119,7 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify(orderData),
         }
       );
-      if (!response.ok) {
-        throw new Error("Failed to update order");
-      }
+      console.log("response", response.json());
 
       // await prisma.order.update({
       //   where: { id: orderId, storeId: process.env.TENANT_ID },
