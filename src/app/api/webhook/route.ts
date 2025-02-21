@@ -4,15 +4,14 @@ import {
   CustomerData,
   sendOrderConfirmationEmail,
 } from "@/app/utils/sendOrderConfirmationEmail";
-import {
-  calculateAverageVat,
-  processInventoryUpdates,
-} from "@/app/utils/stripeWebhookUtils";
+import { calculateAverageVat } from "@/app/utils/stripeWebhookUtils";
+import { Order } from "@/app/utils/types";
 import { stripe } from "@/lib/stripe";
 import { OrderLineItems } from "@prisma/client";
 
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import fetch from "node-fetch";
 import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
@@ -32,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log("Session", session);
+
       const { orderId } = session.metadata || {
         orderId: null,
       };
@@ -42,17 +41,24 @@ export async function POST(req: NextRequest) {
       if (!orderId) {
         throw new Error("Invalid session metadata orderId missing");
       }
+      const orderResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
+        {
+          headers: {
+            "x-api-key": process.env.STOREFRONT_API_KEY || "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const order = await prisma.order.findUnique({
-        where: { id: orderId, storeId: process.env.TENANT_ID },
-        include: { OrderLineItems: true },
-      });
-
-      if (!order) {
-        throw new Error("Order not found");
+      if (!orderResponse.ok) {
+        throw new Error("Failed to fetch order");
       }
 
-      await processInventoryUpdates(order.OrderLineItems);
+      const order = (await orderResponse.json()) as Order;
+
+      // Process inventory updates later with same endpoint as updating order
+      // await processInventoryUpdates(order.OrderLineItems);
 
       const customerData: CustomerData = {
         first_name: session.customer_details?.name as string,
@@ -81,34 +87,70 @@ export async function POST(req: NextRequest) {
         logo: "https://via.placeholder.com/80x80?text=Toimitus",
       };
 
-      await prisma.order.update({
-        where: { id: orderId, storeId: process.env.TENANT_ID },
-        data: {
-          status: "PAID",
-
-          OrderShipmentMethod: {
-            create: {
-              id: shippingRate.id,
-              name: shippingRate.display_name || "Postitus",
-              price: shippingRate.fixed_amount?.amount ?? 0,
-              vatRate: averageVatRate,
-              logo: "https://via.placeholder.com/80x80?text=Toimitus",
-            },
-          },
-          orderCustomerData: {
-            create: {
-              firstName: customerData.first_name,
-              lastName: customerData.last_name,
-              email: customerData.email,
-              address: customerData.address,
-              postalCode: customerData.postal_code,
-              city: customerData.city,
-
-              phone: customerData.phone || "",
-            },
-          },
+      const orderData = {
+        status: "PAID",
+        orderShipmentMethod: {
+          id: shippingRate.id,
+          name: shippingRate.display_name || "Postitus",
+          price: shippingRate.fixed_amount?.amount ?? 0,
+          vatRate: averageVatRate,
+          logo: "https://via.placeholder.com/80x80?text=Toimitus",
         },
-      });
+        orderCustomerData: {
+          firstName: customerData.first_name,
+          lastName: customerData.last_name,
+          email: customerData.email,
+          address: customerData.address,
+          postalCode: customerData.postal_code,
+          city: customerData.city,
+
+          phone: customerData.phone || "",
+        },
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update order");
+      }
+
+      // await prisma.order.update({
+      //   where: { id: orderId, storeId: process.env.TENANT_ID },
+      //   data: {
+      //     status: "PAID",
+
+      //     OrderShipmentMethod: {
+      //       create: {
+      //         id: shippingRate.id,
+      //         name: shippingRate.display_name || "Postitus",
+      //         price: shippingRate.fixed_amount?.amount ?? 0,
+      //         vatRate: averageVatRate,
+      //         logo: "https://via.placeholder.com/80x80?text=Toimitus",
+      //       },
+      //     },
+      //     orderCustomerData: {
+      //       create: {
+      //         firstName: customerData.first_name,
+      //         lastName: customerData.last_name,
+      //         email: customerData.email,
+      //         address: customerData.address,
+      //         postalCode: customerData.postal_code,
+      //         city: customerData.city,
+
+      //         phone: customerData.phone || "",
+      //       },
+      //     },
+      //   },
+      // });
 
       const shippingLineItem: OrderLineItems = {
         orderId: orderId,
@@ -128,7 +170,6 @@ export async function POST(req: NextRequest) {
         ...order.OrderLineItems,
         shippingLineItem,
       ];
-      console.log("Order items with shipping sending", orderItemsWithShipping);
 
       await sendOrderConfirmationEmail(
         customerData,

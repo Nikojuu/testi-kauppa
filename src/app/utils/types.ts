@@ -196,3 +196,50 @@ type ShipitShippingMethod = {
   pickupPoint: boolean;
   onlyParchelLocker: boolean;
 };
+
+export interface OrderLineItems {
+  id: string;
+  orderId: string;
+  itemType: ItemType;
+  quantity: number;
+  price: number;
+  totalAmount: number;
+  productCode: string;
+  name: string;
+  vatRate: number;
+  // Optional: reference back to Order if needed
+  // order?: Order;
+}
+
+export interface Order {
+  id: string;
+  storeId?: string;
+  createdAt: Date;
+  totalAmount: number;
+  status: OrderStatus;
+  paytrailTransactionId?: string;
+  shipitShippingMethodId?: string;
+  shipitOrderId?: string;
+  trackingNumber?: string;
+  trackingUrls: string[];
+  freightDoc: string[];
+  orderNumber: number;
+  customerDataId?: string;
+
+  ShipitShippingMethod?: ShipitShippingMethod;
+
+  OrderLineItems: OrderLineItems[];
+}
+export enum OrderStatus {
+  PENDING = "PENDING",
+  PAID = "PAID",
+  SHIPPED = "SHIPPED",
+  // add other statuses as needed
+}
+
+export enum ItemType {
+  SHIPPING = "SHIPPING",
+  VARIATION = "VARIATION",
+  PRODUCT = "PRODUCT",
+  // add other item types as needed
+}

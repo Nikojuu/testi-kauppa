@@ -325,8 +325,14 @@ async function createPendingOrder(
         }),
       }
     );
-    console.log("res", res);
-    console.log(await res.json());
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        (errorData as { error?: string }).error ||
+          "Failed to create pending order"
+      );
+    }
   } catch (error) {
     console.error("Error in createPendingOrder:", error);
     throw error;
