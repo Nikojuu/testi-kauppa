@@ -1,4 +1,3 @@
-import prisma from "@/app/utils/db";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,22 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-const getData = async () => {
-  try {
-    const result = await prisma.storeSettings.findFirst({
-      where: {
-        storeId: process.env.STORE_ID,
-      },
-      select: { email: true },
-    });
-    return result?.email;
-  } catch (error) {
-    console.log("Error fetching email", error);
-  }
-};
-
 export default async function TermsPage() {
-  const email = await getData();
   return (
     <div className="mx-auto max-w-screen-2xl py-8 px-4 mt-24 md:mt-48">
       <h1 className="text-3xl font-secondary font-bold mb-6">
@@ -50,9 +34,9 @@ export default async function TermsPage() {
           Peruuttamisoikeuden käyttämiseksi asiakkaan on ilmoitettava
           päätöksestä peruuttaa tilaus yksiselitteisellä tavalla (esim.
           kirjeellä tai sähköpostilla). Sähköpostiosoite on{" "}
-          <a href={`mailto:${email}`} className="text-blue-600">
+          {/* <a href={`mailto:${email}`} className="text-blue-600">
             {email}
-          </a>
+          </a> */}
           .
         </p>
         <h3 className="text-xl font-medium mb-2">Palautuskulut</h3>

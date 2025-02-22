@@ -1,4 +1,4 @@
-import prisma from "@/app/utils/db";
+import { Order } from "@/app/utils/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { XCircle } from "lucide-react";
@@ -20,21 +20,29 @@ export const metadata: Metadata = {
 
 const restoreProducts = async (orderId: string) => {
   try {
-    const order = await prisma.order.findUnique({
-      where: {
-        storeId: process.env.TENANT_ID,
-        id: orderId,
-      },
-      include: {
-        OrderLineItems: true,
-      },
-    });
+    const orderResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
+      {
+        headers: {
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    if (!order) {
-      return console.log("Order not found");
-    }
+    const order = (await orderResponse.json()) as Order;
     if (order.status === "PENDING") {
-      // restoreItemQuantitys(orderId, "CANCELLED");
+      await fetch(
+        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/cancel/${orderId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          },
+          body: JSON.stringify({ status: "CANCELLED" }),
+        }
+      );
     }
   } catch (error) {
     console.error("Error fetching order data:", error);

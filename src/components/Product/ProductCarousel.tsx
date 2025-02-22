@@ -6,7 +6,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { Product } from "@prisma/client";
 import { ProductCard } from "../ProductCard";
 import { ApiResponseProductCardType } from "@/app/utils/types";
 

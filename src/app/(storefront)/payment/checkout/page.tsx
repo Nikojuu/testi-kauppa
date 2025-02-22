@@ -1,5 +1,5 @@
-import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
-import CheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
+// import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
+// import CheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
 import PaytrailCheckout from "@/components/Checkout/PaytrailPayments";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";

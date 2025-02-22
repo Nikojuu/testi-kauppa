@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
               "Content-Type": "application/json",
               "x-api-key": process.env.STOREFRONT_API_KEY || "",
             },
-            body: JSON.stringify({ status: "CANCELLED" }),
+            body: JSON.stringify({ status: "FAILED" }),
           }
         );
       } catch (error) {

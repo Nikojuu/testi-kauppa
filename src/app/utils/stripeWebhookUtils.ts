@@ -1,5 +1,4 @@
-import { OrderLineItems } from "@prisma/client";
-import prisma from "./db";
+import { OrderLineItems } from "./types";
 
 export function calculateAverageVat(items: OrderLineItems[]): number {
   const nonShippingItems = items.filter((item) => item.itemType !== "SHIPPING");

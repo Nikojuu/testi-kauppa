@@ -14,7 +14,6 @@
     "@conform-to/react": "^1.2.2",
     "@conform-to/zod": "^1.2.2",
     "@hookform/resolvers": "^3.9.1",
-    "@prisma/client": "^5.20.0",
     "@radix-ui/react-collapsible": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
@@ -62,7 +61,6 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.14",
     "postcss": "^8",
-    "prisma": "^5.20.0",
     "react-email": "3.0.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
