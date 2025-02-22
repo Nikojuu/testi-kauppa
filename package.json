@@ -1,5 +1,5 @@
 {
-  "name": "store_template",
+  "name": "pupun-korvat",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "email": "email dev --dir src/components/email",
-    "postinstall": "npx prisma generate"
+    "email": "email dev --dir src/components/email"
   },
   "dependencies": {
     "@conform-to/react": "^1.2.2",

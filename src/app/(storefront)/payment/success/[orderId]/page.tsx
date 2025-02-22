@@ -15,7 +15,6 @@ import { ClearCart } from "@/components/Cart/ClearCart";
 import { Metadata } from "next";
 import ImageKitImage from "@/components/ImageKitImage";
 import { Order } from "@/app/utils/types";
-import prisma from "@/app/utils/db";
 import fetch from "node-fetch";
 import { OrderItem } from "@/app/utils/sendOrderConfirmationEmail";
 
