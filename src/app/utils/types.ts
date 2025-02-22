@@ -56,6 +56,7 @@ export interface Product {
   slug: string;
   metaTitle?: string | null;
   metaDescription?: string | null;
+  createdAt?: Date;
 
   quantity: number | null;
   salePrice?: number | null;
