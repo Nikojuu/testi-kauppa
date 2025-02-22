@@ -11,7 +11,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           headers: {
             "x-api-key": process.env.STOREFRONT_API_KEY || "",
           },
-          cache: "no-store",
+          next: {
+            revalidate: 13600, // Revalidate every hour
+          },
         }
       );
 
@@ -34,6 +36,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         {
           headers: {
             "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          },
+          next: {
+            revalidate: 13600,
           },
         }
       );
