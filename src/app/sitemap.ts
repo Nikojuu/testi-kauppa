@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const fetchProducts = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/products?slugs=all-products&page=1&pageSize=1000`,
+        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/filtered-products?slugs=all-products&page=1&pageSize=1000`,
         {
           headers: {
             "x-api-key": process.env.STOREFRONT_API_KEY || "",
