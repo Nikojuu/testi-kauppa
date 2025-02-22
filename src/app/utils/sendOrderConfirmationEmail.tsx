@@ -28,6 +28,7 @@ export interface OrderItem {
   price: number;
   images: string;
   quantity: number;
+  options?: { name: string; value: string }[];
 }
 
 class EmailError extends Error {
@@ -45,7 +46,7 @@ export async function sendOrderConfirmationEmail(
 ) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/email-order-items`,
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order-items`,
       {
         method: "POST",
         headers: {

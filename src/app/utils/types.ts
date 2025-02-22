@@ -196,6 +196,17 @@ type ShipitShippingMethod = {
   pickupPoint: boolean;
   onlyParchelLocker: boolean;
 };
+export type OrderCustomerData = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string | null; // Optional and nullable
+  address: string;
+  city: string;
+  postalCode: string;
+  // Orders?: Order[]; // Uncomment if you need the related Orders
+};
 
 export interface OrderLineItems {
   id: string;
@@ -210,6 +221,16 @@ export interface OrderLineItems {
   // Optional: reference back to Order if needed
   // order?: Order;
 }
+type OrderShipmentMethod = {
+  id: string;
+  name: string;
+  description?: string | null;
+  logo?: string | null;
+  price: number; // Float in Prisma, number in TypeScript
+  orderId: string;
+  vatRate?: number | null;
+  // order?: Order; // Uncomment if you need the related Order
+};
 
 export interface Order {
   id: string;
@@ -225,9 +246,9 @@ export interface Order {
   freightDoc: string[];
   orderNumber: number;
   customerDataId?: string;
-
+  orderCustomerData?: OrderCustomerData;
   ShipitShippingMethod?: ShipitShippingMethod;
-
+  orderShipmentMethod?: OrderShipmentMethod;
   OrderLineItems: OrderLineItems[];
 }
 export enum OrderStatus {

@@ -10,20 +10,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import prisma from "@/app/utils/db";
 import Link from "next/link";
 import { ClearCart } from "@/components/Cart/ClearCart";
-import Image from "next/image";
 import { Metadata } from "next";
 import ImageKitImage from "@/components/ImageKitImage";
-
-type OrderItem = {
-  options: { name: string; value: string }[];
-  name: string | null;
-  images: string[];
-  quantity: number;
-  unitPrice: number;
-} | null;
+import { Order } from "@/app/utils/types";
+import prisma from "@/app/utils/db";
+import fetch from "node-fetch";
+import { OrderItem } from "@/app/utils/sendOrderConfirmationEmail";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Kiitos tilauksestasi!",
@@ -40,18 +34,17 @@ export const metadata: Metadata = {
 
 const getData = async (orderId: string) => {
   try {
-    const data = await prisma.order.findUnique({
-      where: {
-        storeId: process.env.TENANT_ID,
-        id: orderId,
-      },
-      include: {
-        OrderLineItems: true,
-        orderCustomerData: true,
-        OrderShipmentMethod: true,
-      },
-    });
-    return data;
+    const orderResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
+      {
+        headers: {
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return await orderResponse.json();
   } catch (error) {
     console.error("Error fetching order data:", error);
     throw new Error("Failed to fetch order data.");
@@ -65,7 +58,7 @@ export default async function PaymentSuccessPage({
 }) {
   const { orderId } = params;
 
-  const order = await getData(orderId);
+  const order: Order = (await getData(orderId)) as Order;
   if (!order) {
     return (
       <div className="container mx-auto px-4 py-8 my-32">
@@ -75,94 +68,41 @@ export default async function PaymentSuccessPage({
       </div>
     );
   }
-
   const customerData = order.orderCustomerData;
-  const shipmentMethod = order.OrderShipmentMethod;
+  const shipmentMethod = order.orderShipmentMethod;
   const orderItems = order.OrderLineItems;
 
-  let items: OrderItem[];
-  try {
-    items = await Promise.all(
-      orderItems.map(async (item) => {
-        const type = item.itemType;
-        let product = null;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order-items`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.STOREFRONT_API_KEY || "",
+      },
+      body: JSON.stringify({
+        orderItems: orderItems.map((item) => ({
+          productCode: item.productCode,
+          itemType: item.itemType,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+      }),
+    }
+  );
 
-        if (type === "VARIATION") {
-          product = await prisma.productVariation.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            select: {
-              VariantOption: {
-                select: {
-                  value: true,
-                  OptionType: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                },
-              },
-              Product: {
-                select: {
-                  name: true,
-                  images: true, // Get parent product images
-                },
-              },
-              images: true, // Get variation images
-            },
-          });
+  const items = (await res.json()) as OrderItem[];
 
-          if (!product) return null;
-
-          // Use variation images if available, otherwise parent product images
-          const images =
-            product.images.length > 0 ? product.images : product.Product.images;
-
-          return {
-            options: product.VariantOption.map((vo) => ({
-              name: vo.OptionType.name,
-              value: vo.value,
-            })),
-            name: product.Product.name,
-            images,
-            quantity: item.quantity,
-            unitPrice: item.price / 100,
-          };
-        } else if (type === "PRODUCT") {
-          product = await prisma.product.findUnique({
-            where: { id: item.productCode, storeId: process.env.TENANT_ID },
-            select: {
-              name: true,
-              images: true,
-            },
-          });
-
-          return {
-            options: [],
-            name: product?.name ?? null,
-            images: product?.images || [],
-            quantity: item.quantity,
-            unitPrice: item.price / 100,
-          };
-        } else if (type === "SHIPPING") {
-          return null;
-        }
-
-        return null;
-      })
-    );
-  } catch (error) {
-    console.error("Error fetching product data:", error);
-    items = [];
-  }
-
-  const totalPrice =
+  const totalPriceInCents =
     items.reduce((total, item) => {
-      if (item && item.unitPrice && item.quantity) {
-        return total + item.unitPrice * item.quantity;
+      if (item && item.price && item.quantity) {
+        return total + item.price * item.quantity;
       }
       return total;
-    }, 0) +
-    (shipmentMethod?.price ?? 0) / 100;
+    }, 0) + (shipmentMethod?.price ?? 0);
+
+  const totalPrice = totalPriceInCents / 100;
+
   return (
     <div className="container mx-auto px-4 py-8 my-32">
       <ClearCart />
@@ -193,9 +133,7 @@ export default async function PaymentSuccessPage({
                   <div key={index} className="flex items-center space-x-4">
                     <div className="flex-shrink-0 w-16 h-16 relative">
                       <ImageKitImage
-                        src={
-                          (item.images && item.images[0]) || "/placeholder.png"
-                        }
+                        src={item.images || "/placeholder.png"}
                         alt={item.name || "Product image"}
                         width={64}
                         height={64}
@@ -211,7 +149,7 @@ export default async function PaymentSuccessPage({
                         </p>
                       ))}
                       <p className="text-sm">
-                        {item.quantity} x {item.unitPrice.toFixed(2)} €
+                        {item.quantity} x {(item.price / 100).toFixed(2)} €
                       </p>
                     </div>
                   </div>

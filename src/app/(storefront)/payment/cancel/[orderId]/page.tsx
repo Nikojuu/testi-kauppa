@@ -1,5 +1,4 @@
 import prisma from "@/app/utils/db";
-import { restoreItemQuantitys } from "@/app/utils/restoreItemQuantitys";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { XCircle } from "lucide-react";
@@ -35,7 +34,7 @@ const restoreProducts = async (orderId: string) => {
       return console.log("Order not found");
     }
     if (order.status === "PENDING") {
-      restoreItemQuantitys(orderId, "CANCELLED");
+      // restoreItemQuantitys(orderId, "CANCELLED");
     }
   } catch (error) {
     console.error("Error fetching order data:", error);

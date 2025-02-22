@@ -1,5 +1,3 @@
-import prisma from "@/app/utils/db";
-import { restoreItemQuantitys } from "@/app/utils/restoreItemQuantitys";
 import {
   CustomerData,
   sendOrderConfirmationEmail,
@@ -152,7 +150,21 @@ export async function POST(req: NextRequest) {
       if (!orderId)
         throw new Error("Missing orderId in payment intent metadata");
 
-      await restoreItemQuantitys(orderId, "FAILED");
+      try {
+        await fetch(
+          `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/cancel/${orderId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.STOREFRONT_API_KEY || "",
+            },
+            body: JSON.stringify({ status: "CANCELLED" }),
+          }
+        );
+      } catch (error) {
+        console.error("Error updating order status:", error);
+      }
     }
     // Handle canceled checkout session
     else if (event.type === "checkout.session.expired") {
@@ -161,7 +173,21 @@ export async function POST(req: NextRequest) {
 
       if (!orderId) throw new Error("Missing orderId in session metadata");
 
-      await restoreItemQuantitys(orderId, "CANCELLED");
+      try {
+        await fetch(
+          `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/cancel/${orderId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": process.env.STOREFRONT_API_KEY || "",
+            },
+            body: JSON.stringify({ status: "CANCELLED" }),
+          }
+        );
+      } catch (error) {
+        console.error("Error updating order status:", error);
+      }
     }
     return NextResponse.json({ result: event, ok: true });
   } catch (error) {
