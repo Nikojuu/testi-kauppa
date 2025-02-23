@@ -120,7 +120,7 @@ const CartPage = () => {
                   className="relative mb-4 h-40 w-40 text-muted-foreground"
                 >
                   <Image
-                    src="/hippo-empty-cart.png"
+                    src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4i4qKGOmoWuI5hetYs2UbcZvCKz06lFmBSQgq9"
                     fill
                     loading="eager"
                     alt="empty shopping cart hippo"

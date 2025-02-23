@@ -1,15 +1,4 @@
-import {
-  Inter,
-  Jost,
-  Lato,
-  Merriweather,
-  Montserrat,
-  Nunito,
-  Poppins,
-  Roboto,
-  Tangerine,
-  Ubuntu,
-} from "next/font/google";
+import { Tangerine, Ubuntu } from "next/font/google";
 
 export const textPrimary = Tangerine({
   subsets: ["latin"],

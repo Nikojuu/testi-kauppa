@@ -12,12 +12,38 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
 const photos = [
-  { src: "/kaulakorutesti.jpg", width: 800, height: 600, alt: "kuva1" },
-  { src: "/korvakorutesti.jpg", width: 1600, height: 900 },
-  { src: "/rannekorutesti.jpg", width: 800, height: 600 },
-  { src: "/korvakorutesti.jpg", width: 800, height: 600, alt: "kuva1" },
-  { src: "/kaulakorutesti.jpg", width: 1600, height: 900 },
-  { src: "/korvakorutesti.jpg", width: 800, height: 600 },
+  {
+    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iNszCiLll2B7obGOFk8e3TUw1f0dm4Lj6pgZD",
+    width: 800,
+    height: 600,
+    alt: "kuva1",
+  },
+  {
+    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog",
+    width: 1600,
+    height: 900,
+  },
+  {
+    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4is8RVYIdma5coNw4jlW36PiGI9zVhDQk1f7ge",
+    width: 800,
+    height: 600,
+  },
+  {
+    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog",
+    width: 800,
+    height: 600,
+    alt: "kuva1",
+  },
+  {
+    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iNszCiLll2B7obGOFk8e3TUw1f0dm4Lj6pgZD",
+    width: 1600,
+    height: 900,
+  },
+  {
+    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog",
+    width: 800,
+    height: 600,
+  },
 ];
 
 const PhotoGallery = () => {

@@ -15,7 +15,7 @@ const AboutMeSection = () => {
   return (
     <section
       ref={ref}
-      className="mx-auto mb-32 mt-32 flex w-full container max-w-screen-2xl flex-col px-4 sm:px-8 lg:flex-row overflow-x-hidden"
+      className="mx-auto mb-32 mt-32 flex w-full container max-w-screen-2xl flex-col px-4 sm:px-8 lg:flex-row "
     >
       {/* Mobile-only static image */}
       <div className="relative aspect-square w-full h-96 lg:hidden">
@@ -23,7 +23,7 @@ const AboutMeSection = () => {
           fill
           alt="Korukoru design process"
           sizes="100vw"
-          src="/korvakorutesti.jpg"
+          src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog"
           className="object-cover rounded-lg shadow-2xl -rotate-2"
           priority
         />
@@ -40,7 +40,7 @@ const AboutMeSection = () => {
           fill
           alt="Korukoru design process"
           sizes="50vw"
-          src="/korvakorutesti.jpg"
+          src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog"
           className="object-cover rounded-lg shadow-2xl -rotate-2"
         />
       </motion.div>

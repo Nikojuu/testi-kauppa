@@ -9,20 +9,23 @@ const categories = [
   {
     title: "Upeita kaulakoruja",
     description: "Selaa kaulakoruvalikoimani ja hanki itsellesi upea kaulakoru",
-    image: "/kaulakorutesti.jpg",
+    image:
+      "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iNszCiLll2B7obGOFk8e3TUw1f0dm4Lj6pgZD",
     link: "/products/kaulakorut",
   },
   {
     title: "Upeat korvakorut",
     description:
       "Katso mitä ihania korvakoruja minulla on sinulle tai lahjaksi",
-    image: "/korvakorutesti.jpg",
+    image:
+      "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog",
     link: "/products/korvakorut",
   },
   {
     title: "Upeat Rannekorut",
     description: "Katso mitä ihania rannekkoruja minulla on sinulle",
-    image: "/rannekorutesti.jpg",
+    image:
+      "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4is8RVYIdma5coNw4jlW36PiGI9zVhDQk1f7ge",
     link: "/products/rannekorut",
   },
 ];
