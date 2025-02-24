@@ -25,7 +25,7 @@ export default function RootLayout({
     >
       <head />
 
-      <body className="bg-neutral-50">
+      <body className="bg-[radial-gradient(1px_1px_at_1px_1px,rgba(0,0,0,0.1)_1px,transparent_1px)] bg-[length:20px_20px]">
         <StickyNavbar>
           <Navbar />
         </StickyNavbar>

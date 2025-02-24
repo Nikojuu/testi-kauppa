@@ -1,4 +1,4 @@
-import { Hero } from "@/components/Hero";
+import Hero from "@/components/Hero";
 import Subtitle from "@/components/subtitle";
 import AboutMeSection from "@/components/Homepage/AboutMeSection";
 import CategorySection from "@/components/Homepage/CategorySection";
@@ -76,7 +76,7 @@ export default async function Home() {
     <div>
       <Hero />
 
-      <Subtitle subtitle="Upeita koruja" />
+      <Subtitle subtitle="Myy mitä vain!" />
       <CategorySection />
       <Subtitle subtitle="Uusimmat tuotteet" />
       <div className="hidden sm:grid grid-cols-3 gap-5 max-w-screen-xl mx-auto container px-4">
@@ -87,7 +87,7 @@ export default async function Home() {
       <ProductCarousel products={latestProducts} />
 
       <div className=" py-8">
-        <Subtitle subtitle="Tietoa minusta" />
+        <Subtitle subtitle="Kerro hieman kaupastasi" />
         <AboutMeSection />
       </div>
     </div>

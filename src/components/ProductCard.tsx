@@ -35,7 +35,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
     <div className="h-full flex flex-col  ">
       <Link
         href={`/product/${item.slug}`}
-        className="block rounded-lg hover:shadow-sm hover:shadow-primary transition-shadow duration-300 h-full"
+        className="block rounded-lg  transition-shadow duration-300 h-full"
       >
         <div className="w-full mx-auto border border-primary ">
           <div className="relative  overflow-hidden aspect-square ">

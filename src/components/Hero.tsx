@@ -1,63 +1,97 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { GlassySquareButton } from "./ui/cta-button";
 
-export function Hero() {
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { Button } from "@/components/ui/button"; // Assuming shadcn Button component
+
+const Hero = () => {
+  // Animation variants for the text and button
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
   return (
-    <div className="relative w-full h-[80vh] lg:h-[90vh] min-h-[30rem] max-h-screen overflow-hidden">
-      <div>
-        <Image
-          alt="Hero Image"
-          src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4imUy9z6a7Tl2NA59idJ6mPQpotYxuWSZErnMa"
-          fill
-          sizes="(max-width: 640px) 200vw, 100vw"
-          className="object-cover"
-          priority
-        />
-      </div>
-      <div className="absolute inset-0 flex flex-col items-center md:items-start justify-center md:justify-start pt-32 md:pt-64 text-center md:text-left px-4 md:pl-44">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="relative max-w-4xl"
-        >
-          <div className="flex flex-col items-center md:items-start justify-center space-y-4 p-4 backdrop:blur-[2px] rounded-full ">
-            <motion.h1
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-white text-5xl sm:text-9xl tracking-tight drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
-            >
-              Pupun korvat
-            </motion.h1>
-            <motion.h2
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-white font-primary text-4xl md:text-6xl"
-            >
-              Upeita käsintehtyjä koruja juhlaan ja arkeen
-            </motion.h2>
-          </div>
+    <section className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
+      {/* Content */}
+      <motion.div
+        className="relative z-20 text-center max-w-4xl px-4"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Logo */}
+        <motion.div variants={fadeInUp} className="mb-6">
+          <Image
+            src="/logo.svg"
+            alt="Putiikkipalvelu Logo"
+            width={200}
+            height={100}
+            className="mx-auto w-40 md:w-52"
+          />
         </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="mt-8"
+
+        {/* Headline */}
+        <motion.h1
+          variants={fadeInUp}
+          className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 text-gray-900"
         >
-          <Link href="/products">
-            <GlassySquareButton>Tutustu kauppaani!</GlassySquareButton>
-          </Link>
+          Tervetuloa Putiikkipalvelun Testi-Kauppaan!
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          variants={fadeInUp}
+          className="text-lg sm:text-xl md:text-2xl mb-8 text-gray-700"
+        >
+          Löydä laadukkaat tuotteet ja nauti modernista ostokokemuksesta.
+        </motion.p>
+
+        {/* Call to Action */}
+        <motion.div variants={fadeInUp}>
+          <Button
+            asChild
+            className="bg-violet-600 text-white hover:bg-violet-700 px-8 py-3 rounded-xl  font-semibold transition-all duration-300 transform hover:scale-105"
+          >
+            <a href="/products">Tutustu Nyt</a>
+          </Button>
         </motion.div>
-      </div>
-    </div>
+      </motion.div>
+
+      {/* Fancy Animated Background Elements */}
+      <motion.div
+        className="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72 bg-violet-500/20 rounded-full"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-violet-500/20 rounded-full"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </section>
   );
-}
+};
 
 export default Hero;
 

@@ -23,7 +23,7 @@ const AboutMeSection = () => {
           fill
           alt="Korukoru design process"
           sizes="100vw"
-          src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog"
+          src="/ostoksille.jpg"
           className="object-cover rounded-lg shadow-2xl -rotate-2"
           priority
         />
@@ -40,22 +40,21 @@ const AboutMeSection = () => {
           fill
           alt="Korukoru design process"
           sizes="50vw"
-          src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog"
+          src="/ostoksille.jpg"
           className="object-cover rounded-lg shadow-2xl -rotate-2"
         />
       </motion.div>
 
       {/* Content wrapper */}
-      <div className="z-10 flex-1 bg-pink-50/95 backdrop-blur-sm p-8 text-black lg:-ml-24 lg:mt-24 rounded-lg shadow-xl border border-white/20">
+      <div className="z-10 flex-1 bg-purple-100/95 backdrop-blur-sm p-8 text-black lg:-ml-24 lg:mt-24 rounded-lg shadow-xl border border-white/20">
         {/* Mobile-only static content */}
         <div className="lg:hidden">
-          <h3 className="mb-8 font-primary text-5xl">
-            Huolellinen suunnittelu
-          </h3>
+          <h3 className="mb-8 font-primary text-5xl">Putiikkipalvelu</h3>
           <p className="text-sm leading-relaxed text-gray-800 mb-8">
-            Jokainen tuotteeni lähtee liikkeelle huolellisesta
-            suunnitteluprosessista. Luon korkealaatuisia ja ainutlaatuisia
-            tuotteita, jotka erottuvat joukosta.
+            Putiikkipalvelu tarjoaa mahdollisuuden myydä mitä vain. Esimerkiksi
+            käsintehtyjä koruja, vaatteita ja paljon muuta. Meidän kauttamme
+            voit myös myydä omia tuotteitasi ja saada näkyvyyttä. Liity mukaan
+            ja löydä oma tyylisi!
           </p>
         </div>
 
@@ -66,20 +65,18 @@ const AboutMeSection = () => {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="hidden lg:block"
         >
-          <h3 className="mb-8 font-primary text-5xl">
-            Huolellinen suunnittelu
-          </h3>
+          <h3 className="mb-8 font-primary text-5xl">Putiikkipalvelu</h3>
           <p className="text-lg leading-relaxed text-gray-800 mb-8">
-            Jokainen tuotteeni lähtee liikkeelle huolellisesta
-            suunnitteluprosessista. Luon korkealaatuisia ja ainutlaatuisia
-            tuotteita, jotka erottuvat joukosta. Suunnittelutyössäni yhdistyvät
-            käsityötaidot, luovuus ja huolellinen harkinta.
+            Putiikkipalvelu tarjoaa mahdollisuuden myydä mitä vain. Esimerkiksi
+            käsintehtyjä koruja, vaatteita ja paljon muuta. Meidän kauttamme
+            voit myös myydä omia tuotteitasi ja saada näkyvyyttä. Liity mukaan
+            ja löydä oma tyylisi!
           </p>
         </motion.div>
 
         <Link href="/about">
           <Button variant="gooeyLeft">
-            Lue lisää minusta
+            Lue lisää meistä
             <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </Link>

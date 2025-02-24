@@ -68,7 +68,7 @@ export function NavbarLinks({ categories }: { categories: ApiCategory[] }) {
           <Link href="/products">
             <Button
               variant="linkHover2"
-              className="flex items-center gap-1  font-primary text-3xl lg:text-4xl"
+              className="flex items-center gap-1  font-primary text-lg "
             >
               Tuotteet
               <ChevronDown className="h-4 w-4" />
@@ -85,27 +85,18 @@ export function NavbarLinks({ categories }: { categories: ApiCategory[] }) {
         </div>
 
         <Link href="/about">
-          <Button
-            variant="linkHover2"
-            className=" font-primary text-3xl lg:text-4xl"
-          >
+          <Button variant="linkHover2" className=" font-primary text-lg">
             <span className="lg:hidden">Tarina</span>
             <span className="hidden lg:block">Pupunkorvien tarina</span>
           </Button>
         </Link>
         <Link href="/gallery">
-          <Button
-            variant="linkHover2"
-            className=" text-3xl lg:text-4xl font-primary"
-          >
+          <Button variant="linkHover2" className=" text-lg font-primary">
             Galleria
           </Button>
         </Link>
         <Link href="/contact">
-          <Button
-            variant="linkHover2"
-            className=" text-3xl lg:text-4xl font-primary"
-          >
+          <Button variant="linkHover2" className=" text-lg font-primary">
             Yhteydenotto
           </Button>
         </Link>

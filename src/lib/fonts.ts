@@ -1,11 +1,12 @@
-import { Tangerine, Ubuntu } from "next/font/google";
+import { DM_Serif_Text, Recursive, Tangerine, Ubuntu } from "next/font/google";
 
-export const textPrimary = Tangerine({
+export const textPrimary = Recursive({
   subsets: ["latin"],
   variable: "--font-primary",
   display: "swap",
-  weight: "400",
+  weight: "variable",
 });
+
 // export const textPrimary = DM_Serif_Text({
 //   subsets: ["latin"],
 //   variable: "--font-primary",

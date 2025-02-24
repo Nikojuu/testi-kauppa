@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
+import { LOGO_URL } from "@/app/utils/constants";
 
 export function Footer() {
   return (
@@ -11,7 +12,7 @@ export function Footer() {
           <div className="flex flex-col items-center md:items-start gap-4">
             <Link href="/" className="flex-shrink-0">
               <Image
-                src="https://ik.imagekit.io/putiikkipalvelu/tr:w-80,h-80/https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
+                src={LOGO_URL}
                 alt="logo"
                 width={80}
                 height={80}
@@ -48,7 +49,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="py-6 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Pupun korvat. Kaikki oikeudet
+            © {new Date().getFullYear()} Putiikkipalvelu. Kaikki oikeudet
             pidätetään.
           </p>
         </div>

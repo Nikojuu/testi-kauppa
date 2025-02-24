@@ -1,5 +1,6 @@
 "use client";
 
+import { LOGO_URL } from "@/app/utils/constants";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,7 +17,7 @@ export default function StickyNavbar({
       >
         <Link href="/" className="lg:mr-20 hidden md:block">
           <Image
-            src="https://ik.imagekit.io/putiikkipalvelu/tr:w-80,h-80/https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
+            src={LOGO_URL}
             alt="logo"
             width="80"
             sizes="80px"
