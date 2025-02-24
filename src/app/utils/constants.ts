@@ -1,3 +1,5 @@
+export type PaymentMethod = "stripe" | "paytrail"; // Add more methods as needed
+
 export const EMAIL = "info@putiikkipalvelu.fi";
 export const LOGO_URL = "/logo.svg";
 
@@ -24,3 +26,5 @@ export const SHOWCASE_CATEGORIES = [
     link: "/products/rannekorut",
   },
 ];
+
+export const PAYMENT_METHODS: PaymentMethod[] = ["paytrail"];

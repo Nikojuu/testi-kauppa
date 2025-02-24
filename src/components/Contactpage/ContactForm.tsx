@@ -20,7 +20,6 @@ import { submitContactForm } from "@/app/actions";
 import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Subtitle from "@/components/subtitle";
-import { Metadata } from "next";
 
 const FormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),

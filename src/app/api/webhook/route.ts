@@ -1,3 +1,4 @@
+import { PAYMENT_METHODS } from "@/app/utils/constants";
 import {
   CustomerData,
   sendOrderConfirmationEmail,
@@ -26,14 +27,17 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
 
+    if (!PAYMENT_METHODS.includes("stripe")) {
+      console.log("Stripe is not enabled. Acknowledging event:", event.type);
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
 
       const { orderId } = session.metadata || {
         orderId: null,
       };
-
-      //we dont need fetch line items from stripe as we already have the order line items in our database because we want them to be ready for thank you page
 
       if (!orderId) {
         throw new Error("Invalid session metadata orderId missing");

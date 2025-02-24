@@ -11,6 +11,7 @@ import {
   ShipmentMethods,
 } from "@/app/utils/types";
 import { default as nodeFetch } from "node-fetch";
+import { PAYMENT_METHODS } from "@/app/utils/constants";
 
 class CartError extends Error {
   productId: string;
@@ -29,6 +30,9 @@ export async function createStripeCheckoutSession(
   | { error: boolean; message: string; productId: string; variationId?: string }
   | null
 > {
+  if (!PAYMENT_METHODS.includes("stripe")) {
+    throw new CartError("Stripe is not enabled", "stripe-disabled");
+  }
   try {
     const orderId = randomUUID();
     const lineItems = await confirmLineItems(items);

@@ -13,34 +13,98 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
 const photos = [
   {
-    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iNszCiLll2B7obGOFk8e3TUw1f0dm4Lj6pgZD",
+    src: "https://picsum.photos/id/10/800/600",
     width: 800,
     height: 600,
     alt: "kuva1",
   },
   {
-    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog",
+    src: "https://picsum.photos/id/200/1600/900",
     width: 1600,
     height: 900,
   },
   {
-    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4is8RVYIdma5coNw4jlW36PiGI9zVhDQk1f7ge",
+    src: "https://picsum.photos/id/30/800/600",
     width: 800,
     height: 600,
   },
   {
-    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog",
+    src: "https://picsum.photos/id/40/800/600",
     width: 800,
     height: 600,
     alt: "kuva1",
   },
   {
-    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iNszCiLll2B7obGOFk8e3TUw1f0dm4Lj6pgZD",
+    src: "https://picsum.photos/id/50/1600/900",
     width: 1600,
     height: 900,
   },
   {
-    src: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iQMzvV03iZuaqKV5cjLJxYH94e6DM8sFUXNog",
+    src: "https://picsum.photos/id/60/800/600",
+    width: 800,
+    height: 600,
+  },
+  {
+    src: "https://picsum.photos/id/70/800/600",
+    width: 800,
+    height: 600,
+    alt: "kuva1",
+  },
+  {
+    src: "https://picsum.photos/id/80/1600/900",
+    width: 1600,
+    height: 900,
+  },
+  {
+    src: "https://picsum.photos/id/90/800/600",
+    width: 800,
+    height: 600,
+  },
+  {
+    src: "https://picsum.photos/id/100/800/600",
+    width: 800,
+    height: 600,
+    alt: "kuva1",
+  },
+  {
+    src: "https://picsum.photos/id/110/1600/900",
+    width: 1600,
+    height: 900,
+  },
+  {
+    src: "https://picsum.photos/id/120/800/600",
+    width: 800,
+    height: 600,
+  },
+  {
+    src: "https://picsum.photos/id/130/800/600",
+    width: 800,
+    height: 600,
+    alt: "kuva1",
+  },
+  {
+    src: "https://picsum.photos/id/140/1600/900",
+    width: 1600,
+    height: 900,
+  },
+  {
+    src: "https://picsum.photos/id/151/800/600",
+    width: 800,
+    height: 600,
+  },
+  {
+    src: "https://picsum.photos/id/160/800/600",
+    width: 800,
+    height: 600,
+    alt: "kuva1",
+  },
+  {
+    src: "https://picsum.photos/id/170/1600/900",
+    width: 1600,
+    height: 900,
+  },
+  {
+    src: "https://picsum.photos/id/300/800/600",
     width: 800,
     height: 600,
   },

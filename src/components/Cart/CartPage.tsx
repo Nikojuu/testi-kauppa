@@ -14,6 +14,7 @@ import { createStripeCheckoutSession } from "@/lib/actions/stripeActions";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import ImageKitImage from "../ImageKitImage";
+import { PAYMENT_METHODS } from "@/app/utils/constants";
 
 export type ShipmentMethods = {
   id: string;
@@ -61,7 +62,10 @@ const CartPage = () => {
   );
 
   const handleStripeCheckout = async () => {
-    console.log("handleStripeCheckout");
+    if (!PAYMENT_METHODS.includes("stripe")) {
+      alert("Stripe is not a valid payment method");
+      return;
+    }
     try {
       const res = await createStripeCheckoutSession(items);
 
@@ -306,16 +310,21 @@ const CartPage = () => {
             </div>
 
             <div className="mt-6">
-              <form action={handleStripeCheckout}>
-                <CheckoutButton />
-                <p className="text-red-500">
-                  Checkout is currently in test mode no payments are accepted
-                </p>
-              </form>
-
-              {/* <Link href="/payment/checkout">
-                <Button variant="gooeyLeft">Tee tilaus</Button>
-              </Link> */}
+              {PAYMENT_METHODS.includes("stripe") && (
+                <form action={handleStripeCheckout}>
+                  <CheckoutButton />
+                  <p className="text-red-500">
+                    Checkout is currently in test mode no payments are accepted
+                  </p>
+                </form>
+              )}
+              {PAYMENT_METHODS.includes("paytrail") && (
+                <Link href="/payment/checkout">
+                  <Button className="w-full" variant="gooeyLeft">
+                    Tee tilaus
+                  </Button>
+                </Link>
+              )}
             </div>
           </section>
         </div>

@@ -86,8 +86,8 @@ export function NavbarLinks({ categories }: { categories: ApiCategory[] }) {
 
         <Link href="/about">
           <Button variant="linkHover2" className=" font-primary text-lg">
-            <span className="lg:hidden">Tarina</span>
-            <span className="hidden lg:block">Pupunkorvien tarina</span>
+            <span className="lg:hidden">Meistä</span>
+            <span className="hidden lg:block">Meistä</span>
           </Button>
         </Link>
         <Link href="/gallery">
