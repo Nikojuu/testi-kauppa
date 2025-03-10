@@ -7,16 +7,11 @@ export function CheckoutButton() {
   return (
     <>
       {pending ? (
-        <Button disabled size="lg" className="w-full mt-5">
+        <Button disabled className="w-full ">
           <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Odota
         </Button>
       ) : (
-        <Button
-          type="submit"
-          variant="gooeyLeft"
-          size="lg"
-          className="w-full mt-5"
-        >
+        <Button type="submit" variant="gooeyLeft" className="w-full ">
           Siirry maksamaan
         </Button>
       )}

@@ -1,6 +1,6 @@
-// import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
-// import CheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
-import PaytrailCheckout from "@/components/Checkout/PaytrailPayments";
+import { PAYMENT_METHODS } from "@/app/utils/constants";
+import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
+
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -18,9 +18,10 @@ export const metadata: Metadata = {
 };
 
 const CheckoutRoute = () => {
-  return notFound();
-  // comment out the line above and uncomment the line below to enable Paytrail payments
-  // return <PaytrailCheckoutPage />;
+  if (!PAYMENT_METHODS.includes("paytrail")) {
+    return notFound();
+  }
+  return <PaytrailCheckoutPage />;
 };
 
 export default CheckoutRoute;

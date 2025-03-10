@@ -2,6 +2,7 @@ import OrderConfirmationEmail from "@/components/Email/OrderConfirmation";
 
 import { Resend } from "resend";
 import { OrderLineItems, StoreSettingsWithName } from "./types";
+import fetch from "node-fetch";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 export interface CustomerData {
@@ -20,6 +21,7 @@ export interface shipmentMethod {
   name: string;
   price: number;
   logo: string;
+  trackingNumber?: string;
 }
 export interface OrderItem {
   productCode: string;

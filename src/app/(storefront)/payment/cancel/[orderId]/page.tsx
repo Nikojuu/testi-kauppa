@@ -18,45 +18,11 @@ export const metadata: Metadata = {
   },
 };
 
-const restoreProducts = async (orderId: string) => {
-  try {
-    const orderResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/${orderId}`,
-      {
-        headers: {
-          "x-api-key": process.env.STOREFRONT_API_KEY || "",
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const order = (await orderResponse.json()) as Order;
-    if (order.status === "PENDING") {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order/cancel/${orderId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.STOREFRONT_API_KEY || "",
-          },
-          body: JSON.stringify({ status: "CANCELLED" }),
-        }
-      );
-    }
-  } catch (error) {
-    console.error("Error fetching order data:", error);
-    throw new Error("Failed to fetch order data.");
-  }
-};
-
 export default async function CancelPage({
   params,
 }: {
   params: { orderId: string };
 }) {
-  const { orderId } = params;
-  await restoreProducts(orderId);
   return (
     <section className="w-full min-h-[80vh] flex items-center justify-center">
       <Card className="w-[350px]">

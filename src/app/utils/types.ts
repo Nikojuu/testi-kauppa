@@ -170,9 +170,10 @@ export interface ShipmentMethods {
 export interface ApiResponseShipmentMethods {
   // To type the API response
   shipmentMethods: ShipmentMethods[];
+  shipitShipmentMethods: ShipitShippingMethod[];
 }
 
-type ShipitShippingMethod = {
+export interface ShipitShippingMethod {
   id: string;
   serviceId: string;
   name: string;
@@ -190,13 +191,13 @@ type ShipitShippingMethod = {
   description: string;
   height: number;
   length: number;
-
+  type: string;
   width: number;
   price: number;
   weight: number;
   pickupPoint: boolean;
   onlyParchelLocker: boolean;
-};
+}
 export type OrderCustomerData = {
   id: string;
   firstName: string;
@@ -222,8 +223,16 @@ export interface OrderLineItems {
   // Optional: reference back to Order if needed
   // order?: Order;
 }
-type OrderShipmentMethod = {
+export type PreOrderLineItems = {
+  itemType: string;
+  quantity: number;
+  price: number;
+  vatRate: number;
+};
+
+export type OrderShipmentMethod = {
   id: string;
+  serviceId?: string;
   name: string;
   description?: string | null;
   logo?: string | null;

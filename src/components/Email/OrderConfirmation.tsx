@@ -73,6 +73,11 @@ export function OrderConfirmationEmail({
               <br />
               Tilausnumero: {orderNumber}
             </Text>
+            {shipmentMethod.trackingNumber && (
+              <Text style={styles.paragraph}>
+                Seurantanumero {shipmentMethod.trackingNumber}
+              </Text>
+            )}
             <Section style={styles.orderDetails}>
               <Heading as="h2" style={styles.subheading}>
                 Tilauksen tiedot
@@ -83,7 +88,7 @@ export function OrderConfirmationEmail({
                     <Img
                       src={
                         item.images ||
-                        "https://via.placeholder.com/80x80?text=No+Image"
+                        "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4ize6OWvnHfKmDy98cwRzTpvhL4l7J65kOBWr2"
                       }
                       alt={item.name}
                       width={80}

@@ -98,8 +98,8 @@ function Group({
         style={{ overflow: "hidden" }}
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4">
-          {providers.map((provider) => (
-            <ProviderForm key={provider.id} provider={provider} />
+          {providers.map((provider, i) => (
+            <ProviderForm key={i} provider={provider} />
           ))}
         </div>
       </div>
@@ -124,13 +124,16 @@ export default function PaytrailCheckout({
     );
   };
 
-  const groupedProviders = paytrailData.providers.reduce((acc, provider) => {
-    if (!acc[provider.group]) {
-      acc[provider.group] = [];
-    }
-    acc[provider.group].push(provider);
-    return acc;
-  }, {} as Record<string, PaytrailProvider[]>);
+  const groupedProviders = paytrailData.providers.reduce(
+    (acc, provider) => {
+      if (!acc[provider.group]) {
+        acc[provider.group] = [];
+      }
+      acc[provider.group].push(provider);
+      return acc;
+    },
+    {} as Record<string, PaytrailProvider[]>
+  );
 
   if (!paytrailData) return null;
 

@@ -1,5 +1,6 @@
 export type PaymentMethod = "stripe" | "paytrail"; // Add more methods as needed
 
+//store Owner email
 export const EMAIL = "info@putiikkipalvelu.fi";
 export const LOGO_URL = "/logo.svg";
 

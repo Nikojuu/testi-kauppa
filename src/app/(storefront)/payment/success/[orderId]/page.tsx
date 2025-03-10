@@ -116,11 +116,18 @@ export default async function PaymentSuccessPage({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div>
-            <h3 className="font-semibold mb-2">Tilauksen tiedot</h3>
-            <p>Tilausnumero: {order.orderNumber}</p>
+          <div className="flex  justify-between items-center mb-4">
+            <div>
+              <h3 className="font-semibold mb-2">Tilauksen tiedot</h3>
+              <p>Tilausnumero: {order.orderNumber}</p>
+            </div>
+            {order.trackingNumber && (
+              <div>
+                <h3 className="font-semibold mb-2">Seurantanumero</h3>
+                <p>{order.trackingNumber}</p>
+              </div>
+            )}
           </div>
-
           <Separator />
 
           <div>

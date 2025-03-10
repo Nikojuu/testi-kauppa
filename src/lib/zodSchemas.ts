@@ -11,7 +11,7 @@ export const customerDataSchema = z.object({
     .string({ message: "Katuosoite vaaditaan" })
     .min(1, "Katuosoite vaaditaan"),
   postal_code: z
-    .string()
+    .string({ message: "Postinumero vaaditaan" })
     .regex(/^\d{5}$/, "Postinumeron on oltava viisi numeroa"),
   city: z
     .string({ message: "Kaupunki vaaditaan" })

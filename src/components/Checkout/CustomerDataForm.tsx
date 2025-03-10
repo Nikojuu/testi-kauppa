@@ -14,15 +14,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PhoneInput } from "../ui/phone-input";
+import { Loader2 } from "lucide-react";
 
 interface CustomerDataFormProps {
   handleSubmit: (data: CustomerData) => void;
   initialData?: CustomerData | null;
+  isLoading: boolean;
 }
 
 export default function CustomerDataForm({
   handleSubmit,
   initialData,
+  isLoading,
 }: CustomerDataFormProps) {
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -135,7 +138,6 @@ export default function CustomerDataForm({
               <PhoneInput
                 id={fields.phone.id}
                 name={fields.phone.name}
-                defaultValue={initialData?.phone || ""}
                 defaultCountry="FI"
                 international
                 placeholder="Anna puhelin numerosi"
@@ -147,8 +149,17 @@ export default function CustomerDataForm({
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit" variant="gooeyLeft">
-            Jatka valitsemaan toimitustapa
+          <Button
+            type="submit"
+            variant="gooeyLeft"
+            disabled={isLoading}
+            className="min-w-[160px] flex justify-center items-center"
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin w-5 h-5" />
+            ) : (
+              "Jatka maksamaan"
+            )}
           </Button>
         </CardFooter>
       </Card>

@@ -3,9 +3,9 @@ import {
   CustomerData,
   sendOrderConfirmationEmail,
 } from "@/app/utils/sendOrderConfirmationEmail";
-import { calculateAverageVat } from "@/app/utils/stripeWebhookUtils";
 import { ItemType, Order, OrderLineItems } from "@/app/utils/types";
 import { stripe } from "@/lib/stripe";
+import { calculateAverageVat } from "@/lib/utils";
 
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,6 +14,10 @@ import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   try {
+    if (!PAYMENT_METHODS.includes("stripe")) {
+      console.log("Stripe is not enabled. Acknowledging event:");
+      return NextResponse.json("stripe not enabled", { status: 200 });
+    }
     const body = await req.text();
     const signature = headers().get("stripe-signature");
 
@@ -26,11 +30,6 @@ export async function POST(req: NextRequest) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-
-    if (!PAYMENT_METHODS.includes("stripe")) {
-      console.log("Stripe is not enabled. Acknowledging event:", event.type);
-      return NextResponse.json({ received: true }, { status: 200 });
-    }
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
@@ -82,7 +81,7 @@ export async function POST(req: NextRequest) {
         id: shippingRate.id,
         name: shippingRate.display_name || "Postitus",
         price: shippingRate.fixed_amount?.amount ?? 0,
-        logo: "https://via.placeholder.com/80x80?text=Toimitus",
+        logo: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4ize6OWvnHfKmDy98cwRzTpvhL4l7J65kOBWr2",
       };
 
       const orderData = {
@@ -92,7 +91,7 @@ export async function POST(req: NextRequest) {
           name: shippingRate.display_name || "Postitus",
           price: shippingRate.fixed_amount?.amount ?? 0,
           vatRate: averageVatRate,
-          logo: "https://via.placeholder.com/80x80?text=Toimitus",
+          logo: "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4ize6OWvnHfKmDy98cwRzTpvhL4l7J65kOBWr2",
         },
         orderCustomerData: {
           firstName: customerData.first_name,

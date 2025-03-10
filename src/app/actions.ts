@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { Resend } from "resend";
 import ContactFormEmail from "@/components/Email/ContactFormEmail";
+import { EMAIL } from "./utils/constants";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FormSchema = z.object({
@@ -29,7 +30,7 @@ export async function submitContactForm(formData: FormData) {
   try {
     const { error } = await resend.emails.send({
       from: "Putiikkipalvelu <info@putiikkipalvelu.fi>",
-      to: ["info@webdevniko.fi"],
+      to: [EMAIL],
       subject: "Sinulle on uusi yhteydenottopyyntö",
       react: ContactFormEmail({ firstName, lastName, email, message }),
     });
