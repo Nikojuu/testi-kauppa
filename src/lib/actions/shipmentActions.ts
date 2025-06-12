@@ -62,10 +62,11 @@ export const getDropInLocations = async ({
     return [];
   }
 
-  const url =
-    process.env.NODE_ENV === "development"
-      ? "https://apitest.shipit.ax/v1/agents"
-      : "https://api.shipit.ax/v1/agents";
+  // const url =
+  //   process.env.NODE_ENV === "development"
+  //     ? "https://apitest.shipit.ax/v1/agents"
+  //     : "https://api.shipit.ax/v1/agents";
+  const url = process.env.SHIPIT_API_URL!; // Use the environment variable for the URL
 
   const requestBody = {
     postcode: customerPostalCode,

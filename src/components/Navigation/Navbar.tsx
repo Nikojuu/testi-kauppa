@@ -2,10 +2,12 @@ import { NavbarLinks } from "./NavbarLinks";
 import Cart from "../Cart/Cart";
 import MobileLinks from "./MobileLinks";
 import { ApiCategory } from "@/app/utils/types";
+import CustomerDropdown from "./CustomerDropdown";
+import { getUser } from "@/lib/actions/authActions";
 
 const getCategoryData = async (): Promise<ApiCategory[]> => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL || "https://putiikkipalvelu.fi"}/api/storefront/v1/categories`,
+    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/categories`,
     {
       headers: {
         "x-api-key": process.env.STOREFRONT_API_KEY || "",
@@ -24,6 +26,7 @@ const getCategoryData = async (): Promise<ApiCategory[]> => {
 
 const Navbar = async () => {
   const categories = await getCategoryData();
+  const { user } = await getUser();
   return (
     <>
       <div className="lg:mr-8">
@@ -32,6 +35,7 @@ const Navbar = async () => {
       <NavbarLinks categories={categories} />
 
       <div className="flex gap-4 ml-auto">
+        <CustomerDropdown user={user} />
         <Cart />
       </div>
     </>

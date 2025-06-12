@@ -50,7 +50,7 @@ export async function createStripeCheckoutSession(
     }
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "klarna", "mobilepay"],
+      payment_method_types: ["card", "klarna"],
       line_items: lineItems,
       automatic_tax: {
         enabled: true,
@@ -156,20 +156,26 @@ async function getFormattedShippingOptions(): Promise<
 async function confirmLineItems(
   items: CartItem[]
 ): Promise<Stripe.Checkout.SessionCreateParams.LineItem[]> {
-  const vatResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/default-vat-rate`,
-    {
-      headers: {
-        "x-api-key": process.env.STOREFRONT_API_KEY || "",
-      },
+  const defaultVatRate = await (async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/default-vat-rate`,
+        {
+          headers: {
+            "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          },
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to fetch VAT rate");
+      }
+      return data;
+    } catch (error) {
+      console.error("Error fetching default VAT rate:", error);
+      throw error;
     }
-  );
-
-  if (!vatResponse.ok) {
-    throw new Error("Failed to fetch VAT rate");
-  }
-
-  const defaultVatRate = await vatResponse.json();
+  })();
 
   return Promise.all(
     items.map(async (item) => {

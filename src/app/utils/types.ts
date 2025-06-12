@@ -299,3 +299,9 @@ export type StoreSettingsWithName = {
   logoUrl: string | null;
   Store: StoreName; // Assuming Store can be null, adjust if needed
 };
+
+export type User = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};

@@ -56,14 +56,23 @@ export async function POST(req: NextRequest) {
       }
 
       const order = (await orderResponse.json()) as Order;
+      if (order.status === "PAID") {
+        return NextResponse.json({ message: "Order already paid", ok: true });
+      }
+      const fullName = (session.customer_details?.name || "").trim();
+      const [first_name, ...lastParts] = fullName.split(/\s+/); // Split by one or more spaces
+      const last_name = lastParts.join(" ");
 
       const customerData: CustomerData = {
-        first_name: session.customer_details?.name as string,
-        last_name: session.customer_details?.name as string,
+        first_name: first_name || "",
+        last_name: last_name || "",
         email: session.customer_details?.email as string,
-        address: session.shipping_details?.address?.line1 as string,
-        postal_code: session.shipping_details?.address?.postal_code as string,
-        city: session.shipping_details?.address?.city as string,
+        address: session.customer_details?.address?.line2
+          ? `${session.customer_details.address.line1}, ${session.customer_details.address.line2}`
+          : (session.customer_details?.address?.line1 as string),
+
+        postal_code: session.customer_details?.address?.postal_code as string,
+        city: session.customer_details?.address?.city as string,
         phone: session.customer_details?.phone as string,
       };
 
