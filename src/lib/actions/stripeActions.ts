@@ -12,6 +12,7 @@ import {
 } from "@/app/utils/types";
 import { default as nodeFetch } from "node-fetch";
 import { PAYMENT_METHODS } from "@/app/utils/constants";
+import { getUser } from "./authActions";
 
 class CartError extends Error {
   productId: string;
@@ -311,6 +312,26 @@ async function createPendingOrder(
   }));
 
   try {
+
+    const { user } = await getUser();
+    const body: {
+      orderId: string;
+      confirmedItems: typeof orderLineItems;
+      totalAmount: number;
+      customerId?: string;
+    } = {
+      orderId: orderId,
+      confirmedItems: orderLineItems,
+      totalAmount: orderLineItems.reduce(
+        (acc, item) => acc + item.totalAmount,
+        0
+      ),
+    };
+
+    if (user && user.id) {
+      body.customerId = user.id; // Add customerId if logged in
+    }
+
     const res = await nodeFetch(
       `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order`,
       {
@@ -319,14 +340,7 @@ async function createPendingOrder(
           "x-api-key": process.env.STOREFRONT_API_KEY || "",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          orderId: orderId,
-          confirmedItems: orderLineItems,
-          totalAmount: orderLineItems.reduce(
-            (acc, item) => acc + item.totalAmount,
-            0
-          ),
-        }),
+        body: JSON.stringify(body),
       }
     );
 

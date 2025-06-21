@@ -17,6 +17,7 @@ import {
 import fetch from "node-fetch";
 import { PaytrailResponse } from "@/components/Checkout/PaytrailPayments";
 import { PAYMENT_METHODS } from "@/app/utils/constants";
+import { getUser } from "./authActions";
 
 const createHeaders = (method: string): { [key: string]: string } => {
   if (!PAYMENT_METHODS.includes("paytrail")) {
@@ -241,6 +242,7 @@ async function createPendingOrder(
     city: customerData.city,
     phone: customerData.phone || "",
   };
+  const { user } = await getUser();
 
   try {
     const res = await fetch(
@@ -261,6 +263,7 @@ async function createPendingOrder(
           orderShipmentMethod,
           orderCustomerData,
           transactionId,
+          ...(user && user.id && { customerId: user.id }),
         }),
       }
     );

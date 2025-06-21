@@ -6,22 +6,34 @@ import CustomerDropdown from "./CustomerDropdown";
 import { getUser } from "@/lib/actions/authActions";
 
 const getCategoryData = async (): Promise<ApiCategory[]> => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/categories`,
-    {
-      headers: {
-        "x-api-key": process.env.STOREFRONT_API_KEY || "",
-      },
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/categories`,
+      {
+        headers: {
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      let errorMessage = "Failed to fetch categories";
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch (jsonErr) {
+        // Ignore JSON parse errors
+      }
+      console.error(errorMessage);
+      return [];
     }
-  );
 
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.error || "Failed to fetch categories");
+    const categories: ApiCategory[] = await res.json();
+    return categories;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
   }
-
-  const categories: ApiCategory[] = await res.json();
-  return categories;
 };
 
 const Navbar = async () => {
