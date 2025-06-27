@@ -277,7 +277,7 @@ export default function LoginForm() {
           ),
         });
         form.reset();
-        router.push("/mypage");
+        router.refresh();
       }
     } finally {
       setIsLoading(false);

@@ -20,6 +20,7 @@ import {
   ProductVariation,
   ProductVariationFromApi,
 } from "@/app/utils/types";
+import WishlistButton from "./WishlistButton";
 
 const ProductDetail = ({ product }: { product: ProductFromApi }) => {
   const hasVariations = product.variations?.length > 0;
@@ -186,9 +187,12 @@ const ProductDetail = ({ product }: { product: ProductFromApi }) => {
                 </Select>
               </div>
             )}
-          </div>
-
-          <div className="mt-6">
+          </div>{" "}
+          <div className="space-y-4">
+            <WishlistButton
+              product={product}
+              selectedVariation={selectedVariation}
+            />
             <AddToCartButton
               product={product}
               selectedVariation={selectedVariation}
