@@ -313,13 +313,7 @@ export default function LoginForm() {
         toast({
           title: "Virhe",
           description: "Sähköpostin lähettäminen epäonnistui. Yritä uudelleen.",
-          className:
-            "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
-          action: (
-            <div className="flex items-center space-x-2">
-              <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
-            </div>
-          ),
+          variant: "destructive",
         });
       }
     } finally {

@@ -373,20 +373,23 @@ export async function editCustomerProfile(formData: FormData) {
 
   const { firstName, lastName, email } = validatedFields.data;
 
-  // Get current user session
-  const { user } = await getUser();
-  if (!user) {
+  // Get session ID from cookies
+  const cookieStore = cookies();
+  const sessionIdCookie = cookieStore.get("session-id");
+  if (!sessionIdCookie) {
     return { error: "No active session found. Please login again." };
   }
+  const sessionId = sessionIdCookie.value;
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/edit-user/${user.id}`,
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/edit-user/`,
       {
         method: "PATCH",
         headers: {
           "x-api-key": process.env.STOREFRONT_API_KEY || "",
           "Content-Type": "application/json",
+          "x-session-id": sessionId,
         },
         body: JSON.stringify({
           firstName,
@@ -427,19 +430,25 @@ export async function editCustomerProfile(formData: FormData) {
 
 export async function deleteCustomerAccount() {
   // Get current user session
-  const { user } = await getUser();
-  if (!user) {
-    return { error: "No active session found. Please login again." };
+
+  const cookieStore = cookies();
+  const sessionIdCookie = cookieStore.get("session-id");
+
+  if (!sessionIdCookie) {
+    return { error: "No active session found." };
   }
+
+  const sessionId = sessionIdCookie.value;
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/delete-user/${user.id}`,
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/delete-user/`,
       {
         method: "DELETE",
         headers: {
           "x-api-key": process.env.STOREFRONT_API_KEY || "",
           "Content-Type": "application/json",
+          "x-session-id": sessionId,
         },
       }
     );
@@ -497,9 +506,127 @@ export async function resendVerificationEmail(customerId: string) {
       }
     }
 
-    return { success: true, message: "Verification email sent!" };
+    return { success: true, message: "Email verified successfully!" };
   } catch (error) {
-    console.error("Resend verification error:", error);
+    console.error("Email verification error:", error);
     return { error: "An unexpected error occurred. Please try again." };
   }
 }
+
+export async function addToWishlist(productId: string, returnUrl: string, variationId?: string) {
+  const cookieStore = cookies();
+  const sessionIdCookie = cookieStore.get("session-id");
+
+  if (!sessionIdCookie) {
+    // If not logged in, return a flag for the UI to handle redirect
+    return { requiresLogin: true, returnUrl: returnUrl || null };
+  }
+
+  const sessionId = sessionIdCookie.value;
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/wishlist`,
+      {
+        method: "POST",
+        headers: {
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          "Content-Type": "application/json",
+          "x-session-id": sessionId,
+        },
+        body: JSON.stringify({ productId, variationId }),
+      }
+    );
+
+    if (response.status === 401) {
+      // Session expired or invalid, ask UI to redirect to login
+      return { requiresLogin: true, returnUrl: returnUrl || null };
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json() as { error?: string };
+      return { error: errorData.error || "Failed to add to wishlist" };
+    }
+
+    return { success: true, message: "Added to wishlist" };
+  } catch (error) {
+    console.error("Add to wishlist error:", error);
+    return { error: "An unexpected error occurred. Please try again." };
+  }
+}
+
+// export async function deleteFromWishlist(wishlistItemId: string) {
+//   const cookieStore = cookies();
+//   const sessionIdCookie = cookieStore.get("session-id");
+
+//   if (!sessionIdCookie) {
+//     return { error: "No active session found." };
+//   }
+
+//   const sessionId = sessionIdCookie.value;
+
+//   try {
+//     const response = await fetch(
+//       `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/wishlist/${wishlistItemId}`,
+//       {
+//         method: "DELETE",
+//         headers: {
+//           "x-api-key": process.env.STOREFRONT_API_KEY || "",
+//           "Content-Type": "application/json",
+//           "x-session-id": sessionId,
+//         },
+//       }
+//     );
+
+//     if (!response.ok) {
+//       const errorData = await response.json() as { error?: string };
+//       return { error: errorData.error || "Failed to delete from wishlist" };
+//     }
+
+//     return { success: true, message: "Deleted from wishlist" };
+//   } catch (error) {
+//     console.error("Delete from wishlist error:", error);
+//     return { error: "An unexpected error occurred. Please try again." };
+//   }
+// }
+
+// Server action for deleting wishlist items
+export async function deleteWishlistItem(productId: string, variationId?: string | null) {
+
+  const cookieStore = cookies();
+  const sessionIdCookie = cookieStore.get("session-id");
+
+  if (!sessionIdCookie) {
+    return { error: "No active session found." };
+  }
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/wishlist`,
+      {
+        method: "DELETE",
+        headers: {
+          "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          "Content-Type": "application/json",
+          "x-session-id": sessionIdCookie.value,
+        },
+        body: JSON.stringify({
+          productId: productId,
+          variationId: variationId || null,
+        }),
+      }
+    );
+
+    if (response.ok) {
+      return { success: true, message: "Deleted from wishlist" };
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json() as { error?: string };
+      return { error: errorData.error || "Failed to delete from wishlist" };
+    }
+  } catch (error) {
+    console.error("Error removing from wishlist:", error);
+    return { error: "An unexpected error occurred. Please try again." };
+  }
+};

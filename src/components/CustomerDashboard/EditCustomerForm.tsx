@@ -17,7 +17,15 @@ import {
   editCustomerProfile,
   deleteCustomerAccount,
 } from "@/lib/actions/authActions";
-import { User, Trash2, Save, AlertTriangle } from "lucide-react";
+import {
+  User,
+  Trash2,
+  Save,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type User = {
   id: string;
@@ -42,6 +50,7 @@ const EditCustomerForm = ({ user }: { user: User }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formState, setFormState] = useState<FormState>({});
   const router = useRouter();
+  const { toast } = useToast();
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
       const result = await editCustomerProfile(formData);
@@ -51,14 +60,47 @@ const EditCustomerForm = ({ user }: { user: User }) => {
         console.error("Profile update API error:", result.error);
 
         if (typeof result.error === "string") {
+          toast({
+            title: "Profiilin päivittäminen epäonnistui",
+            description: result.error,
+            className:
+              "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
+            action: (
+              <div className="flex items-center space-x-2">
+                <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
+              </div>
+            ),
+          });
           setFormState({
             error: result.error,
           });
         } else {
           // Handle Zod field errors - they come with Finnish messages from the schema
+          toast({
+            title: "Profiilin päivittäminen epäonnistui",
+            description: "Tarkista antamasi tiedot ja yritä uudelleen",
+            className:
+              "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
+            action: (
+              <div className="flex items-center space-x-2">
+                <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
+              </div>
+            ),
+          });
           setFormState({ fieldErrors: result.error });
         }
       } else {
+        toast({
+          title: "Profiili päivitetty onnistuneesti",
+          description: "Tietosi on päivitetty onnistuneesti.",
+          className:
+            "bg-green-50 border-green-200 dark:bg-green-900 dark:border-green-800",
+          action: (
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="h-5 w-5 text-green-500 dark:text-green-400" />
+            </div>
+          ),
+        });
         setFormState({
           success: "Profiili päivitetty onnistuneesti!",
         });
@@ -75,15 +117,48 @@ const EditCustomerForm = ({ user }: { user: User }) => {
       if (result.error) {
         // Log API error for debugging
         console.error("Account deletion API error:", result.error);
+        toast({
+          title: "Tilin poistaminen epäonnistui",
+          description: "Yritä uudelleen.",
+          className:
+            "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
+          action: (
+            <div className="flex items-center space-x-2">
+              <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
+            </div>
+          ),
+        });
         setFormState({
           error: "Tilin poistaminen epäonnistui. Yritä uudelleen.",
         });
       } else {
+        toast({
+          title: "Tili poistettu",
+          description: "Tili on poistettu onnistuneesti.",
+          className:
+            "bg-green-50 border-green-200 dark:bg-green-900 dark:border-green-800",
+          action: (
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="h-5 w-5 text-green-500 dark:text-green-400" />
+            </div>
+          ),
+        });
         // Redirect to home page after successful deletion
         router.push("/");
       }
     } catch (error) {
       console.error("Unexpected error during account deletion:", error);
+      toast({
+        title: "Odottamaton virhe tapahtui",
+        description: "Yritä uudelleen.",
+        className:
+          "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
+        action: (
+          <div className="flex items-center space-x-2">
+            <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
+          </div>
+        ),
+      });
       setFormState({
         error: "Odottamaton virhe tapahtui. Yritä uudelleen.",
       });
@@ -94,16 +169,16 @@ const EditCustomerForm = ({ user }: { user: User }) => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Omat tiedot</h1>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Omat tiedot</h2>
         <p className="text-muted-foreground">
           Hallitse tilitietojasi ja asetuksiasi
         </p>
       </div>
 
       {/* Profile Edit Form */}
-      <Card className="mb-8">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />

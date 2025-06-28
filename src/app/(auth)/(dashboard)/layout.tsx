@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Mail, LogOut, Home } from "lucide-react";
+import { ShoppingCart, User, Mail, LogOut, Home, Heart } from "lucide-react";
 import Link from "next/link";
 
 const MyPageLayout = ({
@@ -34,6 +34,13 @@ const MyPageLayout = ({
               >
                 <User className="w-4 h-4" />
                 Omat tiedot
+              </Link>
+              <Link
+                href="/mywishlist"
+                className="flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <Heart className="w-4 h-4" />
+                Toivelista
               </Link>
               <Link
                 href="/newsletter"

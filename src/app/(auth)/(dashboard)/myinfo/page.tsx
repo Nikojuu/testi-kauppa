@@ -9,7 +9,11 @@ const MyinfoPage = async () => {
     redirect("/login");
   }
 
-  return <EditCustomerForm user={user} />;
+  return (
+    <div className="max-w-2xl">
+      <EditCustomerForm user={user} />
+    </div>
+  );
 };
 
 export default MyinfoPage;

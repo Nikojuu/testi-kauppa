@@ -285,11 +285,9 @@ const MyOrdersPage = async () => {
     ) || [];
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Minun tilaukseni
-        </h1>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Minun tilaukseni</h2>
         <p className="text-muted-foreground">
           Näet täältä kaikki tilauksesi ja niiden tilan
         </p>
@@ -301,10 +299,10 @@ const MyOrdersPage = async () => {
             <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
               <Package className="w-6 h-6 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-medium mb-2">
               Sinulla ei ole vielä tilauksia
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground mb-6">
               Kun teet ensimmäisen tilauksesi, näet sen täältä
             </p>
             <a
