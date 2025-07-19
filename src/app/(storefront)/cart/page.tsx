@@ -1,4 +1,4 @@
-// import CartPage from "@/components/Cart/CartPage";
+import CartPage from "@/components/Cart/CartPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 };
 
 const CartRoute = () => {
-  // return <CartPage />;
-  return <h1>Cart</h1>;
+  return <CartPage />;
+  // return <h1>Cart</h1>;
 };
 
 export default CartRoute;
