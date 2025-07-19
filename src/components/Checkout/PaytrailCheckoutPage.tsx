@@ -57,15 +57,15 @@ const PaytrailCheckoutPage = () => {
     setCustomerData(data);
 
     try {
-      const response = await getShipmentMethods();
+      // const response = await getShipmentMethods();
 
-      setShipmentMethods(response);
+      // setShipmentMethods(response);
 
-      const fetchDropInLocations = await getDropInLocations({
-        customerPostalCode: data.postal_code,
-      });
+      // const fetchDropInLocations = await getDropInLocations({
+      //   customerPostalCode: data.postal_code,
+      // });
 
-      setDropInLocations(fetchDropInLocations);
+      // setDropInLocations(fetchDropInLocations);
       setStep(2);
     } catch (error) {
       toast({
@@ -195,10 +195,15 @@ const PaytrailCheckoutPage = () => {
   if (!PAYMENT_METHODS.includes("paytrail")) {
     return notFound();
   }
+  const steps = [
+    { number: 1, title: "Asiakastiedot" },
+    { number: 2, title: "Toimitustapa" },
+    { number: 3, title: "Maksutapa" },
+  ];
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 mt-24 md:mt-48 mb-12">
-      <CheckoutSteps currentStep={step} />
+      <CheckoutSteps currentStep={step} steps={steps} />
 
       {step === 1 && (
         <CustomerDataForm

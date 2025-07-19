@@ -1,194 +1,169 @@
 "use client";
 
-import { useState } from "react";
-import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
-import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
-  DropInLocation,
-  ShipitShippingMethod,
+  ShipmentMethodsWithLocations,
   ShipmentMethods,
 } from "@/app/utils/types";
-import { cn } from "@/lib/utils";
-import Subtitle from "../subtitle";
-
-const LOCATIONS_PER_PAGE = 6;
+import { useState } from "react";
 
 export function SelectShipmentMethod({
-  allShipmentMethods,
-  chosenShipmentMethod,
-  setChosenShipmentMethod,
-  dropInLocations,
-}: {
-  allShipmentMethods: {
-    customShipmentMethods: ShipmentMethods[];
-    shipitShipmentMethods: ShipitShippingMethod[];
-  };
-  chosenShipmentMethod:
-    | ShipmentMethods
-    | ShipitShippingMethod
-    | DropInLocation
-    | null;
-  setChosenShipmentMethod: (
-    method: ShipmentMethods | ShipitShippingMethod | DropInLocation | null
-  ) => void;
-  dropInLocations: DropInLocation[];
-}) {
-  const [showAllLocations, setShowAllLocations] = useState(false);
-  const allMethods = [
-    ...allShipmentMethods.customShipmentMethods,
-    ...allShipmentMethods.shipitShipmentMethods,
-    ...dropInLocations,
-  ];
+  shipmentMethodsAndLocations,
 
-  const visibleLocations = showAllLocations
-    ? dropInLocations
-    : dropInLocations.slice(0, LOCATIONS_PER_PAGE);
+  setChosenShipmentMethod,
+}: {
+  shipmentMethodsAndLocations: ShipmentMethodsWithLocations | null;
+
+  setChosenShipmentMethod: (shipmentMethod: {
+    shipmentMethodId: string;
+    pickupId: string | null;
+  }) => void;
+}) {
+  const [selectedShipmentMethod, setSelectedShipmentMethod] =
+    useState<unknown>(null);
+
+  const { shipmentMethods, pricedLocations } = shipmentMethodsAndLocations || {
+    shipmentMethods: [],
+    pricedLocations: [],
+  };
+
+  const homeDeliveryOrCustomShipments: ShipmentMethods[] = [];
+  const parcelLockerShipments: ShipmentMethods[] = [];
+
+  shipmentMethods.forEach((method) => {
+    if (method.shipitMethod?.onlyParchelLocker) {
+      parcelLockerShipments.push(method);
+    } else {
+      homeDeliveryOrCustomShipments.push(method);
+    }
+  });
+
+  const handleShipmentMethodChange = (value: string) => {
+    setSelectedShipmentMethod(value);
+
+    // Parse the JSON string back into an object
+    const data = JSON.parse(value);
+
+    if (data.type === "locker") {
+      const { lockerId, serviceId } = data;
+
+      // Find the shipment method that corresponds to the selected locker's service
+      const shipmentMethod = parcelLockerShipments.find(
+        (method) => method.shipitMethod?.serviceId === serviceId
+      );
+
+      if (shipmentMethod) {
+        const shipmentMethodId = shipmentMethod.id;
+        setChosenShipmentMethod({
+          shipmentMethodId: shipmentMethodId,
+          pickupId: lockerId,
+        });
+      } else {
+        console.error(
+          "Could not find a matching shipment method for serviceId:",
+          serviceId
+        );
+      }
+    } else if (data.type === "method") {
+      // Handle regular shipment methods if needed
+      const { methodId } = data;
+      setChosenShipmentMethod({
+        shipmentMethodId: methodId,
+        pickupId: null,
+      });
+    }
+  };
 
   return (
-    <>
-      <Subtitle subtitle="Valitse toimitustapa" />
+    <div className="space-y-6 w-full">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Valitse toimitustapa</h2>
+      </div>
+
       <RadioGroup
-        onValueChange={(value: string) => {
-          const selected = allMethods.find((method) => method.id === value);
-          if (selected) {
-            setChosenShipmentMethod(selected);
-          }
-        }}
-        value={chosenShipmentMethod?.id}
-        className="space-y-6 mx-auto max-w-2xl "
+        value={selectedShipmentMethod as string}
+        onValueChange={handleShipmentMethodChange}
+        className="space-y-6 "
       >
-        <Card>
-          <CardHeader>
-            <CardTitle>Postitus</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {allShipmentMethods.customShipmentMethods.map((method) => (
-              <ShipmentMethod key={method.id} method={method} />
-            ))}
-          </CardContent>
-        </Card>
-        {allShipmentMethods.shipitShipmentMethods.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Shipit Postitus</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {allShipmentMethods.shipitShipmentMethods.map((method) => (
-                <ShipmentMethod key={method.id} method={method} />
+        {/* Home Delivery / Custom Shipments Section */}
+        {homeDeliveryOrCustomShipments.length > 0 && (
+          <div className="space-y-4 ">
+            <div className="flex flex-col gap-4 ">
+              {homeDeliveryOrCustomShipments.map((shipment) => (
+                <Card
+                  key={shipment.id}
+                  className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
+                >
+                  <CardContent className="p-4 ">
+                    <div className="flex items-start space-x-3">
+                      <RadioGroupItem
+                        value={JSON.stringify({
+                          type: "method",
+                          methodId: shipment.id,
+                        })}
+                        id={`method-${shipment.id}`}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <Label
+                          htmlFor={`method-${shipment.id}`}
+                          className="block cursor-pointer w-full"
+                        >
+                          <h4 className="font-medium text-lg">
+                            {shipment.name}
+                          </h4>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Hinta: {shipment.price.toFixed(2)}€
+                          </p>
+                        </Label>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
-        {dropInLocations.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Pakettiautomaatit</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
-                {visibleLocations.map((method) => (
-                  <ParchelLockerShipmentMethod
-                    key={method.id}
-                    method={method}
-                  />
-                ))}
-              </div>
-              {dropInLocations.length > LOCATIONS_PER_PAGE && (
-                <div className="flex justify-center pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowAllLocations(!showAllLocations)}
-                    className="w-full max-w-xs"
-                  >
-                    {showAllLocations
-                      ? "Näytä vähemmän automaatteja"
-                      : `Näytä lisää automaatteja (${
-                          dropInLocations.length - LOCATIONS_PER_PAGE
-                        })`}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        {pricedLocations.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Pakettiautomaatti</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {pricedLocations.map((location) => (
+                <Card
+                  key={location.id}
+                  className="cursor-pointer transition-all hover:shadow-md hover:border-primary/50"
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start space-x-3">
+                      <RadioGroupItem
+                        value={JSON.stringify({
+                          type: "locker",
+                          lockerId: location.id,
+                          serviceId: location.serviceId,
+                        })}
+                        id={`location-${location.id}`}
+                        className="mt-1"
+                      />
+
+                      <Label
+                        htmlFor={`location-${location.id}`}
+                        className="block cursor-pointer w-full"
+                      >
+                        <h4 className="font-medium text-sm">{location.name}</h4>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Hinta:€
+                        </p>
+                      </Label>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         )}
       </RadioGroup>
-    </>
-  );
-}
-
-function ShipmentMethod({
-  method,
-}: {
-  method: ShipmentMethods | ShipitShippingMethod;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex items-center space-x-2 p-4 rounded-lg border",
-        "hover:bg-accent hover:text-accent-foreground",
-        "transition-colors duration-200"
-      )}
-    >
-      <RadioGroupItem
-        value={method.id}
-        id={method.id}
-        className="border-gray-500 text-gray-700 bg-white "
-      />
-      <Label
-        htmlFor={method.id}
-        className="flex justify-between w-full cursor-pointer"
-      >
-        <span>{method.name}</span>
-      </Label>
-    </div>
-  );
-}
-
-function ParchelLockerShipmentMethod({ method }: { method: DropInLocation }) {
-  return (
-    <div
-      className={cn(
-        "flex items-center   p-2 rounded-lg border",
-        "hover:bg-accent hover:text-accent-foreground",
-        "transition-colors duration-200"
-      )}
-    >
-      <RadioGroupItem
-        className="border-gray-500 text-gray-700 bg-white "
-        value={method.id}
-        id={method.id}
-      />
-      <Label
-        htmlFor={method.id}
-        className="flex flex-col items-start cursor-pointer w-full p-2 "
-      >
-        <div className="flex justify-between w-full ">
-          <span className="font-medium ">{method.name}</span>
-          <span className="text-sm text-muted-foreground ">
-            {method.merchantPrice! / 100} €
-          </span>
-        </div>
-        <div className="flex items-center text-sm text-muted-foreground space-x-1">
-          <MapPin className="h-3 w-3" />
-          <span>{method.distanceInKilometers} km away</span>
-        </div>
-        <div className="flex items-center justify-between w-full">
-          <span className="text-sm text-muted-foreground">
-            {method.carrier}
-          </span>
-          <Image
-            src={method.carrierLogo}
-            alt={method.carrier}
-            width={40}
-            height={40}
-            className="object-contain"
-          />
-        </div>
-      </Label>
     </div>
   );
 }

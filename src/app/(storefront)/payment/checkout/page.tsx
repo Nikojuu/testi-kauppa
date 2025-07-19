@@ -1,8 +1,8 @@
 import { PAYMENT_METHODS } from "@/app/utils/constants";
 import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
+import StripeCheckoutPage from "@/components/Checkout/StripeCheckoutPage";
 
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Tilaus",
@@ -18,10 +18,11 @@ export const metadata: Metadata = {
 };
 
 const CheckoutRoute = () => {
-  if (!PAYMENT_METHODS.includes("paytrail")) {
-    return notFound();
+  if (PAYMENT_METHODS.includes("paytrail")) {
+    return <PaytrailCheckoutPage />;
+  } else if (PAYMENT_METHODS.includes("stripe")) {
+    return <StripeCheckoutPage />;
   }
-  return <PaytrailCheckoutPage />;
 };
 
 export default CheckoutRoute;

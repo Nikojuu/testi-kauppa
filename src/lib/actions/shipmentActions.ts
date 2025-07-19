@@ -1,11 +1,8 @@
 "use server";
 
-// import { ShipitShippingMethod } from "@prisma/client";
-import { CustomerData } from "../zodSchemas";
-import { ApiResponseShipmentMethods } from "@/app/utils/types";
+import { ApiResponseShipmentMethods, ShipitAgentLocation, ShipmentMethodsWithLocations } from "@/app/utils/types";
 
-export async function getShipmentMethods() {
-  // make aktive shipment method in database TODO later§
+export async function getShipmentMethods(postalCode: string): Promise<ShipmentMethodsWithLocations> {
 
   try {
     const res = await fetch(
@@ -27,18 +24,67 @@ export async function getShipmentMethods() {
 
     const apiResponse: ApiResponseShipmentMethods = await res.json();
 
-    // Get both types of shipment methods
-    const customShipmentMethods = apiResponse.shipmentMethods || [];
-    const shipitShipmentMethods =
-      apiResponse.shipitShipmentMethods.filter(
-        (method) => method.onlyParchelLocker === false
-      ) || [];
+   const serviceIds = apiResponse.shipmentMethods
+  .map((method) => method.shipitMethod?.serviceId) 
+  .filter((id): id is string => id !== undefined && id !== null);
+   
 
-    return { customShipmentMethods, shipitShipmentMethods };
+
+     const requestBody = {
+    postcode: postalCode,
+    country: "FI",
+    serviceId: serviceIds,
+    type: "parcel_locker",
+    limit: 20,
+  };
+
+ 
+    const response = await fetch(process.env.SHIPIT_API_URL! + "/agents", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-SHIPIT-KEY": process.env.SHIPIT_API_KEY!,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+     if (!data.locations) {
+      console.log("No locations found");
+      return {
+        pricedLocations: [],
+        shipmentMethods: apiResponse.shipmentMethods,
+      };
+    }
+
+    const pricedLocations = data.locations.map((location: ShipitAgentLocation) => {
+      const matchingMethod = apiResponse.shipmentMethods.find(
+        (method) => method.shipitMethod?.serviceId === location.serviceId
+      );
+      return {
+        ...location,
+        merchantPrice: matchingMethod ? matchingMethod.price : null,
+      };
+    });
+    
+
+
+    return {
+      pricedLocations,
+      shipmentMethods: apiResponse.shipmentMethods,
+    };
+
   } catch (error) {
     console.error("Error fetching shipment methods:", error);
     throw error;
   }
+
+
 }
 
 export const getDropInLocations = async ({
@@ -56,7 +102,9 @@ export const getDropInLocations = async ({
     }
   );
   const shipmentMethods: ApiResponseShipmentMethods = await res.json();
-  const shipitShipmentMethods = shipmentMethods.shipitShipmentMethods;
+  const shipitShipmentMethods = shipmentMethods.shipmentMethods.map(
+    (method) => method.shipitMethod
+  );
 
   if (shipitShipmentMethods.length === 0) {
     return [];

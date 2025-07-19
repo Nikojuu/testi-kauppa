@@ -63,14 +63,14 @@ const CartPage = () => {
 
   const handleStripeCheckout = async () => {
     if (!PAYMENT_METHODS.includes("stripe")) {
-      alert("Stripe is not a valid payment method");
+      alert("Stripe ei ole käytettävissä");
       return;
     }
     try {
-      const res = await createStripeCheckoutSession(items);
+      const res = await createStripeCheckoutSession(items, cartTotal);
 
       if (res === null) {
-        alert("Failed to create Stripe Checkout session");
+        alert("Tilauksen luominen epäonnistui");
         return;
       }
 
@@ -97,7 +97,7 @@ const CartPage = () => {
 
       router.push(res as string);
     } catch (error) {
-      alert("Error creating Stripe Checkout session");
+      alert("Tilauksen luominen epäonnistui");
     }
   };
   useEffect(() => {
@@ -310,21 +310,11 @@ const CartPage = () => {
             </div>
 
             <div className="mt-6">
-              {PAYMENT_METHODS.includes("stripe") && (
-                <form action={handleStripeCheckout}>
-                  <CheckoutButton />
-                  <p className="text-red-500">
-                    Checkout is currently in test mode no payments are accepted
-                  </p>
-                </form>
-              )}
-              {PAYMENT_METHODS.includes("paytrail") && (
-                <Link href="/payment/checkout">
-                  <Button className="w-full" variant="gooeyLeft">
-                    Tee tilaus
-                  </Button>
-                </Link>
-              )}
+              <Link href="/payment/checkout">
+                <Button className="w-full" variant="gooeyLeft">
+                  Jatka tilaukseen
+                </Button>
+              </Link>
             </div>
           </section>
         </div>

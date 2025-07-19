@@ -1,16 +1,16 @@
 import { Progress } from "@/components/ui/progress";
 
-interface CheckoutStepsProps {
-  currentStep: number;
+interface Step {
+  number: number;
+  title: string;
 }
 
-const steps = [
-  { number: 1, title: "Asiakastiedot" },
-  { number: 2, title: "Toimitustapa" },
-  { number: 3, title: "Maksutapa" },
-];
+interface CheckoutStepsProps {
+  currentStep: number;
+  steps: Step[];
+}
 
-export function CheckoutSteps({ currentStep }: CheckoutStepsProps) {
+export function CheckoutSteps({ currentStep, steps }: CheckoutStepsProps) {
   const progress = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (

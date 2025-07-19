@@ -26,6 +26,41 @@ export interface DropInLocation {
   distanceInKilometers: number;
 }
 
+export interface ShipitAgentResponse {
+  status: number;
+  locations: ShipitAgentLocation[];
+}
+
+export interface ShipitAgentLocation {
+  id: string;
+  name: string;
+  address1: string;
+  zipcode: string;
+  city: string;
+  countryCode: string;
+  serviceId: string;
+  carrier: string;
+  price: number | null;
+  merchantPrice: number | null;
+  carrierLogo: string;
+  openingHours: {
+    monday: string[];
+    tuesday: string[];
+    wednesday: string[];
+    thursday: string[];
+    friday: string[];
+    saturday: string[];
+    sunday: string[];
+    exceptions: string[];
+  } | null;
+  openingHoursRaw: string | null;
+  latitude: number;
+  longitude: number;
+  distanceInMeters: number;
+  distanceInKilometers: number;
+  metadata: unknown | null;
+}
+
 export interface ShipitResponse {
   status: string;
   number: number;
@@ -165,12 +200,17 @@ export interface ShipmentMethods {
   min_estimate_delivery_days: number | null; // nullable
   active: boolean;
   price: number;
+  shipitMethod: ShipitShippingMethod;
 }
 
 export interface ApiResponseShipmentMethods {
   // To type the API response
   shipmentMethods: ShipmentMethods[];
-  shipitShipmentMethods: ShipitShippingMethod[];
+}
+
+export interface ShipmentMethodsWithLocations {
+  pricedLocations: ShipitAgentLocation[];
+  shipmentMethods: ShipmentMethods[];
 }
 
 export interface ShipitShippingMethod {
@@ -187,7 +227,6 @@ export interface ShipitShippingMethod {
   information?: string | null;
   createdAt: Date;
   updatedAt: Date;
-  storeId?: string | null;
   description: string;
   height: number;
   length: number;
@@ -305,3 +344,47 @@ export type User = {
   lastName: string;
   email: string;
 };
+
+// Campaign Types
+export enum CampaignType {
+  FREE_SHIPPING = "FREE_SHIPPING",
+  BUY_X_PAY_Y = "BUY_X_PAY_Y"
+}
+
+export interface Campaign {
+  id: string;
+  storeId: string;
+  name: string;
+  description: string | null;
+  type: CampaignType;
+  startDate: Date;
+  endDate: Date | null;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  FreeShippingCampaign?: FreeShippingCampaign | null;
+  BuyXPayYCampaign?: BuyXPayYCampaign | null;
+}
+
+export interface FreeShippingCampaign {
+  id: string;
+  campaignId: string;
+  minimumSpend: number;
+  shipmentMethods: ShipmentMethods[];
+  campaign?: Campaign;
+}
+
+export interface BuyXPayYCampaign {
+  id: string;
+  campaignId: string;
+  buyQuantity: number;
+  payQuantity: number;
+  applicableCategories: Category[];
+  campaign?: Campaign;
+}
+
+export interface CampaignApiResponse {
+  campaign: Campaign | null;
+  type: CampaignType;
+  found: boolean;
+}
