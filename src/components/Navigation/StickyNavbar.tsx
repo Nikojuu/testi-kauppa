@@ -83,7 +83,7 @@ export default function StickyNavbar({
         </Link>
         {children}
       </nav>
-      {!isScrolled && (
+      {!isScrolled && campaigns.length > 0 && (
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

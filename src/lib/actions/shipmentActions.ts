@@ -1,9 +1,14 @@
 "use server";
 
-import { ApiResponseShipmentMethods, ShipitAgentLocation, ShipmentMethodsWithLocations } from "@/app/utils/types";
+import {
+  ApiResponseShipmentMethods,
+  ShipitAgentLocation,
+  ShipmentMethodsWithLocations,
+} from "@/app/utils/types";
 
-export async function getShipmentMethods(postalCode: string): Promise<ShipmentMethodsWithLocations> {
-
+export async function getShipmentMethods(
+  postalCode: string
+): Promise<ShipmentMethodsWithLocations> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/shipment-methods`,
@@ -24,21 +29,26 @@ export async function getShipmentMethods(postalCode: string): Promise<ShipmentMe
 
     const apiResponse: ApiResponseShipmentMethods = await res.json();
 
-   const serviceIds = apiResponse.shipmentMethods
-  .map((method) => method.shipitMethod?.serviceId) 
-  .filter((id): id is string => id !== undefined && id !== null);
-   
+    const serviceIds = apiResponse.shipmentMethods
+      .map((method) => method.shipitMethod?.serviceId)
+      .filter((id): id is string => id !== undefined && id !== null);
 
+    if (serviceIds.length === 0) {
+      console.log("No service IDs found, skipping Shipit API call");
+      return {
+        pricedLocations: [],
+        shipmentMethods: apiResponse.shipmentMethods,
+      };
+    }
 
-     const requestBody = {
-    postcode: postalCode,
-    country: "FI",
-    serviceId: serviceIds,
-    type: "parcel_locker",
-    limit: 20,
-  };
+    const requestBody = {
+      postcode: postalCode,
+      country: "FI",
+      serviceId: serviceIds,
+      type: "parcel_locker",
+      limit: 20,
+    };
 
- 
     const response = await fetch(process.env.SHIPIT_API_URL! + "/agents", {
       method: "POST",
       headers: {
@@ -54,7 +64,7 @@ export async function getShipmentMethods(postalCode: string): Promise<ShipmentMe
 
     const data = await response.json();
 
-     if (!data.locations) {
+    if (!data.locations) {
       console.log("No locations found");
       return {
         pricedLocations: [],
@@ -62,29 +72,26 @@ export async function getShipmentMethods(postalCode: string): Promise<ShipmentMe
       };
     }
 
-    const pricedLocations = data.locations.map((location: ShipitAgentLocation) => {
-      const matchingMethod = apiResponse.shipmentMethods.find(
-        (method) => method.shipitMethod?.serviceId === location.serviceId
-      );
-      return {
-        ...location,
-        merchantPrice: matchingMethod ? matchingMethod.price : null,
-      };
-    });
-    
-
+    const pricedLocations = data.locations.map(
+      (location: ShipitAgentLocation) => {
+        const matchingMethod = apiResponse.shipmentMethods.find(
+          (method) => method.shipitMethod?.serviceId === location.serviceId
+        );
+        return {
+          ...location,
+          merchantPrice: matchingMethod ? matchingMethod.price : null,
+        };
+      }
+    );
 
     return {
       pricedLocations,
       shipmentMethods: apiResponse.shipmentMethods,
     };
-
   } catch (error) {
     console.error("Error fetching shipment methods:", error);
     throw error;
   }
-
-
 }
 
 export const getDropInLocations = async ({
