@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { z } from "zod";
 
 export const customerDataSchema = z.object({
@@ -17,8 +18,7 @@ export const customerDataSchema = z.object({
     .min(1, "Kaupunki vaaditaan"),
   phone: z
     .string()
-    .min(1, "Puhelin numero vaaditaan")
-    .regex(/^[\d\s\-\+\(\)]+$/, "Puhelin numero saa sisältää vain numeroita ja välilyöntejä"),
+    .refine(isValidPhoneNumber, { message: "Virheellinen puhelin numero" }),
 });
 export type CustomerData = z.infer<typeof customerDataSchema>;
 

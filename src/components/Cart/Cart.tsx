@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import Image from "next/image";
 import { useCart } from "@/hooks/use-cart";
+import { useCampaignCart } from "@/hooks/use-campaign-cart";
 
 import { useEffect, useState } from "react";
 import {
@@ -20,43 +21,34 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { buttonVariants } from "../ui/button";
 import CartItem from "./CartItem";
-import { isSaleActive } from "@/lib/utils";
+import { Campaign } from "@/app/utils/types";
 
-const Cart = () => {
+const Cart = ({ campaigns = [] }: { campaigns?: Campaign[] }) => {
   const items = useCart((state) => state.items);
   const itemCount = items.length;
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
+  // Find campaigns
+  const freeShippingCampaign = campaigns.find(
+    (campaign) => campaign.type === "FREE_SHIPPING"
+  );
+  const buyXPayYCampaign = campaigns.find(
+    (campaign) => campaign.type === "BUY_X_PAY_Y"
+  );
+
+  // Use the campaign cart hook for calculations
+  const {
+    calculatedItems,
+    cartTotal,
+    originalTotal,
+    totalSavings,
+    freeShipping,
+  } = useCampaignCart(items, buyXPayYCampaign, freeShippingCampaign);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  const cartTotal = items.reduce(
-    (total, { product, variation, cartQuantity }) => {
-      let effectivePrice: number;
-
-      if (variation) {
-        // Handle variation-specific pricing logic
-        const isVariationOnSale =
-          isSaleActive(variation.saleStartDate, variation.saleEndDate) &&
-          variation.salePrice !== null;
-        effectivePrice = isVariationOnSale
-          ? variation.salePrice!
-          : variation.price!;
-      } else {
-        // Handle product-level pricing logic
-        const isProductOnSale =
-          isSaleActive(product.saleStartDate, product.saleEndDate) &&
-          product.salePrice !== null;
-        effectivePrice = isProductOnSale ? product.salePrice! : product.price!;
-      }
-
-      // Multiply effective price by cart quantity, defaulting to 1 if cartQuantity is not defined
-      return total + (effectivePrice / 100) * (cartQuantity || 1);
-    },
-    0
-  );
 
   return (
     <Sheet>
@@ -77,22 +69,62 @@ const Cart = () => {
           <>
             <div className="flex w-full flex-col pr-6">
               <ScrollArea>
-                {items.map(({ product, variation }) => (
+                {calculatedItems.map(({ item, paidQuantity, freeQuantity }) => (
                   <CartItem
-                    product={product}
-                    variation={variation}
-                    key={`${product.id}-${variation?.id ?? "default"}`}
+                    product={item.product}
+                    variation={item.variation}
+                    paidQuantity={paidQuantity}
+                    freeQuantity={freeQuantity}
+                    key={`${item.product.id}-${item.variation?.id ?? "default"}`}
                   />
                 ))}
               </ScrollArea>
             </div>
             <div className="space-y-4 pr-6">
               <Separator />
+
+              {/* Show campaign savings if applicable */}
+              {totalSavings > 0 && (
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex text-xs text-gray-600">
+                    <span className="flex-1">Alkuperäinen hinta</span>
+                    <span>{originalTotal.toFixed(2)} €</span>
+                  </div>
+                  <div className="flex text-xs text-green-600">
+                    <span className="flex-1">Kampanja säästö</span>
+                    <span>-{totalSavings.toFixed(2)} €</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Free shipping status in sidebar */}
+              {freeShippingCampaign && (
+                <div className="text-center">
+                  {freeShipping.isEligible ? (
+                    <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
+                      🚚 Ilmainen toimitus!
+                    </div>
+                  ) : (
+                    <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                      <div>
+                        Lisää {freeShipping.remainingAmount.toFixed(2)} €
+                      </div>
+                      <div>ilmaiseen toimitukseen! 🚚</div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-1.5 text-sm">
                 <div className="flex">
                   <span className="flex-1">Yhteensä</span>
-                  <span>{cartTotal} €</span>
+                  <span>{cartTotal.toFixed(2)} €</span>
                 </div>
+                {totalSavings > 0 && (
+                  <div className="text-xs text-green-600 text-center">
+                    🎉 Säästät {totalSavings.toFixed(2)} € kampanjalla!
+                  </div>
+                )}
               </div>
 
               <SheetFooter>

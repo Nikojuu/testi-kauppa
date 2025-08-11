@@ -69,6 +69,27 @@ export interface ShipitResponse {
   orderId: string;
   freightDoc: string[];
 }
+export type OrderData = {
+  status: string;
+  orderShipmentMethod: {
+    id: string;
+    name: string;
+    price: number;
+    vatRate: number;
+    logo: string;
+  };
+  orderCustomerData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    address: string;
+    postalCode: string;
+    city: string;
+    phone: string;
+  };
+ 
+  shipitData?: ShipitResponse;
+};
 // types.ts
 export interface ProductVariation {
   id: string;
@@ -259,6 +280,7 @@ export interface OrderLineItems {
   productCode: string;
   name: string;
   vatRate: number;
+  images: string[];
   // Optional: reference back to Order if needed
   // order?: Order;
 }
@@ -278,6 +300,10 @@ export type OrderShipmentMethod = {
   price: number; // Float in Prisma, number in TypeScript
   orderId: string;
   vatRate?: number | null;
+  trackingNumber?: string;
+  trackingUrls?: string[];
+  shipmentNumber?: string;
+  freightDoc?: string[];
   // order?: Order; // Uncomment if you need the related Order
 };
 

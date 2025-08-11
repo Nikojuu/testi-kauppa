@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import Image from "next/image";
 import { ClearCart } from "@/components/Cart/ClearCart";
 import { Metadata } from "next";
 import ImageKitImage from "@/components/ImageKitImage";
 import { Order } from "@/app/utils/types";
 import fetch from "node-fetch";
-import { OrderItem } from "@/app/utils/sendOrderConfirmationEmail";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Kiitos tilauksestasi!",
@@ -67,141 +67,231 @@ export default async function PaymentSuccessPage({
       </div>
     );
   }
-  const customerData = order.orderCustomerData;
-  const shipmentMethod = order.orderShipmentMethod;
-  const orderItems = order.OrderLineItems;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/order-items`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.STOREFRONT_API_KEY || "",
-      },
-      body: JSON.stringify({
-        orderItems: orderItems.map((item) => ({
-          productCode: item.productCode,
-          itemType: item.itemType,
-          price: item.price,
-          quantity: item.quantity,
-        })),
-      }),
+  const formatPrice = (price: number) => {
+    if (price === 0) {
+      return <span className="text-green-600 font-semibold">Ilmainen</span>;
     }
-  );
-
-  const items = (await res.json()) as OrderItem[];
-
-  const totalPriceInCents =
-    items.reduce((total, item) => {
-      if (item && item.price && item.quantity) {
-        return total + item.price * item.quantity;
-      }
-      return total;
-    }, 0) + (shipmentMethod?.price ?? 0);
-
-  const totalPrice = totalPriceInCents / 100;
+    return `${(price / 100).toFixed(2)} €`;
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8 my-32">
+    <div className="container mx-auto px-4 py-8 my-8">
       <ClearCart />
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <CheckCircle className="h-6 w-6 text-green-500" />
-            <CardTitle>Kiitos tilauksestasi!</CardTitle>
-          </div>
-          <CardDescription>
-            Tilauksesi on vastaanotettu. Tässä yhteenveto ostoksestasi:
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex  justify-between items-center mb-4">
-            <div>
-              <h3 className="font-semibold mb-2">Tilauksen tiedot</h3>
-              <p>Tilausnumero: {order.orderNumber}</p>
-            </div>
-            {order.trackingNumber && (
-              <div>
-                <h3 className="font-semibold mb-2">Seurantanumero</h3>
-                <p>{order.trackingNumber}</p>
-              </div>
-            )}
-          </div>
-          <Separator />
 
-          <div>
-            <h3 className="font-semibold mb-4">Tuotteet</h3>
-            <div className="space-y-4">
-              {items.map((item, index) => {
-                if (!item) return null;
-                return (
-                  <div key={index} className="flex items-center space-x-4">
-                    <div className="flex-shrink-0 w-16 h-16 relative">
+      <div className="text-center mb-8">
+        <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Kiitos tilauksestasi!
+        </h1>
+        <p className="text-green-600">
+          Tilausnumero:{" "}
+          <span className="font-semibold">#{order.orderNumber}</span>
+        </p>
+        <p className="text-green-600">
+          Tilauksen tila:{" "}
+          <span className=" capitalize">
+            {order.status === "PAID" ? "Maksettu" : order.status}
+          </span>
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        {/* Order Line Items */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              Tilatut tuotteet
+            </CardTitle>
+            <CardDescription>Yhteenveto ostoksestasi</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {order.OrderLineItems.map((item, index) => (
+              <div key={item.id} className="border-b pb-4 last:border-b-0">
+                <div className="flex gap-4">
+                  {item.images.length > 0 && (
+                    <div className="w-16 h-16 flex-shrink-0">
                       <ImageKitImage
-                        src={item.images || "/placeholder.png"}
-                        alt={item.name || "Product image"}
+                        src={item.images[0]}
+                        alt={item.name}
                         width={64}
                         height={64}
-                        className="h-full w-full rounded-md object-cover object-center "
-                        transformations="w-64,h-64"
+                        className="rounded-md object-cover w-full h-full"
                       />
                     </div>
-                    <div className="flex-grow">
-                      <p className="font-medium">{item.name}</p>
-                      {item.options?.map((opt, idx) => (
-                        <p key={idx} className="text-sm text-gray-500">
-                          {opt.name}: {opt.value}
-                        </p>
-                      ))}
-                      <p className="text-sm">
-                        {item.quantity} x {(item.price / 100).toFixed(2)} €
-                      </p>
+                  )}
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900">{item.name}</h3>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <p>Määrä: {item.quantity} kpl</p>
+                      <p>Yksikköhinta: {formatPrice(item.price)}</p>
+                      <p>ALV: {item.vatRate}%</p>
                     </div>
                   </div>
-                );
-              })}
-
-              <div>
-                <h3 className="font-semibold mb-2">Toimitus</h3>
-                <p>{shipmentMethod?.name}</p>
-                <div className="flex justify-between items-center mb-4">
-                  <p>{shipmentMethod?.description}</p>
-                  <p>{((shipmentMethod?.price ?? 0) / 100).toFixed(2)} €</p>
+                  <div className="text-right">
+                    <p className="">{formatPrice(item.totalAmount)}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
+
             <Separator />
-            <div className="mt-4 flex justify-between items-center font-semibold">
+
+            <div className="flex justify-between items-center text-lg font-bold">
               <span>Yhteensä:</span>
-              <span>{totalPrice.toFixed(2)} €</span>
+              <span>{formatPrice(order.totalAmount)}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Shipment Method & Customer Info */}
+        <div className="space-y-6">
+          {/* Shipment Method */}
+          {order.orderShipmentMethod && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-5 w-5 text-blue-500" />
+                  Toimitusmenetelmä
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    {order.orderShipmentMethod.logo && (
+                      <Image
+                        src={order.orderShipmentMethod.logo}
+                        alt={order.orderShipmentMethod.name}
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 object-contain"
+                      />
+                    )}
+                    <div>
+                      <h3 className="font-semibold">
+                        {order.orderShipmentMethod.name}
+                      </h3>
+                      {order.orderShipmentMethod.description && (
+                        <p className="text-sm text-gray-600">
+                          {order.orderShipmentMethod.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="text-gray-600">Toimituskulu:</span>
+                    <span className="font-semibold">
+                      {formatPrice(order.orderShipmentMethod.price * 100)}
+                    </span>
+                  </div>
+
+                  {order.orderShipmentMethod.vatRate && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">ALV:</span>
+                      <span>{order.orderShipmentMethod.vatRate}%</span>
+                    </div>
+                  )}
+
+                  {order.orderShipmentMethod.trackingNumber && (
+                    <div className="pt-2 border-t">
+                      <p className="text-sm text-gray-600 mb-1">
+                        Seurantanumero:
+                      </p>
+                      <p className="font-mono font-semibold">
+                        {order.orderShipmentMethod.trackingNumber}
+                      </p>
+                    </div>
+                  )}
+
+                  {order.orderShipmentMethod.trackingUrls &&
+                    order.orderShipmentMethod.trackingUrls.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600">Seuranta:</p>
+                        {order.orderShipmentMethod.trackingUrls.map(
+                          (url, index) => (
+                            <a
+                              key={index}
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block text-blue-600 hover:text-blue-800 underline text-sm"
+                            >
+                              Seuraa lähetystä #{index + 1}
+                            </a>
+                          )
+                        )}
+                      </div>
+                    )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Customer Information */}
+          {order.orderCustomerData && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Toimitusosoite</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-1 text-gray-600">
+                  <p className="font-semibold text-gray-900">
+                    {order.orderCustomerData.firstName}{" "}
+                    {order.orderCustomerData.lastName}
+                  </p>
+                  <p>{order.orderCustomerData.address}</p>
+                  <p>
+                    {order.orderCustomerData.postalCode}{" "}
+                    {order.orderCustomerData.city}
+                  </p>
+                  <p>{order.orderCustomerData.email}</p>
+                  {order.orderCustomerData.phone && (
+                    <p>{order.orderCustomerData.phone}</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Next Steps */}
+      <Card className="mt-8 max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Mitä tapahtuu seuraavaksi?</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3 text-gray-600">
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                1
+              </div>
+              <p>
+                Saat tilausvahvistuksen sähköpostiisi muutaman minuutin sisällä.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                2
+              </div>
+              <p>
+                Käsittelemme tilauksesi ja lähetämme sen valitsemallasi
+                toimitustavalla.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                3
+              </div>
+              <p>Saat seurantakoodin, kun lähetys on matkalla sinulle.</p>
             </div>
           </div>
-          <Separator />
-          <div>
-            <h3 className="font-semibold mb-2">Asiakastiedot</h3>
-            <p>
-              {customerData?.firstName} {customerData?.lastName}
-            </p>
-            <p>{customerData?.address}</p>
-            <p>
-              {customerData?.postalCode} {customerData?.city}
-            </p>
-            <p>{customerData?.phone}</p>
-            <p>{customerData?.email}</p>
-          </div>
-          <Separator />
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Truck className="h-4 w-4" />
-            <span>
-              Lähetämme tilauksesi mahdollisimman pian. Saat sähköpostiisi
-              tilausvahvistuksen
-            </span>
-          </div>
-          <Link href="/products">
-            <Button className="w-full bg-tertiary">Jatka ostoksia</Button>
+        <CardFooter>
+          <Link href="/" className="w-full">
+            <Button className="w-full">Palaa etusivulle</Button>
           </Link>
         </CardFooter>
       </Card>

@@ -6,7 +6,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Metadata } from "next";
 import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
 import { ProductCarousel } from "@/components/Product/ProductCarousel";
-import { ApiResponseProductCardType } from "../utils/types";
+import { ApiResponseProductCardType, Campaign } from "../utils/types";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Käsintehtyjen korujen verkkokauppa",
@@ -49,7 +49,9 @@ export const revalidate = 3600;
 
 const getHomePageData = async (
   take: number
-): Promise<{ latestProducts: ApiResponseProductCardType[] }> => {
+): Promise<{
+  latestProducts: ApiResponseProductCardType[];
+}> => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL || "https://putiikkipalvelu.fi"}/api/storefront/v1/latest-products?take=${take}`,
     {
@@ -69,6 +71,7 @@ const getHomePageData = async (
 
   return { latestProducts };
 };
+
 export default async function Home() {
   const { latestProducts } = await getHomePageData(3);
 

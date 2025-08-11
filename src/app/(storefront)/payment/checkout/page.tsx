@@ -1,6 +1,7 @@
 import { PAYMENT_METHODS } from "@/app/utils/constants";
 // import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
 import StripeCheckoutPage from "@/components/Checkout/StripeCheckoutPage";
+import { getCampaigns } from "@/app/utils/campaignUtils";
 
 import { Metadata } from "next";
 
@@ -17,11 +18,13 @@ export const metadata: Metadata = {
   },
 };
 
-const CheckoutRoute = () => {
+const CheckoutRoute = async () => {
+  const campaigns = await getCampaigns();
+
   if (PAYMENT_METHODS.includes("paytrail")) {
-    // return <PaytrailCheckoutPage />;
+    // return <PaytrailCheckoutPage campaigns={campaigns} />;
   } else if (PAYMENT_METHODS.includes("stripe")) {
-    return <StripeCheckoutPage />;
+    return <StripeCheckoutPage campaigns={campaigns} />;
   }
 };
 

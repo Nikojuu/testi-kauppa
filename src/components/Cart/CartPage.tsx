@@ -3,18 +3,16 @@
 import Subtitle from "@/components/subtitle";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
-import { cn, isSaleActive } from "@/lib/utils";
-import { Loader2, Minus, Plus, X, XCircle } from "lucide-react";
+import { useCampaignCart } from "@/hooks/use-campaign-cart";
+import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CheckoutButton } from "./CheckoutButton";
-import { createStripeCheckoutSession } from "@/lib/actions/stripeActions";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
-import ImageKitImage from "../ImageKitImage";
-import { PAYMENT_METHODS } from "@/app/utils/constants";
+
+import { Campaign } from "@/app/utils/types";
+import { CampaignAddedCartItems } from "./CampaignAddedCartItems";
 
 export type ShipmentMethods = {
   id: string;
@@ -24,42 +22,26 @@ export type ShipmentMethods = {
   cost: number;
 };
 
-const CartPage = () => {
+const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const router = useRouter();
-  const { toast } = useToast();
 
   const items = useCart((state) => state.items);
-  const incrementQuantity = useCart((state) => state.incrementQuantity);
-  const decrementQuantity = useCart((state) => state.decrementQuantity);
-  const removeItem = useCart((state) => state.removeItem);
-  const cartTotal = items.reduce(
-    (total, { product, variation, cartQuantity }) => {
-      let effectivePrice: number;
 
-      if (variation) {
-        // Handle variation-specific pricing logic
-        const isVariationOnSale =
-          isSaleActive(variation.saleStartDate, variation.saleEndDate) &&
-          variation.salePrice !== null;
-        effectivePrice = isVariationOnSale
-          ? (variation.salePrice ?? product.price) / 100
-          : variation.price! / 100;
-      } else {
-        // Handle product-level pricing logic
-        const isProductOnSale =
-          isSaleActive(product.saleStartDate, product.saleEndDate) &&
-          product.salePrice !== null;
-        effectivePrice = isProductOnSale
-          ? product.salePrice! / 100
-          : product.price! / 100;
-      }
-
-      // Multiply effective price by cart quantity, defaulting to 1 if cartQuantity is not defined
-      return total + effectivePrice * (cartQuantity || 1);
-    },
-    0
+  const freeShippingCampaign = campaigns.find(
+    (campaign) => campaign.type === "FREE_SHIPPING"
   );
+  const buyXPayYCampaign = campaigns.find(
+    (campaign) => campaign.type === "BUY_X_PAY_Y"
+  );
+
+  // Use the campaign cart hook for calculations
+  const {
+    calculatedItems,
+    cartTotal,
+    originalTotal,
+    totalSavings,
+    freeShipping,
+  } = useCampaignCart(items, buyXPayYCampaign, freeShippingCampaign);
 
   useEffect(() => {
     setIsMounted(true);
@@ -104,145 +86,10 @@ const CartPage = () => {
                   isMounted && items.length > 0,
               })}
             >
-              {items.map(({ product, variation, cartQuantity }, i) => {
-                // Determine if the stock is unlimited or out of stock
-                const isUnlimitedStock = variation
-                  ? variation.quantity === null
-                  : product.quantity === null;
-
-                const isOutOfStock = variation
-                  ? !isUnlimitedStock &&
-                    (variation.quantity ?? 0) <= cartQuantity
-                  : !isUnlimitedStock &&
-                    (product.quantity ?? 0) <= cartQuantity;
-
-                return (
-                  <li className="flex py-6 sm:py-10" key={i}>
-                    <div className="flex-shrink-0">
-                      <div className="relative h-24 w-24">
-                        <ImageKitImage
-                          src={variation?.images[0] || product.images[0]}
-                          alt={product.name}
-                          width={96}
-                          height={96}
-                          className="h-full w-full rounded-md object-cover object-center "
-                          transformations="w-96,h-96"
-                          quality={90}
-                        />
-                      </div>
-                    </div>
-                    <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-                      <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
-                        <div>
-                          <div className="flex justify-between">
-                            <h3 className="text-sm">
-                              <Link
-                                href={`/product/${product.slug}`}
-                                className="font-medium text-gray-700 hover:text-gray-800"
-                              >
-                                {product.name}
-                              </Link>
-                            </h3>
-                          </div>
-                          <div className="mt-2 flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                decrementQuantity(product.id, variation?.id)
-                              }
-                              disabled={cartQuantity === 1}
-                            >
-                              <Minus className="h-4 w-4" />
-                              <span className="sr-only">Decrease quantity</span>
-                            </Button>
-                            <span className="w-8 text-center">
-                              {cartQuantity || 0}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                incrementQuantity(product.id, variation?.id)
-                              }
-                              disabled={isOutOfStock} // New logic here
-                            >
-                              <Plus className="h-4 w-4" />
-                              <span className="sr-only">Increase quantity</span>
-                            </Button>
-                          </div>
-
-                          {variation && (
-                            <span className="text-xs text-muted-foreground space-y-0.5">
-                              {variation.options.map((opt) => (
-                                <div
-                                  key={`${opt.optionType.name}-${opt.value}`}
-                                >
-                                  {opt.optionType.name}: {opt.value}
-                                </div>
-                              ))}
-                            </span>
-                          )}
-                          <p className="mt-1 text-sm font-medium text-gray-900">
-                            {/* Check if there's a variation and its sale price */}
-                            {variation ? (
-                              isSaleActive(
-                                variation?.saleStartDate ??
-                                  product.saleStartDate,
-                                variation?.saleEndDate ?? product.saleEndDate
-                              ) && variation?.salePrice ? (
-                                <>
-                                  <span className="line-through text-gray-500 mr-2">
-                                    {variation?.price !== null
-                                      ? variation.price / 100
-                                      : product.price / 100}
-                                    €
-                                  </span>
-                                  <span>{variation?.salePrice / 100} €</span>
-                                </>
-                              ) : (
-                                <span>
-                                  {variation?.price !== null
-                                    ? variation.price / 100
-                                    : product.price / 100}{" "}
-                                  €
-                                </span>
-                              )
-                            ) : isSaleActive(
-                                product.saleStartDate,
-                                product.saleEndDate
-                              ) && product.salePrice ? (
-                              <>
-                                <span className="line-through text-gray-500 mr-2">
-                                  {product.price / 100} €
-                                </span>
-                                <span>{product.salePrice / 100} €</span>
-                              </>
-                            ) : (
-                              <span>{product.price / 100} €</span>
-                            )}
-                          </p>
-                        </div>
-                        <div className="mt-4 sm:mt-0 sm:pr-9 w-20">
-                          <div className="absolute right-0 top-0">
-                            <Button
-                              aria-label="remove product"
-                              onClick={() =>
-                                removeItem(product.id, variation?.id)
-                              }
-                              variant="ghost"
-                            >
-                              <X className="h-5 w-5" aria-hidden="true" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
+              <CampaignAddedCartItems
+                buyXPayYCampaign={buyXPayYCampaign}
+                calculatedItems={calculatedItems}
+              />
             </ul>
           </div>
           <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
@@ -250,9 +97,69 @@ const CartPage = () => {
               Tilauksen yhteenveto
             </h2>
             <div className="mt-6 space-y-4">
+              {/* Show campaign savings if applicable */}
+              {totalSavings > 0 && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-gray-600">
+                      Alkuperäinen hinta
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {isMounted ? (
+                        `${originalTotal.toFixed(2)} €`
+                      ) : (
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-green-600">
+                      Kampanja säästö
+                    </div>
+                    <div className="text-sm text-green-600 font-medium">
+                      {isMounted ? (
+                        `-${totalSavings.toFixed(2)} €`
+                      ) : (
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Free shipping status */}
+              {freeShippingCampaign && (
+                <div className="border-t border-gray-200 pt-4">
+                  {freeShipping.isEligible ? (
+                    <div className="text-center">
+                      <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+                        🚚 <strong>Ilmainen toimitus!</strong>
+                        <div className="text-xs mt-1">
+                          {freeShipping.campaignName}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
+                        <div className="font-medium">
+                          Lisää tuotteita{" "}
+                          {freeShipping.remainingAmount.toFixed(2)} € arvosta
+                        </div>
+                        <div className="text-xs mt-1 text-blue-500">
+                          ja saat ilmaisen toimituksen! 🚚
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <p className="text-sm font-medium text-muted-foreground">
-                  Toimitusmaksu lisätään kun toimitustapa on valittu
+                  {freeShipping.isEligible
+                    ? "Ilmainen toimitus sisällytetty!"
+                    : "Toimitusmaksu lisätään kun toimitustapa on valittu"}
                 </p>
               </div>
 
@@ -262,12 +169,20 @@ const CartPage = () => {
                 </div>
                 <div className="text-base font-medium text-gray-900">
                   {isMounted ? (
-                    cartTotal + " €"
+                    `${cartTotal.toFixed(2)} €`
                   ) : (
                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                   )}
                 </div>
               </div>
+
+              {totalSavings > 0 && (
+                <div className="text-center">
+                  <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
+                    🎉 Säästät {totalSavings.toFixed(2)} € kampanjalla!
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mt-6">

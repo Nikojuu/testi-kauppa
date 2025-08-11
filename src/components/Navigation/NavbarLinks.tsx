@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ApiCategory } from "@/app/utils/types";
+import { ApiCategory, Campaign } from "@/app/utils/types";
 
 const getCategoryPath = (
   category: ApiCategory,
@@ -39,7 +39,7 @@ const DesktopDropdown: React.FC<{
       </Link>
 
       {hasChildren && isHovered && (
-        <div className="absolute left-full top-0 min-w-[200px]  bg-background border rounded-md shadow-md py-2">
+        <div className="absolute left-full top-0 min-w-[200px] bg-background border rounded-md shadow-md py-2 z-[60] ">
           {category.children?.map((child) => (
             <DesktopDropdown
               key={child.id}
@@ -76,7 +76,7 @@ export function NavbarLinks({ categories }: { categories: ApiCategory[] }) {
           </Link>
 
           {isShopHovered && (
-            <div className="absolute left-0 top-full min-w-[200px] bg-background text-black  border rounded-md shadow-md py-2">
+            <div className="absolute left-0 top-full min-w-[200px] bg-background text-black  border rounded-md shadow-md py-2 z-[60]">
               {categories.map((category) => (
                 <DesktopDropdown key={category.id} category={category} />
               ))}

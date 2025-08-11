@@ -14,6 +14,7 @@
 //   DropInLocation,
 //   ShipitShippingMethod,
 //   ShipmentMethods,
+//   Campaign,
 // } from "@/app/utils/types";
 // import { useToast } from "@/hooks/use-toast";
 // import { XCircle } from "lucide-react";
@@ -29,7 +30,11 @@
 // import { PAYMENT_METHODS } from "@/app/utils/constants";
 // import { notFound } from "next/navigation";
 
-// const PaytrailCheckoutPage = () => {
+// interface PaytrailCheckoutPageProps {
+//   campaigns: Campaign[];
+// }
+
+// const PaytrailCheckoutPage = ({ campaigns }: PaytrailCheckoutPageProps) => {
 //   unstable_noStore();
 //   const items = useCart((state) => state.items);
 //   const { toast } = useToast();

@@ -14,10 +14,10 @@ import {
 } from "@react-email/components";
 import {
   CustomerData,
-  OrderItem,
   shipmentMethod,
 } from "@/app/utils/sendOrderConfirmationEmail";
 import { StoreSettingsWithName } from "@/app/utils/types";
+import { OrderLineItems } from "@/app/utils/types";
 
 export function OrderConfirmationEmail({
   customerData,
@@ -27,7 +27,7 @@ export function OrderConfirmationEmail({
   orderNumber,
 }: {
   customerData: CustomerData;
-  orderItems: OrderItem[];
+  orderItems: OrderLineItems[];
   shipmentMethod: shipmentMethod;
   shopInfo: StoreSettingsWithName;
   orderNumber: number;
@@ -87,7 +87,7 @@ export function OrderConfirmationEmail({
                   <Column style={styles.imageColumn}>
                     <Img
                       src={
-                        item.images ||
+                        item.images[0] ||
                         "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4ize6OWvnHfKmDy98cwRzTpvhL4l7J65kOBWr2"
                       }
                       alt={item.name}
@@ -109,6 +109,31 @@ export function OrderConfirmationEmail({
                   </Column>
                 </Row>
               ))}
+              <Row style={styles.orderItem}>
+                <Column style={styles.imageColumn}>
+                  <Img
+                    src={
+                      shipmentMethod.logo ||
+                      "https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4ize6OWvnHfKmDy98cwRzTpvhL4l7J65kOBWr2"
+                    }
+                    alt={shipmentMethod.name}
+                    width={80}
+                    height={80}
+                    style={styles.productImage}
+                  />
+                </Column>
+                <Column style={styles.detailsColumn}>
+                  <Text style={styles.itemName}>{shipmentMethod.name}</Text>
+                  <Text style={styles.itemDetails}>
+                    1 x €{(shipmentMethod.price / 100).toFixed(2)}
+                  </Text>
+                </Column>
+                <Column style={styles.priceColumn}>
+                  <Text style={styles.itemTotal}>
+                    €{(shipmentMethod.price / 100).toFixed(2)}
+                  </Text>
+                </Column>
+              </Row>
               <Hr style={styles.divider} />
               <Row style={styles.totalRow}>
                 <Column>
@@ -116,7 +141,10 @@ export function OrderConfirmationEmail({
                 </Column>
                 <Column align="right">
                   <Text style={styles.totalAmount}>
-                    €{(totalOrderPrice / 100).toFixed(2)}
+                    €
+                    {((totalOrderPrice + shipmentMethod.price) / 100).toFixed(
+                      2
+                    )}
                   </Text>
                 </Column>
               </Row>
