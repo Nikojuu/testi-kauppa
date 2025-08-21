@@ -1,9 +1,6 @@
 import {
   ApiResponseProductCardType,
-  OrderLineItems,
-  PreOrderLineItems,
   PriceInfo,
-  Product,
   ProductFromApi,
   ProductVariationFromApi,
 } from "@/app/utils/types";
@@ -119,19 +116,3 @@ export const getDisplayPriceSelectedProduct = (
 
 export const OPEN_GRAPH_IMAGE = "/kuva1.jpg";
 export const TWITTER_IMAGE = "/kuva2.jpg";
-
-// export function calculateAverageVat(
-//   items: OrderLineItems[] | PreOrderLineItems[]
-// ): number {
-//   const nonShippingItems = items.filter((item) => item.itemType !== "SHIPPING");
-
-//   let totalVAT = 0;
-//   let totalPrice = 0;
-
-//   for (const item of nonShippingItems) {
-//     totalVAT += item.price * item.quantity * (item.vatRate / 100);
-//     totalPrice += item.price * item.quantity;
-//   }
-
-//   return totalPrice === 0 ? 0 : (totalVAT / totalPrice) * 100;
-// }

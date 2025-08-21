@@ -16,10 +16,7 @@ import { getShipmentMethods } from "@/lib/actions/shipmentActions";
 import { PAYMENT_METHODS } from "@/app/utils/constants";
 import { notFound, useRouter } from "next/navigation";
 import { CheckoutButton } from "../Cart/CheckoutButton";
-import {
-  apiCreateStripeCheckoutSession,
-  createStripeCheckoutSession,
-} from "@/lib/actions/stripeActions";
+import { apiCreateStripeCheckoutSession } from "@/lib/actions/stripeActions";
 import { Campaign } from "@/app/utils/types";
 
 export type ChosenShipmentType = {
@@ -110,48 +107,8 @@ const StripeCheckoutPage = ({ campaigns }: StripeCheckoutPageProps) => {
       chosenShipmentMethod,
       validatedCustomerData
     );
-    console.log("res", res);
     router.push(res.url);
-    // try {
-    //   const res = await createStripeCheckoutSession(
-    //     items,
-
-    //     chosenShipmentMethod,
-    //     validatedCustomerData
-    //   );
-
-    //   if (res === null) {
-    //     alert("Failed to create Stripe Checkout session");
-    //     return;
-    //   }
-
-    //   if (typeof res === "object" && res.error) {
-    //     console.error("CartError:", res.message);
-
-    //     toast({
-    //       title: "Jotain meni pieleen",
-    //       description: res.message || "Tuotetta ei ole varastossa",
-    //       className:
-    //         "bg-red-50 border-red-200 dark:bg-red-900 dark:border-red-800",
-    //       action: (
-    //         <div className="flex items-center space-x-2">
-    //           <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
-    //           <div className="flex flex-col"></div>
-    //         </div>
-    //       ),
-    //     });
-
-    //     return;
-    //   }
-
-    //   // If res is a string (session URL), redirect or handle success
-
-    //   router.push(res as string);
-    // } catch (error) {
-    //   alert("Error creating Stripe Checkout session");
-    // }
-
-    console.log("res", res);
+    setIsLoading(false);
   };
 
   const handleGoBack = () => {
