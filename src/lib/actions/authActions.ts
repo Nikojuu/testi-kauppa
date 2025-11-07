@@ -18,8 +18,6 @@ interface Customer {
   createdAt: string;
   emailVerificationToken: string;
   emailVerificationExpiresAt: string;
-  
-  
 }
 
 export async function registerCustomer(formData: FormData) {
@@ -66,27 +64,34 @@ export async function registerCustomer(formData: FormData) {
       return { error: errorMessage };
     }
 
-    const {  customer, success } =
-      await (response.json() as Promise<{
-        success?: boolean;
-    
-      
-        customer: Customer;
-      }>);
+    const { customer, success } = await (response.json() as Promise<{
+      success?: boolean;
+
+      customer: Customer;
+    }>);
 
     // Parse successful response
-    if (  !customer || !success || !customer.emailVerificationToken || !customer.emailVerificationExpiresAt) {
+    if (
+      !customer ||
+      !success ||
+      !customer.emailVerificationToken ||
+      !customer.emailVerificationExpiresAt
+    ) {
       return { error: "Invalid response from server. Please try again." };
     }
 
     // send verification email
     const emailResult = await sendVerificationEmail(customer);
-      if (!emailResult.success) {
-        console.error("Failed to send verification email:", emailResult.error);
-        // Don't fail registration, just log the error
-      }
+    if (!emailResult.success) {
+      console.error("Failed to send verification email:", emailResult.error);
+      // Don't fail registration, just log the error
+    }
 
-      const { emailVerificationToken, emailVerificationExpiresAt, ...customerData } = customer;
+    const {
+      emailVerificationToken,
+      emailVerificationExpiresAt,
+      ...customerData
+    } = customer;
 
     return {
       success: true,
@@ -99,7 +104,7 @@ export async function registerCustomer(formData: FormData) {
     return { error: "An unexpected error occurred. Please try again." };
   }
 }
-async function sendVerificationEmail(customer: Customer ) {
+async function sendVerificationEmail(customer: Customer) {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   // Define the expected type for the store settings response
@@ -114,17 +119,17 @@ async function sendVerificationEmail(customer: Customer ) {
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/store-settings`,
     {
       method: "GET",
-      headers : {
+      headers: {
         "x-api-key": process.env.STOREFRONT_API_KEY || "",
       },
     }
   );
   const storeSettings = (await getStore.json()) as StoreSettingsResponse;
-  const storeName = storeSettings?.Store?.name || 'Store';
-  
+  const storeName = storeSettings?.Store?.name || "Store";
+
   try {
-    const verificationUrl = `${process.env.BASE_URL}/verify-email?token=${customer.emailVerificationToken}`;
-    
+    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${customer.emailVerificationToken}`;
+
     const { error } = await resend.emails.send({
       from: `${storeName} <info@putiikkipalvelu.fi>`,
       to: customer.email,
@@ -142,7 +147,7 @@ async function sendVerificationEmail(customer: Customer ) {
       console.error("Error sending email:", error);
       return { success: false, error: error.message };
     }
-    
+
     return { success: true };
   } catch (error) {
     console.error("Failed to send verification email:", error);
@@ -189,17 +194,21 @@ export async function loginCustomer(formData: FormData) {
     if (!response.ok) {
       let errorMessage = "Login failed. Please try again.";
       try {
-        const errorData = await response.json() as { requiresVerification?: boolean; customerId?: string; error?: string };
-        
+        const errorData = (await response.json()) as {
+          requiresVerification?: boolean;
+          customerId?: string;
+          error?: string;
+        };
+
         // Handle email verification required
         if (errorData.requiresVerification) {
-          return { 
+          return {
             requiresVerification: true,
             customerId: errorData.customerId,
-            error: "Please verify your email before logging in."
+            error: "Please verify your email before logging in.",
           };
         }
-        
+
         errorMessage = errorData.error || errorMessage;
       } catch {
         // JSON parsing failed
@@ -492,11 +501,16 @@ export async function resendVerificationEmail(customerId: string) {
     );
 
     if (!response.ok) {
-      const errorData = await response.json() as { error?: string };
-      return { error: errorData.error || "Failed to resend verification email" };
+      const errorData = (await response.json()) as { error?: string };
+      return {
+        error: errorData.error || "Failed to resend verification email",
+      };
     }
 
-    const data = await response.json() as { success?: boolean; customer?: Customer };
+    const data = (await response.json()) as {
+      success?: boolean;
+      customer?: Customer;
+    };
 
     // Send the verification email using your existing logic
     if (data.success && data.customer) {
@@ -513,7 +527,11 @@ export async function resendVerificationEmail(customerId: string) {
   }
 }
 
-export async function addToWishlist(productId: string, returnUrl: string, variationId?: string) {
+export async function addToWishlist(
+  productId: string,
+  returnUrl: string,
+  variationId?: string
+) {
   const cookieStore = cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
@@ -544,7 +562,7 @@ export async function addToWishlist(productId: string, returnUrl: string, variat
     }
 
     if (!response.ok) {
-      const errorData = await response.json() as { error?: string };
+      const errorData = (await response.json()) as { error?: string };
       return { error: errorData.error || "Failed to add to wishlist" };
     }
 
@@ -591,8 +609,10 @@ export async function addToWishlist(productId: string, returnUrl: string, variat
 // }
 
 // Server action for deleting wishlist items
-export async function deleteWishlistItem(productId: string, variationId?: string | null) {
-
+export async function deleteWishlistItem(
+  productId: string,
+  variationId?: string | null
+) {
   const cookieStore = cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
@@ -622,11 +642,11 @@ export async function deleteWishlistItem(productId: string, variationId?: string
     }
 
     if (!response.ok) {
-      const errorData = await response.json() as { error?: string };
+      const errorData = (await response.json()) as { error?: string };
       return { error: errorData.error || "Failed to delete from wishlist" };
     }
   } catch (error) {
     console.error("Error removing from wishlist:", error);
     return { error: "An unexpected error occurred. Please try again." };
   }
-};
+}

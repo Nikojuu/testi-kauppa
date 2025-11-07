@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 
 import CustomerDataForm from "@/components/Checkout/CustomerDataForm";
 import { useCart } from "@/hooks/use-cart";
@@ -13,8 +13,8 @@ import { XCircle } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
 
 import { getShipmentMethods } from "@/lib/actions/shipmentActions";
-import { PAYMENT_METHODS } from "@/app/utils/constants";
-import { notFound, useRouter } from "next/navigation";
+
+import { useRouter } from "next/navigation";
 import { CheckoutButton } from "../Cart/CheckoutButton";
 import { apiCreateStripeCheckoutSession } from "@/lib/actions/stripeActions";
 import { Campaign } from "@/app/utils/types";
@@ -86,11 +86,6 @@ const StripeCheckoutPage = ({ campaigns }: StripeCheckoutPageProps) => {
   };
 
   const handleStripeCheckout = async () => {
-    if (!PAYMENT_METHODS.includes("stripe")) {
-      alert("Stripe is not a valid payment method");
-      return;
-    }
-
     // Revalidate customer data with Zod schema
     const validationResult = customerDataSchema.safeParse(customerData);
     if (!validationResult.success) {
@@ -123,9 +118,6 @@ const StripeCheckoutPage = ({ campaigns }: StripeCheckoutPageProps) => {
     }
   };
 
-  if (!PAYMENT_METHODS.includes("stripe")) {
-    return notFound();
-  }
   return (
     <div className="max-w-screen-2xl mx-auto px-4 mt-24 md:mt-48 mb-12">
       <CheckoutSteps currentStep={step} steps={steps} />

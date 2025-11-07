@@ -1,17 +1,3 @@
-export interface confirmedItems {
-  unitPrice: number;
-  units: number;
-  vatPercentage: number;
-  productCode: string;
-  description: string;
-  stamp: string;
-}
-
-export type ShipmentMethodUnion =
-  | ShipmentMethods
-  | ShipitShippingMethod
-  | DropInLocation;
-
 export interface DropInLocation {
   id: string;
   name: string;
@@ -87,7 +73,7 @@ export type OrderData = {
     city: string;
     phone: string;
   };
- 
+
   shipitData?: ShipitResponse;
 };
 // types.ts
@@ -374,7 +360,7 @@ export type User = {
 // Campaign Types
 export enum CampaignType {
   FREE_SHIPPING = "FREE_SHIPPING",
-  BUY_X_PAY_Y = "BUY_X_PAY_Y"
+  BUY_X_PAY_Y = "BUY_X_PAY_Y",
 }
 
 export interface Campaign {

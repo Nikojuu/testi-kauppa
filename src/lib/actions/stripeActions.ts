@@ -82,8 +82,8 @@ export async function apiCreateStripeCheckoutSession(
         customerData,
         orderId,
         customerId: user?.id,
-        successUrl: `${process.env.BASE_URL}/payment/success/${orderId}`,
-        cancelUrl: `${process.env.BASE_URL}/payment/cancel/${orderId}`,
+        successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success/${orderId}`,
+        cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/cancel/${orderId}`,
       }),
     }
   );

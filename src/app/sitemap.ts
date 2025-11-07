@@ -60,12 +60,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   const productUrls = products.map((product: Product) => ({
-    url: `${process.env.BASE_URL}/product/${product.slug}`,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/product/${product.slug}`,
     lastModified: product.createdAt,
   }));
 
   const categoryUrls = categories.map((category: Category) => ({
-    url: `${process.env.BASE_URL}/products/${category.slug}`,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/products/${category.slug}`,
     lastModified: category.createdAt,
   }));
 
@@ -78,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { route: "/privacy-policy", changefreq: "yearly", priority: 0.5 },
     { route: "/products", changefreq: "daily", priority: 0.9 },
   ].map(({ route, changefreq, priority }) => ({
-    url: `${process.env.BASE_URL}${route}`,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}${route}`,
     lastModified: new Date(2024, 0, 1),
     changefreq,
     priority,
