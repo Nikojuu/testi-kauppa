@@ -28,4 +28,4 @@ export const SHOWCASE_CATEGORIES = [
   },
 ];
 
-export const PAYMENT_METHODS: PaymentMethod[] = ["paytrail"];
+export const PAYMENT_METHODS: PaymentMethod[] = ["stripe"];

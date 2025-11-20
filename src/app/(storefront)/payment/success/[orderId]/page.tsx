@@ -183,7 +183,7 @@ export default async function PaymentSuccessPage({
                   <div className="flex justify-between items-center pt-2 border-t">
                     <span className="text-gray-600">Toimituskulu:</span>
                     <span className="font-semibold">
-                      {formatPrice(order.orderShipmentMethod.price * 100)}
+                      {formatPrice(order.orderShipmentMethod.price)}
                     </span>
                   </div>
 
