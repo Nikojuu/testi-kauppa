@@ -248,7 +248,7 @@ export async function loginCustomer(formData: FormData) {
     }
 
     // Set session cookie
-    cookies().set({
+    (await cookies()).set({
       name: "session-id",
       value: data.sessionId,
       path: "/",
@@ -270,7 +270,7 @@ export async function loginCustomer(formData: FormData) {
 }
 
 export async function getUser() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
   if (!sessionIdCookie) {
@@ -330,7 +330,7 @@ export async function getUser() {
 }
 
 export async function logout() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
   if (!sessionIdCookie) {
@@ -353,12 +353,12 @@ export async function logout() {
     );
 
     // Clear session cookie
-    cookies().delete("session-id");
+    (await cookies()).delete("session-id");
 
     return;
   } catch (error) {
     console.error("Logout error:", error);
-    cookies().delete("session-id");
+    (await cookies()).delete("session-id");
     return;
   }
 }
@@ -383,7 +383,7 @@ export async function editCustomerProfile(formData: FormData) {
   const { firstName, lastName, email } = validatedFields.data;
 
   // Get session ID from cookies
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionIdCookie = cookieStore.get("session-id");
   if (!sessionIdCookie) {
     return { error: "No active session found. Please login again." };
@@ -440,7 +440,7 @@ export async function editCustomerProfile(formData: FormData) {
 export async function deleteCustomerAccount() {
   // Get current user session
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
   if (!sessionIdCookie) {
@@ -474,7 +474,7 @@ export async function deleteCustomerAccount() {
     }
 
     // Clear session cookie since account is deleted
-    cookies().delete("session-id");
+    (await cookies()).delete("session-id");
 
     return {
       success: true,
@@ -532,7 +532,7 @@ export async function addToWishlist(
   returnUrl: string,
   variationId?: string
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
   if (!sessionIdCookie) {
@@ -613,7 +613,7 @@ export async function deleteWishlistItem(
   productId: string,
   variationId?: string | null
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
   if (!sessionIdCookie) {

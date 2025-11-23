@@ -1,5 +1,6 @@
 "use server";
 
+import * as React from "react";
 import { z } from "zod";
 import { Resend } from "resend";
 import ContactFormEmail from "@/components/Email/ContactFormEmail";
@@ -32,7 +33,7 @@ export async function submitContactForm(formData: FormData) {
       from: "Putiikkipalvelu <info@putiikkipalvelu.fi>",
       to: [EMAIL],
       subject: "Sinulle on uusi yhteydenottopyyntö",
-      react: ContactFormEmail({ firstName, lastName, email, message }),
+      react: ContactFormEmail({ firstName, lastName, email, message }) as React.ReactElement,
     });
 
     if (error) {

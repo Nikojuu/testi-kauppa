@@ -13,12 +13,13 @@ import { unstable_noStore as noStore } from "next/cache";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string[] };
+  params: Promise<{ slug: string[] }>;
 }): Promise<Metadata> {
   type CategoryMetadata = {
     category: Category;
   };
-  const slugs = params.slug;
+  const { slug } = await params;
+  const slugs = slug;
   const categorySlug = slugs[slugs.length - 1]; // Get the last slug for category
 
   let categoryName = "Tuotteet";
@@ -127,14 +128,16 @@ const ProductsPage = async ({
   params,
   searchParams,
 }: {
-  params: { slug?: string[] };
-  searchParams: { page?: string; sort?: string };
+  params: Promise<{ slug?: string[] }>;
+  searchParams: Promise<{ page?: string; sort?: string }>;
 }) => {
   noStore();
-  const slugs = params.slug ?? ["all-products"];
+  const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
+  const slugs = slug ?? ["all-products"];
   const pageSize = 12;
-  const currentPage = Number(searchParams.page) || 1;
-  const sort = (searchParams.sort as SortKey) || "newest";
+  const currentPage = Number(resolvedSearchParams.page) || 1;
+  const sort = (resolvedSearchParams.sort as SortKey) || "newest";
 
   const [productPageData, totalCount] = await Promise.all([
     // Fetch both products and count in parallel

@@ -26,14 +26,15 @@ const getProductDataFromApi = async (slug: string) => {
 };
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const product = await getProductDataFromApi(params.slug);
+  const { slug } = await params;
+  const product = await getProductDataFromApi(slug);
 
   const previousImages = (await parent).openGraph?.images || [];
 
@@ -50,8 +51,9 @@ export async function generateMetadata(
   };
 }
 
-const ProductIdRoute = async ({ params }: { params: { slug: string } }) => {
-  const product = await getProductDataFromApi(params.slug);
+const ProductIdRoute = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await params;
+  const product = await getProductDataFromApi(slug);
 
   return (
     <section className="mt-24 md:mt-48 container mx-auto px-4">

@@ -53,9 +53,9 @@ const getData = async (orderId: string) => {
 export default async function PaymentSuccessPage({
   params,
 }: {
-  params: { orderId: string };
+  params: Promise<{ orderId: string }>;
 }) {
-  const { orderId } = params;
+  const { orderId } = await params;
 
   const order: Order = (await getData(orderId)) as Order;
   if (!order) {

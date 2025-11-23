@@ -55,7 +55,7 @@ interface WishlistResponse {
 }
 
 const getWishlistItems = async (): Promise<WishlistResponse> => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionIdCookie = cookieStore.get("session-id");
 
   if (!sessionIdCookie) {

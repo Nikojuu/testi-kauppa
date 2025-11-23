@@ -8,7 +8,7 @@ interface VerificationResult {
 }
 
 interface VerifyEmailPageProps {
-  searchParams: { token?: string };
+  searchParams: Promise<{ token?: string }>;
 }
 
 async function verifyEmail(token: string): Promise<VerificationResult> {
@@ -47,7 +47,7 @@ async function verifyEmail(token: string): Promise<VerificationResult> {
 }
 
 const VerifyEmailPage = async ({ searchParams }: VerifyEmailPageProps) => {
-  const { token } = searchParams;
+  const { token } = await searchParams;
 
   // Redirect to home if no token provided
   if (!token) {
