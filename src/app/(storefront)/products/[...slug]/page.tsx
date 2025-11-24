@@ -74,16 +74,15 @@ const getProductsDataFromApi = async (
   pageSize: number,
   sort: string
 ) => {
-  // Use new API response type
   const params = new URLSearchParams({
     page: page.toString(),
     pageSize: pageSize.toString(),
     sort: sort,
   });
-  slugs.forEach((slug) => params.append("slugs", slug)); // Append all slugs
+  slugs.forEach((slug) => params.append("slugs", slug));
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/filtered-products?${params.toString()}`,
+    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/sorted-products?${params.toString()}`,
     {
       headers: {
         "x-api-key": process.env.STOREFRONT_API_KEY || "",
@@ -101,29 +100,6 @@ const getProductsDataFromApi = async (
   return productPageData;
 };
 
-const getProductsCountFromApi = async (slugs: string[]): Promise<number> => {
-  const params = new URLSearchParams();
-  slugs.forEach((slug) => params.append("slugs", slug)); // Append all slugs
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/products-count?${params.toString()}`,
-    {
-      headers: {
-        "x-api-key": process.env.STOREFRONT_API_KEY || "",
-      },
-      cache: "no-store",
-    }
-  );
-
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.error || "Failed to fetch product count");
-  }
-
-  const countData = await res.json(); // Use new type
-  return countData.count; // Extract count from response
-};
-
 const ProductsPage = async ({
   params,
   searchParams,
@@ -139,14 +115,17 @@ const ProductsPage = async ({
   const currentPage = Number(resolvedSearchParams.page) || 1;
   const sort = (resolvedSearchParams.sort as SortKey) || "newest";
 
-  const [productPageData, totalCount] = await Promise.all([
-    // Fetch both products and count in parallel
-    getProductsDataFromApi(slugs, currentPage, pageSize, sort),
-    getProductsCountFromApi(slugs), // Fetch product count from API
-  ]);
+  // Single API call - totalCount included in response
+  const productPageData = await getProductsDataFromApi(
+    slugs,
+    currentPage,
+    pageSize,
+    sort
+  );
 
   const products: Product[] = productPageData?.products as Product[];
   const categoryName = productPageData?.name;
+  const totalCount = productPageData?.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
