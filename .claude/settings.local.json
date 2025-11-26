@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": ["mcp__shadcn__view_items_in_registries", "WebSearch"],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": ["D:\\Projektit\\verkkokaupat\\hennan-korukauppa"]
+  }
+}

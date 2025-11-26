@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 import Navbar from "@/components/Navigation/Navbar";
@@ -7,11 +7,39 @@ import { Toaster } from "@/components/ui/toaster";
 import { textPrimary, textSecondary } from "@/lib/fonts";
 import StickyNavbar from "@/components/Navigation/StickyNavbar";
 import { getCampaigns } from "./utils/campaignUtils";
+import OrganizationSchema from "@/components/StructuredData/OrganizationSchema";
+import LocalBusinessSchema from "@/components/StructuredData/LocalBusinessSchema";
+import {
+  STORE_NAME,
+  STORE_DESCRIPTION,
+  GOOGLE_VERIFICATION,
+  SEO_ENABLED,
+} from "@/app/utils/constants";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
-  title: "Pupun Korvat",
-  description: "Käsintehtyjä koruja",
+  title: STORE_NAME,
+  description: STORE_DESCRIPTION,
+  // Disable SEO indexing when SEO_ENABLED is false (for template/development)
+  robots: SEO_ENABLED
+    ? "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+    : "noindex, nofollow",
+  ...(GOOGLE_VERIFICATION ? {
+    verification: {
+      google: GOOGLE_VERIFICATION,
+    },
+  } : {}),
+};
+
+// Separate viewport export (Next.js 14+ requirement)
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
 export default async function RootLayout({
@@ -22,11 +50,14 @@ export default async function RootLayout({
   const campaigns = await getCampaigns();
   return (
     <html
-      lang="en"
+      lang="fi"
       suppressHydrationWarning
       className={`${textPrimary.variable} ${textSecondary.variable}`}
     >
-      <head />
+      <head>
+        <OrganizationSchema />
+        <LocalBusinessSchema />
+      </head>
 
       <body className="bg-[radial-gradient(1px_1px_at_1px_1px,rgba(0,0,0,0.1)_1px,transparent_1px)] bg-[length:20px_20px]">
         <StickyNavbar campaigns={campaigns}>

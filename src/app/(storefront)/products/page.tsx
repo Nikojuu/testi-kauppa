@@ -2,41 +2,47 @@ import { Metadata } from "next";
 import ProductsPage from "./[...slug]/page";
 
 import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
+import {
+  STORE_NAME,
+  STORE_DOMAIN,
+  STORE_DESCRIPTION,
+  SEO_ENABLED,
+} from "@/app/utils/constants";
 
 export const metadata: Metadata = {
-  title: "Pupun Korvat | Kaikki tuotteet",
-  description:
-    "Tutustu Pupun Korvien käsintehtyihin koruihin, kuten korvakoruihin, kaulakoruihin ja rannekoruihin. Löydä itsellesi sopiva koru tai lahja ystävälle.",
+  title: `${STORE_NAME} | Kaikki tuotteet`,
+  description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin. ${STORE_DESCRIPTION}`,
   keywords:
-    "korut, käsintehty, lahjat, lasihelmet, muotoilu, verkkokauppa,uniikit korut, käsityö, korvakorut, kaulakorut, rannekorut, lahja, ystävänpäivä, syntymäpäivä, joulu, äitienpäivä, ystävä, nainen, tyttöystävä, vaimo, äiti, tytär, sisko, ystävyys, rakkaus, kauneus, muoti, tyyli, ajaton, laadukas, kestävä, ekologinen, vastuullinen, kotimainen, suomalainen, design, suunnittelu, käsityöläinen,  käsityöläisyys,suomalainen design,käsityöläinen, ",
-  authors: [{ name: "Pupun Korvat" }],
-  robots:
-    "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
-
+    "verkkokauppa, tuotteet, lahjat, verkko-ostokset, suomalaiset tuotteet, laadukkaat tuotteet",
+  authors: [{ name: STORE_NAME }],
+  robots: SEO_ENABLED
+    ? "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+    : "noindex, nofollow",
+  alternates: {
+    canonical: `${STORE_DOMAIN}/products`,
+  },
   openGraph: {
-    title: "Pupun Korvat | Kaikki tuotteet",
-    description:
-      "Käsintehtyjä koruja lasihelmistä. Tutustu Pupun Korvien koruvalikoimaan ja löydä itsellesi sopiva koru tai lahja ystävälle.",
-    url: "https://www.pupunkorvat.fi", // Your website URL
+    title: `${STORE_NAME} | Kaikki tuotteet`,
+    description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin. ${STORE_DESCRIPTION}`,
+    url: `${STORE_DOMAIN}/products`,
     images: [
       {
-        url: OPEN_GRAPH_IMAGE, // Main product image
+        url: OPEN_GRAPH_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Pupun Korvat - Käsintehty koru",
+        alt: `${STORE_NAME} - Tuotteet`,
       },
     ],
     locale: "fi_FI",
     type: "website",
-    siteName: "Pupun Korvat",
+    siteName: STORE_NAME,
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Pupun Korvat | Kaikki tuotteet",
-    description:
-      "Tutustu Pupun Korvien käsintehtyihin koruihin ja löydä ainutlaatuinen lahja tai itsellesi sopiva koru.",
-    images: [TWITTER_IMAGE], // Main Twitter image
+    title: `${STORE_NAME} | Kaikki tuotteet`,
+    description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin ja löydä itsellesi sopiva tuote.`,
+    images: [TWITTER_IMAGE],
   },
 };
 

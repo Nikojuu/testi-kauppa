@@ -79,7 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { route: "/products", changefreq: "daily", priority: 0.9 },
   ].map(({ route, changefreq, priority }) => ({
     url: `${process.env.NEXT_PUBLIC_BASE_URL}${route}`,
-    lastModified: new Date(2024, 0, 1),
+    lastModified: new Date(),
     changefreq,
     priority,
   }));

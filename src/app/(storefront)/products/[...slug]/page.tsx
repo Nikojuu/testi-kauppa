@@ -9,6 +9,9 @@ import { ProductCard } from "@/components/ProductCard";
 import Subtitle from "@/components/subtitle";
 import { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
+import CollectionPageSchema from "@/components/StructuredData/CollectionPageSchema";
+import BreadcrumbSchema from "@/components/StructuredData/BreadcrumbSchema";
+import { STORE_NAME, STORE_DOMAIN } from "@/app/utils/constants";
 
 export async function generateMetadata({
   params,
@@ -36,13 +39,26 @@ export async function generateMetadata({
     }
   }
 
+  const categoryUrl = `${STORE_DOMAIN}/products/${slugs.join("/")}`;
+
   return {
-    title: `Pupun Korvat | ${categoryName} `,
-    description: `Tutustu Pupun Korvien tuotteisiin kategoriassa ${categoryName}.`,
+    title: `${STORE_NAME} | ${categoryName}`,
+    description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
+    alternates: {
+      canonical: categoryUrl,
+    },
     openGraph: {
-      title: `Pupun Korvat | ${categoryName} `,
-      description: `Tutustu Pupun Korvien tuotteisiin kategoriassa ${categoryName}.`,
+      title: `${STORE_NAME} | ${categoryName}`,
+      description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
+      url: categoryUrl,
+      siteName: STORE_NAME,
+      locale: "fi_FI",
       type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${STORE_NAME} | ${categoryName}`,
+      description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
     },
   };
 }
@@ -128,9 +144,35 @@ const ProductsPage = async ({
   const totalCount = productPageData?.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  // Build breadcrumb items
+  const breadcrumbItems = [
+    { name: "Etusivu", url: STORE_DOMAIN },
+    { name: "Tuotteet", url: `${STORE_DOMAIN}/products` },
+  ];
+
+  if (slugs[0] !== "all-products") {
+    breadcrumbItems.push({
+      name: categoryName || "Kategoria",
+      url: `${STORE_DOMAIN}/products/${slugs.join("/")}`,
+    });
+  }
+
   return (
-    <section className="mt-24 md:mt-48 container mx-auto px-4">
-      <Subtitle subtitle={categoryName || "Tuotteet"} />
+    <>
+      {products && products.length > 0 && (
+        <>
+          <BreadcrumbSchema items={breadcrumbItems} />
+          <CollectionPageSchema
+            name={categoryName || "Tuotteet"}
+            description={`Tutustu ${STORE_NAME} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`}
+            products={products as ApiResponseProductCardType[]}
+            categorySlug={slugs.join("/")}
+            totalCount={totalCount}
+          />
+        </>
+      )}
+      <section className="mt-24 md:mt-48 container mx-auto px-4">
+        <Subtitle subtitle={categoryName || "Tuotteet"} />
       {products && products.length > 0 ? (
         <>
           <div className="max-w-screen-xl mx-auto flex justify-end my-4">
@@ -158,7 +200,8 @@ const ProductsPage = async ({
           <h3>Tällä kategorialla ei löydy tuotteita</h3>
         </div>
       )}
-    </section>
+      </section>
+    </>
   );
 };
 
