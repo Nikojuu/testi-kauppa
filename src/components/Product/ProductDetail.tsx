@@ -9,9 +9,7 @@ import {
 } from "@/components/ui/select";
 import AddToCartButton from "@/components/Cart/AddToCartButton";
 import { getDisplayPriceSelectedProduct, isSaleActive } from "@/lib/utils";
-import { Check, X } from "lucide-react";
 import { PriceDisplay } from "../PriceDisplay";
-import { Separator } from "../ui/separator";
 import Breadcrumbs from "./Breadcrumbs";
 import { ImageSliderWithZoom } from "../imageSliderWithZoom";
 import { ImageSlider } from "../ImageSlider";
@@ -58,9 +56,11 @@ const ProductDetail = ({ product }: { product: ProductFromApi }) => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-screen-xl mx-auto py-8 md:py-12">
       <Breadcrumbs categories={product.categories} productName={product.name} />
-      <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
+
+      <div className="flex flex-col md:flex-row gap-8 lg:gap-16">
+        {/* Image Section */}
         <div className="md:w-1/2">
           <div className="hidden md:block">
             <ImageSliderWithZoom
@@ -82,113 +82,134 @@ const ProductDetail = ({ product }: { product: ProductFromApi }) => {
           </div>
         </div>
 
-        <div className="md:w-1/2 flex flex-col justify-between">
-          <div>
-            <h1 className="text-3xl font-secondary font-extrabold tracking-tight text-gray-900 mb-4">
-              {product.name}
-            </h1>
+        {/* Product Info Section */}
+        <div className="md:w-1/2 flex flex-col">
+          {/* Product Name */}
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-primary font-bold text-charcoal leading-tight mb-6">
+            {product.name}
+          </h1>
 
-            <div className="mb-6 flex justify-between">
-              <h3 className="font-semibold my-4">Hinta:</h3>
-              <PriceDisplay
-                displayPrice={displayPrice!}
-                originalPrice={
-                  isCurrentlyOnSale
-                    ? (selectedVariation?.price ?? product.price) / 100
-                    : undefined
-                }
-                isOnSale={isOnSale(selectedVariation || product)}
-                salePercent={
-                  selectedVariation?.salePercent || product.salePercent
-                }
-              />
+          {/* Decorative line */}
+          <div className="h-[1px] w-16 bg-gradient-to-r from-rose-gold/60 to-transparent mb-6" />
+
+          {/* Price Section */}
+          <div className="mb-8">
+            <span className="text-xs tracking-[0.2em] uppercase font-secondary text-charcoal/50 block mb-2">
+              Hinta
+            </span>
+            <PriceDisplay
+              displayPrice={displayPrice!}
+              originalPrice={
+                isCurrentlyOnSale
+                  ? (selectedVariation?.price ?? product.price) / 100
+                  : undefined
+              }
+              isOnSale={isOnSale(selectedVariation || product)}
+              salePercent={
+                selectedVariation?.salePercent || product.salePercent
+              }
+            />
+          </div>
+
+          {/* Separator */}
+          <div className="h-[1px] bg-gradient-to-r from-rose-gold/20 via-rose-gold/10 to-transparent mb-8" />
+
+          {/* Description */}
+          {!selectedVariation?.description && product.description && (
+            <div className="mb-8">
+              <span className="text-xs tracking-[0.2em] uppercase font-secondary text-charcoal/50 block mb-3">
+                Kuvaus
+              </span>
+              <p className="text-sm md:text-base font-secondary text-charcoal/70 leading-relaxed">
+                {product.description}
+              </p>
             </div>
-            <Separator />
+          )}
 
-            {!selectedVariation?.description && (
-              <>
-                <h3 className="font-semibold my-4">Kuvaus:</h3>
-                <p className="text-base text-gray-700 mb-6">
-                  {product.description}
-                </p>
-              </>
-            )}
-            {!hasVariations && (
+          {/* Stock Status - No Variations */}
+          {!hasVariations && (
+            <div
+              className={`flex items-center gap-2 text-sm font-secondary mb-8 ${
+                isProductInStock ? "text-emerald-600" : "text-deep-burgundy"
+              }`}
+            >
               <div
-                className={`flex items-center ${
-                  isProductInStock ? "text-green-600" : "text-red-600"
-                } text-sm font-medium my-6`}
+                className={`w-2 h-2 rounded-full ${
+                  isProductInStock ? "bg-emerald-500" : "bg-deep-burgundy"
+                }`}
+              />
+              <span>
+                {isProductInStock ? "Tuotetta on varastossa" : "Tuote on loppu"}
+              </span>
+            </div>
+          )}
+
+          {/* Variation Section */}
+          {hasVariations && (
+            <div className="mb-8">
+              {/* Variation Description */}
+              {selectedVariation?.description && (
+                <div className="mb-6">
+                  <span className="text-xs tracking-[0.2em] uppercase font-secondary text-charcoal/50 block mb-3">
+                    Kuvaus
+                  </span>
+                  <p className="text-sm md:text-base font-secondary text-charcoal/70 leading-relaxed">
+                    {selectedVariation.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Variation Selector */}
+              <label className="text-xs tracking-[0.2em] uppercase font-secondary text-charcoal/50 block mb-3">
+                {selectedVariation?.options[0]?.optionType.name}
+              </label>
+
+              <Select
+                onValueChange={handleVariationChange}
+                value={selectedVariation?.id}
               >
-                {isProductInStock ? (
-                  <>
-                    <Check className="w-5 h-5 mr-2" />
-                    <span>Tuotetta on varastossa</span>
-                  </>
-                ) : (
-                  <>
-                    <X className="w-5 h-5 mr-2" />
-                    <span>Tuote on loppu</span>
-                  </>
-                )}
-              </div>
-            )}
+                <SelectTrigger className="w-full h-12 border-charcoal/20 bg-warm-white font-secondary text-charcoal hover:border-rose-gold/40 transition-colors duration-300">
+                  {selectedVariation?.options
+                    .map((opt) => opt.value)
+                    .join(" / ")}
+                </SelectTrigger>
+                <SelectContent className="bg-warm-white border-charcoal/20">
+                  {product.variations.map((variation) => (
+                    <SelectItem
+                      key={variation.id}
+                      value={variation.id}
+                      className="font-secondary text-charcoal hover:bg-rose-gold/10 focus:bg-rose-gold/10 cursor-pointer"
+                    >
+                      {variation.options.map((opt) => opt.value).join(" / ")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            {selectedVariation && (
-              <div
-                className={`flex items-center ${
-                  isVariationInStock ? "text-green-600" : "text-red-600"
-                } text-sm font-medium my-6`}
-              >
-                {isVariationInStock ? (
-                  <>
-                    <Check className="w-5 h-5 mr-2" />
-                    <span>Tuotetta on varastossa</span>
-                  </>
-                ) : (
-                  <>
-                    <X className="w-5 h-5 mr-2" />
-                    <span>Tuote on loppu</span>
-                  </>
-                )}
-              </div>
-            )}
-
-            {hasVariations && (
-              <div className="mb-6">
-                {selectedVariation?.description && (
-                  <>
-                    <h3 className="font-semibold my-4">Kuvaus:</h3>
-                    <p className="text-base text-gray-700 mb-4">
-                      {selectedVariation.description}
-                    </p>
-                  </>
-                )}
-
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {selectedVariation?.options[0]?.optionType.name}:
-                </label>
-
-                <Select
-                  onValueChange={handleVariationChange}
-                  value={selectedVariation?.id}
+              {/* Variation Stock Status */}
+              {selectedVariation && (
+                <div
+                  className={`flex items-center gap-2 text-sm font-secondary mt-4 ${
+                    isVariationInStock ? "text-emerald-600" : "text-deep-burgundy"
+                  }`}
                 >
-                  <SelectTrigger className="w-full">
-                    {selectedVariation?.options
-                      .map((opt) => opt.value)
-                      .join(" / ")}
-                  </SelectTrigger>
-                  <SelectContent>
-                    {product.variations.map((variation) => (
-                      <SelectItem key={variation.id} value={variation.id}>
-                        {variation.options.map((opt) => opt.value).join(" / ")}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>{" "}
-          <div className="space-y-4">
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      isVariationInStock ? "bg-emerald-500" : "bg-deep-burgundy"
+                    }`}
+                  />
+                  <span>
+                    {isVariationInStock
+                      ? "Tuotetta on varastossa"
+                      : "Tuote on loppu"}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Wishlist & Add to Cart Buttons */}
+          <div className="mt-auto pt-6 space-y-3">
             <WishlistButton
               product={product}
               selectedVariation={selectedVariation}

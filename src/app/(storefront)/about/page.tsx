@@ -1,8 +1,8 @@
 import AboutBlock from "@/components/Aboutpage/AboutBlock";
-import Subtitle from "@/components/subtitle";
 import { Metadata } from "next";
-
 import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
+import { AboutHero } from "@/components/Aboutpage/AboutHero";
+import { AboutCTA } from "@/components/Aboutpage/AboutCTA";
 
 export const metadata: Metadata = {
   title: "Putiikkipalvelu | Tietoa meistä",
@@ -61,13 +61,20 @@ const aboutPageBlock3 = {
 
 const AboutPage = () => {
   return (
-    <section className="mt-24 md:mt-48">
-      <Subtitle subtitle="Vähän minusta" />
-      <div className="md:mt-32"></div>
-      <AboutBlock blockInfo={aboutPageBlock1} />
-      <AboutBlock blockInfo={aboutPageBlock2} />
-      <AboutBlock blockInfo={aboutPageBlock3} />
-    </section>
+    <main className="bg-warm-white">
+      {/* Hero Section */}
+      <AboutHero />
+
+      {/* Content Sections */}
+      <section className="py-12 md:py-16">
+        <AboutBlock blockInfo={aboutPageBlock1} />
+        <AboutBlock blockInfo={aboutPageBlock2} />
+        <AboutBlock blockInfo={aboutPageBlock3} />
+      </section>
+
+      {/* CTA Section */}
+      <AboutCTA />
+    </main>
   );
 };
 

@@ -1,16 +1,12 @@
 "use client";
 
 import Subtitle from "@/components/subtitle";
-import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { useCampaignCart } from "@/hooks/use-campaign-cart";
-import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
 import { Campaign } from "@/app/utils/types";
 import { CampaignAddedCartItems } from "./CampaignAddedCartItems";
 
@@ -48,149 +44,245 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
   }, []);
 
   return (
-    <section className="mt-24 md:mt-48">
+    <section className="pt-8 md:pt-16 pb-16 bg-warm-white">
       <Subtitle subtitle="Ostoskori" />
-      <div className="mx-auto max-w-screen-2xl">
-        <div className="md:mt-12 mt-0 p-8 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-          <div
-            className={cn("lg:col-span-7", {
-              "rounded-lg border-2 border-dashed border-zinc-200 p-12":
-                isMounted && items.length === 0,
-            })}
-          >
-            <h2 className="sr-only">Items in your shopping cart</h2>
+
+      <div className="container mx-auto px-4 max-w-screen-xl">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
+          {/* Cart Items Section */}
+          <div className="lg:col-span-7">
+            <h2 className="sr-only">Ostoskorin tuotteet</h2>
 
             {isMounted && items.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center space-y-1">
-                <div
-                  aria-hidden="true"
-                  className="relative mb-4 h-40 w-40 text-muted-foreground"
-                >
-                  <Image
-                    src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4i4qKGOmoWuI5hetYs2UbcZvCKz06lFmBSQgq9"
-                    fill
-                    loading="eager"
-                    alt="empty shopping cart hippo"
-                  />
-                </div>
-                <h3 className="font-semibold text-2xl">Your cart is empty</h3>
-                <p className="text-muted-foreground text-center">
-                  Whoops! Nothing to show here yet.
-                </p>
-              </div>
-            ) : null}
+              /* Empty cart state */
+              <div className="relative p-8 md:p-12 bg-cream/30 border border-rose-gold/10">
+                {/* Corner accents */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-rose-gold/30" />
+                <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-rose-gold/30" />
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-rose-gold/30" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-rose-gold/30" />
 
-            <ul
-              className={cn({
-                "divide-y divide-gray-200 border-b border-t border-gray-200":
-                  isMounted && items.length > 0,
-              })}
-            >
-              <CampaignAddedCartItems
-                buyXPayYCampaign={buyXPayYCampaign}
-                calculatedItems={calculatedItems}
-              />
-            </ul>
+                <div className="flex flex-col items-center justify-center text-center">
+                  {/* Decorative element */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/40" />
+                    <div className="w-2 h-2 bg-rose-gold/30 diamond-shape" />
+                    <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/40" />
+                  </div>
+
+                  <div aria-hidden="true" className="relative mb-6 h-40 w-40">
+                    <Image
+                      src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4i4qKGOmoWuI5hetYs2UbcZvCKz06lFmBSQgq9"
+                      fill
+                      loading="eager"
+                      alt="Tyhjä ostoskori"
+                      className="object-contain opacity-80"
+                    />
+                  </div>
+
+                  <h3 className="font-primary text-4xl text-charcoal mb-2">
+                    Ostoskorisi on tyhjä
+                  </h3>
+                  <p className="text-base font-secondary text-charcoal/60 mb-8">
+                    Löydä itsellesi sopiva koru kokoelmastamme
+                  </p>
+
+                  <Link
+                    href="/products"
+                    className="group inline-flex items-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold"
+                  >
+                    <span>Selaa koruja</span>
+                    <svg
+                      className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              /* Cart items list */
+              <div className="space-y-4">
+                <CampaignAddedCartItems
+                  buyXPayYCampaign={buyXPayYCampaign}
+                  calculatedItems={calculatedItems}
+                />
+              </div>
+            )}
           </div>
-          <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
-            <h2 className="text-lg font-medium text-gray-900">
-              Tilauksen yhteenveto
-            </h2>
-            <div className="mt-6 space-y-4">
-              {/* Show campaign savings if applicable */}
-              {totalSavings > 0 && (
-                <>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
-                      Alkuperäinen hinta
+
+          {/* Order Summary Section */}
+          <section className="mt-12 lg:mt-0 lg:col-span-5">
+            <div className="relative bg-cream/40 p-6 md:p-8">
+              {/* Border frame */}
+              <div className="absolute inset-0 border border-rose-gold/15 pointer-events-none" />
+
+              {/* Corner accents */}
+              <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-rose-gold/40" />
+              <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-rose-gold/40" />
+              <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-rose-gold/40" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-rose-gold/40" />
+
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1.5 h-1.5 bg-rose-gold/60 diamond-shape" />
+                <h2 className="font-primary text-4xl text-charcoal">
+                  Tilauksen yhteenveto
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                {/* Campaign savings */}
+                {totalSavings > 0 && (
+                  <div className="space-y-3 pb-4 border-b border-rose-gold/15">
+                    <div className="flex items-center justify-between">
+                      <span className="text-base font-secondary text-charcoal/60">
+                        Alkuperäinen hinta
+                      </span>
+                      <span className="text-base font-secondary text-charcoal/60">
+                        {isMounted ? (
+                          `${originalTotal.toFixed(2)} €`
+                        ) : (
+                          <Loader2 className="h-4 w-4 animate-spin text-charcoal/40" />
+                        )}
+                      </span>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      {isMounted ? (
-                        `${originalTotal.toFixed(2)} €`
+                    <div className="flex items-center justify-between">
+                      <span className="text-base font-secondary text-deep-burgundy">
+                        Kampanja säästö
+                      </span>
+                      <span className="text-base font-secondary text-deep-burgundy font-medium">
+                        {isMounted ? (
+                          `-${totalSavings.toFixed(2)} €`
+                        ) : (
+                          <Loader2 className="h-4 w-4 animate-spin text-charcoal/40" />
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Free shipping status */}
+                {freeShippingCampaign && (
+                  <div className="py-4 border-b border-rose-gold/15">
+                    <div className="relative p-4 text-center">
+                      <div className="absolute inset-0 border border-rose-gold/20 pointer-events-none" />
+                      {freeShipping.isEligible ? (
+                        <div>
+                          <p className="text-base font-secondary text-charcoal">
+                            <span className="text-rose-gold">✓</span> Ilmainen
+                            toimitus!
+                          </p>
+                          <p className="text-sm font-secondary text-charcoal/50 mt-1">
+                            {freeShipping.campaignName}
+                          </p>
+                        </div>
                       ) : (
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        <div>
+                          <p className="text-base font-secondary text-charcoal/70">
+                            Lisää tuotteita{" "}
+                            <span className="text-rose-gold font-medium">
+                              {freeShipping.remainingAmount.toFixed(2)} €
+                            </span>{" "}
+                            arvosta
+                          </p>
+                          <p className="text-sm font-secondary text-charcoal/50 mt-1">
+                            ja saat ilmaisen toimituksen!
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-green-600">
-                      Kampanja säästö
-                    </div>
-                    <div className="text-sm text-green-600 font-medium">
-                      {isMounted ? (
-                        `-${totalSavings.toFixed(2)} €`
-                      ) : (
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
+                )}
 
-              {/* Free shipping status */}
-              {freeShippingCampaign && (
-                <div className="border-t border-gray-200 pt-4">
-                  {freeShipping.isEligible ? (
-                    <div className="text-center">
-                      <div className="text-sm text-green-600 bg-green-50 p-3 rounded-lg">
-                        🚚 <strong>Ilmainen toimitus!</strong>
-                        <div className="text-xs mt-1">
-                          {freeShipping.campaignName}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
-                        <div className="font-medium">
-                          Lisää tuotteita{" "}
-                          {freeShipping.remainingAmount.toFixed(2)} € arvosta
-                        </div>
-                        <div className="text-xs mt-1 text-blue-500">
-                          ja saat ilmaisen toimituksen! 🚚
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                {/* Shipping note */}
+                <div className="py-3">
+                  <p className="text-sm font-secondary text-charcoal/50">
+                    {freeShipping.isEligible
+                      ? "Ilmainen toimitus sisällytetty!"
+                      : "Toimitusmaksu lisätään kun toimitustapa on valittu"}
+                  </p>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                <p className="text-sm font-medium text-muted-foreground">
-                  {freeShipping.isEligible
-                    ? "Ilmainen toimitus sisällytetty!"
-                    : "Toimitusmaksu lisätään kun toimitustapa on valittu"}
-                </p>
+                {/* Total */}
+                <div className="flex items-center justify-between pt-4 border-t border-rose-gold/20">
+                  <span className="font-secondary text-charcoal uppercase tracking-wider text-base">
+                    Yhteensä
+                  </span>
+                  <span className="text-lg text-charcoal ">
+                    {isMounted ? (
+                      `${cartTotal.toFixed(2)} €`
+                    ) : (
+                      <Loader2 className="h-6 w-6 animate-spin text-charcoal/40" />
+                    )}
+                  </span>
+                </div>
+
+                {/* Savings badge */}
+                {totalSavings > 0 && (
+                  <div className="text-center pt-2">
+                    <span className="inline-block text-sm font-secondary text-deep-burgundy bg-deep-burgundy/10 px-4 py-2">
+                      Säästät {totalSavings.toFixed(2)} € kampanjalla!
+                    </span>
+                  </div>
+                )}
               </div>
 
-              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                <div className="text-base font-medium text-gray-900">
-                  Yhteensä
-                </div>
-                <div className="text-base font-medium text-gray-900">
-                  {isMounted ? (
-                    `${cartTotal.toFixed(2)} €`
-                  ) : (
-                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                  )}
-                </div>
-              </div>
-
-              {totalSavings > 0 && (
-                <div className="text-center">
-                  <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
-                    🎉 Säästät {totalSavings.toFixed(2)} € kampanjalla!
-                  </div>
+              {/* Checkout button - only show if cart has items */}
+              {isMounted && items.length > 0 && (
+                <div className="mt-8">
+                  <Link
+                    href="/payment/checkout"
+                    className="group w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold"
+                  >
+                    <span>Jatka tilaukseen</span>
+                    <svg
+                      className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </Link>
                 </div>
               )}
-            </div>
 
-            <div className="mt-6">
-              <Link href="/payment/checkout">
-                <Button className="w-full" variant="gooeyLeft">
-                  Jatka tilaukseen
-                </Button>
-              </Link>
+              {/* Continue shopping link */}
+              <div className="mt-4 text-center">
+                <Link
+                  href="/products"
+                  className="inline-flex items-center gap-2 text-sm font-secondary text-charcoal/60 hover:text-rose-gold transition-colors duration-300"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M7 16l-4-4m0 0l4-4m-4 4h18"
+                    />
+                  </svg>
+                  <span>Jatka ostoksia</span>
+                </Link>
+              </div>
             </div>
           </section>
         </div>

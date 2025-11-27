@@ -37,8 +37,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    { media: "(prefers-color-scheme: light)", color: "#FFFBF7" }, // warm-white
+    { media: "(prefers-color-scheme: dark)", color: "#3B3939" }, // charcoal
   ],
 };
 
@@ -59,11 +59,11 @@ export default async function RootLayout({
         <LocalBusinessSchema />
       </head>
 
-      <body className="bg-[radial-gradient(1px_1px_at_1px_1px,rgba(0,0,0,0.1)_1px,transparent_1px)] bg-[length:20px_20px]">
+      <body className="bg-warm-white">
         <StickyNavbar campaigns={campaigns}>
           <Navbar />
         </StickyNavbar>
-        <main className="min-h-[75vh]  max-w-[3500px]">{children}</main>
+        <main className="min-h-[75vh] max-w-[3500px]">{children}</main>
         <Footer />
 
         <Toaster />

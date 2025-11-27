@@ -101,25 +101,17 @@ export function PaginationComponent({
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href={currentPage > 1 ? createPageURL(currentPage - 1) : "#"}
-            onClick={(e) => {
-              if (currentPage === 1) e.preventDefault();
-            }}
-          />
-        </PaginationItem>
+        {currentPage > 1 && (
+          <PaginationItem>
+            <PaginationPrevious href={createPageURL(currentPage - 1)} />
+          </PaginationItem>
+        )}
         {renderPageLinks()}
-        <PaginationItem>
-          <PaginationNext
-            href={
-              currentPage < totalPages ? createPageURL(currentPage + 1) : "#"
-            }
-            onClick={(e) => {
-              if (currentPage === totalPages) e.preventDefault();
-            }}
-          />
-        </PaginationItem>
+        {currentPage < totalPages && (
+          <PaginationItem>
+            <PaginationNext href={createPageURL(currentPage + 1)} />
+          </PaginationItem>
+        )}
       </PaginationContent>
     </Pagination>
   );

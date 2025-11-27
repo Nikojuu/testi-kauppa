@@ -73,12 +73,16 @@ const Navbar = async () => {
   const { user } = await getUser();
   return (
     <>
-      <div className="lg:mr-8">
+      {/* Mobile menu button */}
+      <div className="lg:mr-4">
         <MobileLinks categories={categories} />
       </div>
+
+      {/* Desktop navigation links */}
       <NavbarLinks categories={categories} />
 
-      <div className="flex gap-4 ml-auto">
+      {/* User dropdown and Cart - positioned on the right */}
+      <div className="flex items-center gap-4 ml-auto">
         <CustomerDropdown user={user} />
         <Cart campaigns={campaigns} />
       </div>

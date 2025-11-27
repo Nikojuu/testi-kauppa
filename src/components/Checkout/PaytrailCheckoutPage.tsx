@@ -144,8 +144,9 @@ const PaytrailCheckoutPage = ({ campaigns }: PaytrailCheckoutPageProps) => {
   };
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4 mt-24 md:mt-48 mb-12">
-      <CheckoutSteps currentStep={step} steps={steps} />
+    <div className="bg-warm-white min-h-screen">
+      <div className="max-w-screen-2xl mx-auto px-4 pt-24 md:pt-32 pb-12">
+        <CheckoutSteps currentStep={step} steps={steps} />
 
       {step === 1 && (
         <CustomerDataForm
@@ -165,10 +166,26 @@ const PaytrailCheckoutPage = ({ campaigns }: PaytrailCheckoutPageProps) => {
               buyXPayYCampaign={buyXPayYCampaign}
             />
           </div>
-          <div className="mt-12 flex justify-between items-center mx-auto max-w-2xl">
-            <Button variant="gooeyRight" onClick={handleGoBack}>
-              Takaisin
-            </Button>
+          <div className="mt-12 flex justify-between items-center mx-auto max-w-2xl gap-4">
+            <button
+              onClick={handleGoBack}
+              className="group inline-flex items-center gap-2 px-6 py-3 border border-charcoal/30 text-charcoal font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:border-rose-gold hover:text-rose-gold"
+            >
+              <svg
+                className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M7 16l-4-4m0 0l4-4m-4 4h18"
+                />
+              </svg>
+              <span>Takaisin</span>
+            </button>
             <form action={handlePaytrailCheckout}>
               <CheckoutButton disabled={!chosenShipmentMethod} />
             </form>
@@ -180,6 +197,7 @@ const PaytrailCheckoutPage = ({ campaigns }: PaytrailCheckoutPageProps) => {
           <PaymentSelection paytrailData={paytrailData} />
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { z } from "zod";
 import fetch from "node-fetch";
 import { cookies } from "next/headers";
 import { Resend } from "resend";
+import { STORE_NAME } from "@/app/utils/constants";
 const RegisterSchema = z.object({
   firstName: z.string().min(1, "Etunimi on pakollinen"),
   lastName: z.string().min(1, "Sukunimi on pakollinen"),
@@ -107,33 +108,13 @@ export async function registerCustomer(formData: FormData) {
 async function sendVerificationEmail(customer: Customer) {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  // Define the expected type for the store settings response
-  type StoreSettingsResponse = {
-    Store?: {
-      name?: string;
-    };
-    // ...other fields if needed
-  };
-
-  const getStore = await fetch(
-    `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/store-settings`,
-    {
-      method: "GET",
-      headers: {
-        "x-api-key": process.env.STOREFRONT_API_KEY || "",
-      },
-    }
-  );
-  const storeSettings = (await getStore.json()) as StoreSettingsResponse;
-  const storeName = storeSettings?.Store?.name || "Store";
-
   try {
     const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${customer.emailVerificationToken}`;
 
     const { error } = await resend.emails.send({
-      from: `${storeName} <info@putiikkipalvelu.fi>`,
+      from: `${STORE_NAME} <info@putiikkipalvelu.fi>`,
       to: customer.email,
-      subject: `Vahvista sähköpostisi – ${storeName}`,
+      subject: `Vahvista sähköpostisi – ${STORE_NAME}`,
       text: `Tervetuloa ${customer.firstName}! Vahvista sähköpostiosoitteesi vierailemalla: ${verificationUrl}`,
       html: `
         <h2>Tervetuloa ${customer.firstName}!</h2>
@@ -205,7 +186,7 @@ export async function loginCustomer(formData: FormData) {
           return {
             requiresVerification: true,
             customerId: errorData.customerId,
-            error: "Please verify your email before logging in.",
+            error: "Vahvista sähköpostiosoitteesi ennen sisäänkirjautumista.",
           };
         }
 

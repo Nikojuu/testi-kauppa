@@ -97,42 +97,42 @@ const getOrders = async (userId: string): Promise<OrdersResponse> => {
   }
 };
 
-// Component to get status color and icon
+// Component to get status color and icon with Pupun Korvat theme
 const getStatusInfo = (status: OrderStatus) => {
   switch (status) {
     case OrderStatus.PENDING:
       return {
-        color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+        color: "bg-champagne/20 text-charcoal border-champagne/40",
         icon: <Clock className="w-3 h-3" />,
         text: "Odottaa maksua",
       };
     case OrderStatus.PAID:
       return {
-        color: "bg-green-100 text-green-800 border-green-200",
+        color: "bg-rose-gold/20 text-charcoal border-rose-gold/40",
         icon: <CreditCard className="w-3 h-3" />,
         text: "Maksettu",
       };
     case OrderStatus.SHIPPED:
       return {
-        color: "bg-blue-100 text-blue-800 border-blue-200",
+        color: "bg-rose-gold/30 text-charcoal border-rose-gold/50",
         icon: <Truck className="w-3 h-3" />,
         text: "Lähetetty",
       };
     case OrderStatus.COMPLETED:
       return {
-        color: "bg-green-100 text-green-800 border-green-200",
+        color: "bg-rose-gold/20 text-charcoal border-rose-gold/40",
         icon: <CheckCircle className="w-3 h-3" />,
         text: "Valmis",
       };
     case OrderStatus.REFUNDED:
       return {
-        color: "bg-orange-100 text-orange-800 border-orange-200",
+        color: "bg-champagne/30 text-charcoal border-champagne/50",
         icon: <Package className="w-3 h-3" />,
         text: "Palautettu",
       };
     default:
       return {
-        color: "bg-gray-100 text-gray-800 border-gray-200",
+        color: "bg-cream text-charcoal/70 border-rose-gold/20",
         icon: <Package className="w-3 h-3" />,
         text: status,
       };
@@ -146,44 +146,54 @@ const OrderCard = ({ order }: { order: Order }) => {
   const totalAmountEur = (order.totalAmount / 100).toFixed(2);
 
   return (
-    <Card className="mb-4 hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <CardTitle className="text-lg">
+    <div className="group relative bg-warm-white p-6 mb-6 transition-all duration-300 hover:shadow-md">
+      {/* Border frame */}
+      <div className="absolute inset-0 border border-rose-gold/10 pointer-events-none group-hover:border-rose-gold/25 transition-colors" />
+
+      {/* Corner accents */}
+      <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+      <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+      <div className="absolute bottom-0 left-0 w-4 h-4 border-l border-b border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+      <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+
+      <div className="relative">
+        <div className="flex justify-between items-start mb-4">
+          <div className="space-y-2">
+            <h3 className="font-primary text-lg text-charcoal">
               Tilausnumero: {order.orderNumber}
-            </CardTitle>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Calendar className="w-4 h-4 mr-1" />
+            </h3>
+            <div className="flex items-center text-sm font-secondary text-charcoal/60">
+              <Calendar className="w-4 h-4 mr-2" />
               {orderDate}
             </div>
           </div>
           <div className="text-right space-y-2">
-            <Badge variant="outline" className={statusInfo.color}>
+            <div
+              className={`inline-flex items-center gap-2 px-3 py-1.5 border font-secondary text-xs tracking-wider uppercase ${statusInfo.color}`}
+            >
               {statusInfo.icon}
-              <span className="ml-1">{statusInfo.text}</span>
-            </Badge>
-            <div className="flex items-center text-lg font-semibold">
-              <Euro className="w-4 h-4 mr-1" />
+              <span>{statusInfo.text}</span>
+            </div>
+            <div className="flex items-center justify-end text-xl font-primary text-charcoal">
+              <Euro className="w-5 h-5 mr-1" />
               {totalAmountEur}
             </div>
           </div>
         </div>
-      </CardHeader>
 
-      <CardContent className="pt-0">
+        <div className="mb-4 h-[1px] bg-gradient-to-r from-rose-gold/30 to-transparent" />
+
         <div className="space-y-3">
-          {" "}
           {/* Order Items */}
           <div>
-            <h4 className="text-sm font-medium text-muted-foreground mb-2">
+            <h4 className="text-sm font-secondary font-medium text-charcoal/70 mb-3">
               Tilauksen tuotteet:
             </h4>
             <div className="space-y-3">
               {order.OrderLineItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-cream/30 border border-rose-gold/10"
                 >
                   <div className="flex items-center space-x-3">
                     {/* Product Image */}
@@ -205,26 +215,28 @@ const OrderCard = ({ order }: { order: Order }) => {
 
                     {/* Product Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-secondary font-medium text-charcoal truncate">
                         {item.product.name}
                       </p>
                       {/* Show variation options if available */}
                       {item.product.optionName && item.product.optionValue && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs font-secondary text-charcoal/60">
                           {item.product.optionName}: {item.product.optionValue}
                         </p>
                       )}
                       {/* Show if shipping item */}
                       {item.product.isShipping && (
-                        <p className="text-xs text-blue-600">Toimitus</p>
+                        <p className="text-xs font-secondary text-rose-gold">
+                          Toimitus
+                        </p>
                       )}
                       {/* Show if product unavailable */}
                       {item.product.unavailable && (
-                        <p className="text-xs text-red-500">
+                        <p className="text-xs font-secondary text-deep-burgundy">
                           Tuote ei enää saatavilla
                         </p>
                       )}
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs font-secondary text-charcoal/60">
                         Määrä: {item.quantity}
                       </p>
                     </div>
@@ -232,11 +244,11 @@ const OrderCard = ({ order }: { order: Order }) => {
 
                   {/* Price */}
                   <div className="text-right">
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-primary font-medium text-charcoal">
                       €{(item.price / 100).toFixed(2)}
                     </span>
                     {item.quantity > 1 && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs font-secondary text-charcoal/60">
                         €{((item.price * item.quantity) / 100).toFixed(2)}{" "}
                         yhteensä
                       </p>
@@ -249,21 +261,21 @@ const OrderCard = ({ order }: { order: Order }) => {
           {/* Tracking Information */}
           {order.trackingNumber && (
             <>
-              <Separator />
+              <div className="my-3 h-[1px] bg-gradient-to-r from-rose-gold/20 to-transparent" />
               <div className="flex items-center justify-between">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Truck className="w-4 h-4 mr-2" />
+                <div className="flex items-center text-sm font-secondary text-charcoal/70">
+                  <Truck className="w-4 h-4 mr-2 text-rose-gold" />
                   Seurantanumero:
                 </div>
-                <Badge variant="secondary" className="font-mono">
+                <span className=" text-sm font-secondary text-charcoal bg-cream/50 px-3 py-1 border border-rose-gold/20">
                   {order.trackingNumber}
-                </Badge>
+                </span>
               </div>
             </>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
@@ -285,39 +297,48 @@ const MyOrdersPage = async () => {
     ) || [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Minun tilaukseni</h2>
-        <p className="text-muted-foreground">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-1.5 h-1.5 bg-rose-gold/60 diamond-shape" />
+          <h2 className="text-2xl md:text-3xl font-primary text-charcoal">
+            Minun tilaukseni
+          </h2>
+        </div>
+        <p className="font-secondary text-charcoal/60 ml-5">
           Näet täältä kaikki tilauksesi ja niiden tilan
         </p>
       </div>
 
       {filteredOrders.length === 0 ? (
-        <Card className="text-center py-12">
-          <CardContent>
-            <div className="mx-auto w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
-              <Package className="w-6 h-6 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-medium mb-2">
+        <div className="relative bg-warm-white p-12 text-center">
+          <div className="absolute inset-0 border border-rose-gold/10 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-rose-gold/30" />
+          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-rose-gold/30" />
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-rose-gold/30" />
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-r border-b border-rose-gold/30" />
+          <div className="relative">
+            <Package className="w-16 h-16 text-charcoal/20 mx-auto mb-6" />
+            <h3 className="text-xl font-primary text-charcoal mb-3">
               Sinulla ei ole vielä tilauksia
             </h3>
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="text-sm font-secondary text-charcoal/60 mb-6">
               Kun teet ensimmäisen tilauksesi, näet sen täältä
             </p>
             <a
               href="/products"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+              className="inline-flex items-center justify-center gap-3 px-8 py-3 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold"
             >
-              <Plane className="w-4 h-4 mr-2" />
+              <Plane className="w-4 h-4" />
               Aloita ostokset
             </a>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+        <div>
+          <div className="mb-6">
+            <p className="text-sm font-secondary text-charcoal/60">
               Yhteensä {filteredOrders.length} tilausta
             </p>
           </div>

@@ -28,17 +28,19 @@ export function SortOptions() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 mb-4">
-      <span className="text-sm font-semibold text-gray-700">Järjestä:</span>
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+      <span className="text-xs tracking-[0.2em] uppercase font-secondary text-charcoal/60">
+        Järjestä:
+      </span>
       <div className="flex flex-wrap gap-2">
         {sortOptions.map((option) => (
           <Link
             key={option.value}
             href={`${pathname}?${createQueryString("sort", option.value)}`}
-            className={`text-sm px-3 py-2 rounded-full ${
+            className={`text-sm font-secondary px-4 py-2 border transition-all duration-300 ${
               currentSort === option.value
-                ? "font-semibold text-primary bg-primary/10"
-                : "text-gray-600 hover:text-primary hover:bg-primary/5"
+                ? "border-rose-gold bg-rose-gold/10 text-charcoal"
+                : "border-charcoal/10 text-charcoal/60 hover:border-rose-gold/40 hover:text-charcoal"
             }`}
           >
             {option.label}

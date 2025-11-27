@@ -107,40 +107,50 @@ const WishlistPage = async () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Toivelista</h2>
-        <p className="text-muted-foreground">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-1.5 h-1.5 bg-rose-gold/60 diamond-shape" />
+          <h2 className="text-2xl md:text-3xl font-primary text-charcoal">Toivelista</h2>
+        </div>
+        <p className="font-secondary text-charcoal/60 ml-5">
           Täältä löydät kaikki suosikkituotteesi
         </p>
       </div>
 
       {wishlistItems.length === 0 ? (
-        <div className="rounded-lg border bg-card text-center py-12">
-          <div className="pt-6">
-            <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Toivelistasi on tyhjä</h3>
-            <p className="text-sm text-muted-foreground mb-6">
+        <div className="relative bg-warm-white p-12 text-center">
+          <div className="absolute inset-0 border border-rose-gold/10 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-8 h-8 border-l border-t border-rose-gold/30" />
+          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-rose-gold/30" />
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-rose-gold/30" />
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-r border-b border-rose-gold/30" />
+          <div className="relative">
+            <Heart className="w-16 h-16 text-charcoal/20 mx-auto mb-6" />
+            <h3 className="text-xl font-primary text-charcoal mb-3">Toivelistasi on tyhjä</h3>
+            <p className="text-sm font-secondary text-charcoal/60 mb-6">
               Lisää tuotteita toivelistaan selatessasi kauppaa
             </p>
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              asChild
+            <a
+              href="/products"
+              className="inline-flex items-center justify-center gap-3 px-8 py-3 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold"
             >
-              <a href="/products">
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Selaa tuotteita
-              </a>
-            </Button>
+              <ShoppingCart className="w-4 h-4" />
+              Selaa tuotteita
+            </a>
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Näytetään {wishlistItems.length} tuotetta
-          </p>
+        <div>
+          <div className="mb-6">
+            <p className="text-sm font-secondary text-charcoal/60">
+              Näytetään {wishlistItems.length} tuotetta
+            </p>
+          </div>
 
-          {wishlistItems.map((item) => {
+          <div className="space-y-6">
+            {wishlistItems.map((item) => {
             const displayImage = getDisplayImage(item);
 
             // Calculate effective price using the same logic as cart page
@@ -186,12 +196,21 @@ const WishlistPage = async () => {
             return (
               <div
                 key={item.id}
-                className="rounded-lg border bg-card hover:shadow-md transition-shadow"
+                className="group relative bg-warm-white p-6 transition-all duration-300 hover:shadow-md"
               >
-                <div className="p-6 pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-start space-x-4">
-                      <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100">
+                {/* Border frame */}
+                <div className="absolute inset-0 border border-rose-gold/10 pointer-events-none group-hover:border-rose-gold/25 transition-colors" />
+
+                {/* Corner accents */}
+                <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+                <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+                <div className="absolute bottom-0 left-0 w-4 h-4 border-l border-b border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-rose-gold/20 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+
+                <div className="relative">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
+                    <div className="flex items-start space-x-4 flex-1">
+                      <div className="relative w-24 h-24 overflow-hidden bg-cream/30 border border-rose-gold/10 flex-shrink-0">
                         <Image
                           src={displayImage}
                           alt={item.product.name}
@@ -200,12 +219,12 @@ const WishlistPage = async () => {
                           sizes="96px"
                         />
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium mb-1">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-primary text-lg text-charcoal mb-2">
                           {item.product.name}
                         </h4>
                         {item.variation && (
-                          <div className="text-xs text-muted-foreground mb-2 space-y-0.5">
+                          <div className="text-xs font-secondary text-charcoal/60 mb-3 space-y-0.5">
                             {item.variation.options.map((opt) => (
                               <div key={`${opt.optionType.name}-${opt.value}`}>
                                 {opt.optionType.name}: {opt.value}
@@ -213,32 +232,36 @@ const WishlistPage = async () => {
                             ))}
                           </div>
                         )}
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-lg font-medium flex items-center">
-                            <Euro className="w-4 h-4" />
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-xl font-primary text-charcoal flex items-center">
+                            <Euro className="w-5 h-5 mr-1" />
                             {effectivePrice.toFixed(2)}
                           </span>
                           {isItemOnSale && (
                             <>
-                              <span className="text-sm text-muted-foreground line-through flex items-center">
+                              <span className="text-sm font-secondary text-charcoal/50 line-through flex items-center">
                                 <Euro className="w-3 h-3" />
                                 {originalPrice.toFixed(2)}
                               </span>
-                              <Badge variant="destructive" className="text-xs">
+                              <span className="px-2 py-1 bg-deep-burgundy/10 border border-deep-burgundy/30 text-deep-burgundy text-xs font-secondary tracking-wider uppercase">
                                 TARJOUS
-                              </Badge>
+                              </span>
                             </>
                           )}
                         </div>
+                        <p className="text-xs font-secondary text-charcoal/50">
+                          Lisätty: {new Date(item.createdAt).toLocaleDateString("fi-FI")}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Button size="sm" asChild>
-                        <a href={`/product/${item.product.slug}`}>
-                          <ShoppingCart className="w-4 h-4 mr-1" />
-                          Katso tuote
-                        </a>
-                      </Button>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:items-start">
+                      <a
+                        href={`/product/${item.product.slug}`}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold whitespace-nowrap"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                        Katso tuote
+                      </a>
                       <DeleteWishlistButton
                         productId={item.productId}
                         variationId={item.variationId}
@@ -246,16 +269,10 @@ const WishlistPage = async () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="px-6 pb-6 pt-0">
-                  <p className="text-sm text-muted-foreground">
-                    Lisätty toivelistaan:{" "}
-                    {new Date(item.createdAt).toLocaleDateString("fi-FI")}
-                  </p>
-                </div>
               </div>
             );
-          })}
+            })}
+          </div>
         </div>
       )}
     </div>

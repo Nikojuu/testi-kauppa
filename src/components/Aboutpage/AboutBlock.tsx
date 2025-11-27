@@ -19,72 +19,95 @@ const AboutBlock = ({ blockInfo }: { blockInfo: AboutBlockType }) => {
   return (
     <section
       ref={ref}
-      className={`mx-auto mb-32 flex w-full max-w-screen-2xl flex-col px-4 sm:px-8 lg:flex-row ${
+      className={`mx-auto mb-20 md:mb-32 flex w-full max-w-screen-xl flex-col px-4 sm:px-8 lg:flex-row lg:items-center gap-8 lg:gap-0 ${
         blockInfo.reverse ? "lg:flex-row-reverse" : ""
-      } overflow-x-hidden`}
+      }`}
     >
-      {/* Mobile Image */}
-      <div
-        className={`relative aspect-square w-full h-96 lg:hidden ${blockInfo.reverse ? "order-last" : ""}`}
-      >
-        <Image
-          fill
-          alt={blockInfo.title}
-          src={blockInfo.imgSrc}
-          sizes="100vw"
-          className="object-cover rounded-lg shadow-2xl -rotate-2"
-          priority
-        />
-      </div>
-
-      {/* Desktop Animated Image */}
+      {/* Image Container */}
       <motion.div
-        initial={{ x: blockInfo.reverse ? 100 : -100, opacity: 0 }}
+        initial={{
+          x: blockInfo.reverse ? 60 : -60,
+          opacity: 0
+        }}
         animate={{
-          x: isInView ? 0 : blockInfo.reverse ? 100 : -100,
+          x: isInView ? 0 : blockInfo.reverse ? 60 : -60,
           opacity: isInView ? 1 : 0,
         }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hidden lg:block relative lg:w-1/2 lg:min-h-[600px]"
+        transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="relative w-full lg:w-1/2 group"
       >
-        <Image
-          fill
-          alt={blockInfo.title}
-          src={blockInfo.imgSrc}
-          sizes="(min-width: 1620px) 752px, (min-width: 1060px) calc(-9.81vw + 909px)"
-          className="object-cover rounded-lg shadow-2xl -rotate-2"
+        {/* Decorative frame behind image */}
+        <div
+          className={`absolute -inset-3 border border-rose-gold/20 ${
+            blockInfo.reverse ? "translate-x-3" : "-translate-x-3"
+          } translate-y-3 transition-all duration-500 group-hover:border-rose-gold/40`}
         />
+
+        {/* Corner accents */}
+        <div className="absolute -top-1 -left-1 w-6 h-6 border-l-2 border-t-2 border-rose-gold/50 z-10 transition-all duration-500 group-hover:w-10 group-hover:h-10 group-hover:border-rose-gold/70" />
+        <div className="absolute -top-1 -right-1 w-6 h-6 border-r-2 border-t-2 border-rose-gold/50 z-10 transition-all duration-500 group-hover:w-10 group-hover:h-10 group-hover:border-rose-gold/70" />
+        <div className="absolute -bottom-1 -left-1 w-6 h-6 border-l-2 border-b-2 border-rose-gold/50 z-10 transition-all duration-500 group-hover:w-10 group-hover:h-10 group-hover:border-rose-gold/70" />
+        <div className="absolute -bottom-1 -right-1 w-6 h-6 border-r-2 border-b-2 border-rose-gold/50 z-10 transition-all duration-500 group-hover:w-10 group-hover:h-10 group-hover:border-rose-gold/70" />
+
+        {/* Image wrapper */}
+        <div className="relative aspect-[4/5] overflow-hidden bg-cream">
+          <Image
+            fill
+            alt={blockInfo.title}
+            src={blockInfo.imgSrc}
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            priority
+          />
+          {/* Subtle overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/10 via-transparent to-warm-white/10 pointer-events-none" />
+        </div>
       </motion.div>
 
       {/* Content Container */}
-      <div
-        className={`z-10 flex-1 bg-pink-50/95 backdrop-blur-sm p-8 text-black rounded-lg shadow-xl border border-white/20 
-        ${blockInfo.reverse ? "lg:-mr-24" : "lg:-ml-24"} lg:mt-24`}
+      <motion.div
+        initial={{
+          x: blockInfo.reverse ? -60 : 60,
+          opacity: 0
+        }}
+        animate={{
+          x: isInView ? 0 : blockInfo.reverse ? -60 : 60,
+          opacity: isInView ? 1 : 0,
+        }}
+        transition={{ duration: 0.8, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className={`relative flex-1 ${
+          blockInfo.reverse ? "lg:pr-16 lg:-mr-8" : "lg:pl-16 lg:-ml-8"
+        } lg:py-12 z-10`}
       >
-        {/* Mobile Content */}
-        <div className="lg:hidden">
-          <h3 className="mb-4 font-primary text-4xl">{blockInfo.title}</h3>
-          <p className="text-sm leading-relaxed text-gray-800 whitespace-pre-line">
-            {blockInfo.text}
-          </p>
-        </div>
+        {/* Content card */}
+        <div className="relative bg-warm-white/95 backdrop-blur-sm p-8 md:p-10 lg:p-12 border border-rose-gold/10 shadow-lg">
+          {/* Small decorative diamond */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-1.5 h-1.5 bg-rose-gold/60 diamond-shape" />
+            <div className="w-12 h-[1px] bg-gradient-to-r from-rose-gold/50 to-transparent" />
+          </div>
 
-        {/* Desktop Animated Content */}
-        <motion.div
-          initial={{ x: blockInfo.reverse ? -100 : 100, opacity: 0 }}
-          animate={{
-            x: isInView ? 0 : blockInfo.reverse ? -100 : 100,
-            opacity: isInView ? 1 : 0,
-          }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="hidden lg:block"
-        >
-          <h3 className="mb-8 font-primary text-5xl">{blockInfo.title}</h3>
-          <p className="text-lg leading-relaxed text-gray-800 whitespace-pre-line">
-            {blockInfo.text}
-          </p>
-        </motion.div>
-      </div>
+          {/* Title */}
+          <h3 className="font-primary text-2xl md:text-3xl lg:text-4xl font-bold text-charcoal mb-6 tracking-tight">
+            {blockInfo.title}
+          </h3>
+
+          {/* Text content with paragraph handling */}
+          <div className="space-y-4">
+            {blockInfo.text.split("\n\n").map((paragraph, index) => (
+              <p
+                key={index}
+                className="text-sm md:text-base leading-relaxed text-charcoal/70 font-secondary"
+              >
+                {paragraph.trim()}
+              </p>
+            ))}
+          </div>
+
+          {/* Bottom decorative line */}
+          <div className="mt-8 h-[1px] bg-gradient-to-r from-rose-gold/40 via-champagne/30 to-transparent max-w-32" />
+        </div>
+      </motion.div>
     </section>
   );
 };

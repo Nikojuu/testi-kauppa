@@ -167,10 +167,19 @@ export function SelectShipmentMethod({
 
   return (
     <div className="space-y-8 w-full">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">
+      {/* Header with diamond decoration */}
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="w-2 h-2 bg-rose-gold/60 diamond-shape" />
+          <div className="w-16 h-[1px] bg-gradient-to-r from-rose-gold/60 to-champagne/40" />
+          <div className="w-1.5 h-1.5 bg-champagne/50 diamond-shape" />
+          <div className="w-16 h-[1px] bg-gradient-to-l from-rose-gold/60 to-champagne/40" />
+          <div className="w-2 h-2 bg-rose-gold/60 diamond-shape" />
+        </div>
+        <h2 className="text-3xl md:text-4xl font-primary text-charcoal tracking-tight">
           Valitse toimitustapa
         </h2>
+        <div className="mt-4 h-[1px] bg-gradient-to-r from-transparent via-rose-gold/30 to-transparent max-w-xs mx-auto" />
       </div>
 
       <RadioGroup
@@ -181,24 +190,77 @@ export function SelectShipmentMethod({
         {/* Home Delivery / Custom Shipments Section */}
         {homeDeliveryOrCustomShipments.length > 0 && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-800 border-b border-gray-200 pb-2">
-              Kotiinkuljetus
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 bg-rose-gold/60 diamond-shape" />
+              <h3 className="text-xl md:text-2xl font-primary text-charcoal">
+                Kotiinkuljetus
+              </h3>
+              <div className="flex-1 h-[1px] bg-gradient-to-r from-rose-gold/30 to-transparent" />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {homeDeliveryOrCustomShipments.map((shipment) => (
-                <Card
+                <div
                   key={shipment.id}
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-primary/60 hover:scale-[1.02] ${
+                  className={`group relative bg-warm-white cursor-pointer transition-all duration-500 ${
                     selectedShipmentMethod ===
                     JSON.stringify({
                       type: "method",
                       methodId: shipment.id,
                     })
-                      ? "border-primary bg-primary/10 shadow-lg scale-[1.02] ring-2 ring-primary/20"
-                      : "border-gray-200 hover:border-primary/40"
+                      ? "shadow-lg"
+                      : "hover:shadow-md"
                   }`}
                 >
-                  <CardContent className="p-5">
+                  {/* Border frame */}
+                  <div className={`absolute inset-0 border pointer-events-none transition-colors duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "method",
+                      methodId: shipment.id,
+                    })
+                      ? "border-rose-gold/40"
+                      : "border-rose-gold/10 group-hover:border-rose-gold/25"
+                  }`} />
+
+                  {/* Corner accents */}
+                  <div className={`absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "method",
+                      methodId: shipment.id,
+                    })
+                      ? "border-rose-gold/60 w-8 h-8"
+                      : "border-rose-gold/30 group-hover:w-8 group-hover:h-8 group-hover:border-rose-gold/50"
+                  }`} />
+                  <div className={`absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "method",
+                      methodId: shipment.id,
+                    })
+                      ? "border-rose-gold/60 w-8 h-8"
+                      : "border-rose-gold/30 group-hover:w-8 group-hover:h-8 group-hover:border-rose-gold/50"
+                  }`} />
+                  <div className={`absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "method",
+                      methodId: shipment.id,
+                    })
+                      ? "border-rose-gold/60 w-8 h-8"
+                      : "border-rose-gold/30 group-hover:w-8 group-hover:h-8 group-hover:border-rose-gold/50"
+                  }`} />
+                  <div className={`absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "method",
+                      methodId: shipment.id,
+                    })
+                      ? "border-rose-gold/60 w-8 h-8"
+                      : "border-rose-gold/30 group-hover:w-8 group-hover:h-8 group-hover:border-rose-gold/50"
+                  }`} />
+
+                  <CardContent className="p-6 relative">
                     <div className="flex items-start space-x-4">
                       <RadioGroupItem
                         value={JSON.stringify({
@@ -215,22 +277,22 @@ export function SelectShipmentMethod({
                         >
                           <div className="space-y-3">
                             {/* Shipment name */}
-                            <h4 className="font-semibold text-lg leading-tight line-clamp-2 text-gray-900">
+                            <h4 className="font-primary text-lg leading-tight line-clamp-2 text-charcoal">
                               {shipment.name}
                             </h4>
 
-                            <p className="text-sm min-h-10 text-gray-600 leading-relaxed">
+                            <p className="text-sm min-h-10 font-secondary text-charcoal/60 leading-relaxed">
                               {shipment.description
                                 ? shipment.description
                                 : shipment.name}
                             </p>
 
                             {/* Price */}
-                            <div className="flex justify-between items-end">
+                            <div className="flex justify-between items-end pt-2">
                               {(shipment.min_estimate_delivery_days ||
                                 shipment.max_estimate_delivery_days) && (
-                                <div className="text-sm text-gray-600">
-                                  <span className="font-medium text-gray-700">
+                                <div className="text-sm font-secondary text-charcoal/70">
+                                  <span className="font-medium text-charcoal">
                                     Toimitus:{" "}
                                   </span>
                                   {shipment.min_estimate_delivery_days ===
@@ -239,7 +301,7 @@ export function SelectShipmentMethod({
                                     : `${shipment.min_estimate_delivery_days}-${shipment.max_estimate_delivery_days} päivää`}
                                 </div>
                               )}
-                              <span className="font-bold text-xl text-primary bg-primary/10 px-3 py-1 rounded-lg">
+                              <span className="font-primary text-xl text-charcoal bg-rose-gold/10 px-3 py-1.5 border border-rose-gold/20">
                                 {formatShipmentMethodPrice(shipment)}
                               </span>
                             </div>
@@ -248,7 +310,7 @@ export function SelectShipmentMethod({
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </div>
               ))}
             </div>
           </div>
@@ -257,28 +319,86 @@ export function SelectShipmentMethod({
         {/* Parcel Locker Section */}
         {pricedLocations.length > 0 && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-800 border-b border-gray-200 pb-2">
-              Pakettiautomaatti
-            </h2>
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-1.5 bg-rose-gold/60 diamond-shape" />
+              <h3 className="text-xl md:text-2xl font-primary text-charcoal">
+                Pakettiautomaatti
+              </h3>
+              <div className="flex-1 h-[1px] bg-gradient-to-r from-rose-gold/30 to-transparent" />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {(showAllLocations
                 ? pricedLocations
                 : pricedLocations.slice(0, INITIAL_LOCATIONS_COUNT)
               ).map((location) => (
-                <Card
+                <div
                   key={location.id}
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-primary/60 hover:scale-[1.02] ${
+                  className={`group relative bg-warm-white cursor-pointer transition-all duration-500 ${
                     selectedShipmentMethod ===
                     JSON.stringify({
                       type: "locker",
                       lockerId: location.id,
                       serviceId: location.serviceId,
                     })
-                      ? "border-primary bg-primary/10 shadow-lg scale-[1.02] ring-2 ring-primary/20"
-                      : "border-gray-200 hover:border-primary/40"
+                      ? "shadow-lg"
+                      : "hover:shadow-md"
                   }`}
                 >
-                  <CardContent className="p-4">
+                  {/* Border frame */}
+                  <div className={`absolute inset-0 border pointer-events-none transition-colors duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "locker",
+                      lockerId: location.id,
+                      serviceId: location.serviceId,
+                    })
+                      ? "border-rose-gold/40"
+                      : "border-rose-gold/10 group-hover:border-rose-gold/25"
+                  }`} />
+
+                  {/* Corner accents */}
+                  <div className={`absolute top-0 left-0 w-4 h-4 border-l border-t transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "locker",
+                      lockerId: location.id,
+                      serviceId: location.serviceId,
+                    })
+                      ? "border-rose-gold/60 w-6 h-6"
+                      : "border-rose-gold/30 group-hover:w-6 group-hover:h-6 group-hover:border-rose-gold/50"
+                  }`} />
+                  <div className={`absolute top-0 right-0 w-4 h-4 border-r border-t transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "locker",
+                      lockerId: location.id,
+                      serviceId: location.serviceId,
+                    })
+                      ? "border-rose-gold/60 w-6 h-6"
+                      : "border-rose-gold/30 group-hover:w-6 group-hover:h-6 group-hover:border-rose-gold/50"
+                  }`} />
+                  <div className={`absolute bottom-0 left-0 w-4 h-4 border-l border-b transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "locker",
+                      lockerId: location.id,
+                      serviceId: location.serviceId,
+                    })
+                      ? "border-rose-gold/60 w-6 h-6"
+                      : "border-rose-gold/30 group-hover:w-6 group-hover:h-6 group-hover:border-rose-gold/50"
+                  }`} />
+                  <div className={`absolute bottom-0 right-0 w-4 h-4 border-r border-b transition-all duration-500 ${
+                    selectedShipmentMethod ===
+                    JSON.stringify({
+                      type: "locker",
+                      lockerId: location.id,
+                      serviceId: location.serviceId,
+                    })
+                      ? "border-rose-gold/60 w-6 h-6"
+                      : "border-rose-gold/30 group-hover:w-6 group-hover:h-6 group-hover:border-rose-gold/50"
+                  }`} />
+
+                  <CardContent className="p-4 relative">
                     <div className="flex items-start space-x-3">
                       <RadioGroupItem
                         value={JSON.stringify({
@@ -296,7 +416,7 @@ export function SelectShipmentMethod({
                       >
                         <div className="space-y-3">
                           {/* Header with carrier logo and name */}
-                          <div className="flex items-center space-x-2 min-w-0 bg-gray-50 rounded-md px-2 py-1">
+                          <div className="flex items-center space-x-2 min-w-0 bg-cream/40 px-2 py-1 border border-rose-gold/10">
                             {location.carrierLogo && (
                               /* eslint-disable-next-line @next/next/no-img-element */
                               <img
@@ -305,18 +425,18 @@ export function SelectShipmentMethod({
                                 className="w-5 h-5 object-contain flex-shrink-0"
                               />
                             )}
-                            <span className="text-xs font-medium text-gray-700 truncate">
+                            <span className="text-xs font-secondary font-medium text-charcoal/70 truncate">
                               {location.carrier}
                             </span>
                           </div>
 
                           {/* Location name */}
-                          <h4 className="font-medium text-sm leading-tight line-clamp-2 min-h-10 text-gray-900">
+                          <h4 className="font-secondary font-medium text-sm leading-tight line-clamp-2 min-h-10 text-charcoal">
                             {location.name}
                           </h4>
 
                           {/* Address */}
-                          <div className="text-xs text-gray-600 space-y-1 bg-gray-50 rounded-md p-2">
+                          <div className="text-xs font-secondary text-charcoal/60 space-y-1 bg-cream/30 p-2 border border-rose-gold/10">
                             <p className="truncate font-medium">
                               {location.address1}
                             </p>
@@ -326,11 +446,11 @@ export function SelectShipmentMethod({
                           </div>
 
                           {/* Price and Distance */}
-                          <div className="flex justify-between items-center">
-                            <span className="font-bold text-base text-primary bg-primary/10 px-2 py-1 rounded-md">
+                          <div className="flex justify-between items-center pt-1">
+                            <span className="font-primary text-base text-charcoal bg-rose-gold/10 px-2 py-1 border border-rose-gold/20">
                               {formatParcelLocationPrice(location)}
                             </span>
-                            <span className="text-gray-600 text-sm font-medium bg-gray-100 px-2 py-1 rounded-md">
+                            <span className="text-charcoal/60 text-xs font-secondary font-medium bg-cream/40 px-2 py-1 border border-rose-gold/10">
                               {formatDistance(location.distanceInMeters)}
                             </span>
                           </div>
@@ -338,23 +458,22 @@ export function SelectShipmentMethod({
                       </Label>
                     </div>
                   </CardContent>
-                </Card>
+                </div>
               ))}
             </div>
 
             {/* Show More/Less Button */}
             {pricedLocations.length > INITIAL_LOCATIONS_COUNT && (
               <div className="flex justify-center pt-4">
-                <Button
+                <button
                   type="button"
-                  variant="outline"
                   onClick={() => setShowAllLocations(!showAllLocations)}
-                  className="px-8 py-2 text-sm font-medium transition-all duration-200 hover:bg-primary hover:text-primary-foreground border-primary/20 text-primary hover:border-primary"
+                  className="inline-flex items-center gap-3 px-8 py-3 border border-charcoal/30 text-charcoal font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:border-rose-gold hover:text-rose-gold"
                 >
                   {showAllLocations
                     ? `Näytä vähemmän (${INITIAL_LOCATIONS_COUNT}/${pricedLocations.length})`
                     : `Näytä lisää (${pricedLocations.length - INITIAL_LOCATIONS_COUNT} lisää)`}
-                </Button>
+                </button>
               </div>
             )}
           </div>

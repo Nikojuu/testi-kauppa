@@ -71,17 +71,15 @@ const DeleteWishlistButton = ({
   };
 
   return (
-    <Button
+    <button
       type="button"
-      variant="outline"
-      size="sm"
       onClick={handleDeleteWishlistItem}
       disabled={isDeleting}
-      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+      className="inline-flex items-center gap-2 px-4 py-2 border border-deep-burgundy/30 text-deep-burgundy font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-deep-burgundy/5 hover:border-deep-burgundy/60 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      <Trash2 className="w-4 h-4 mr-1" />
+      <Trash2 className="w-4 h-4" />
       {isDeleting ? "Poistetaan..." : "Poista"}
-    </Button>
+    </button>
   );
 };
 

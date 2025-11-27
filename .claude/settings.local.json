@@ -1,8 +1,16 @@
 {
   "permissions": {
-    "allow": ["mcp__shadcn__view_items_in_registries", "WebSearch"],
+    "allow": [
+      "mcp__shadcn__view_items_in_registries",
+      "WebSearch",
+      "Bash(ls:*)",
+      "Bash(find:*)"
+    ],
     "deny": [],
     "ask": [],
-    "additionalDirectories": ["D:\\Projektit\\verkkokaupat\\hennan-korukauppa"]
+    "additionalDirectories": [
+      "D:\\Projektit\\verkkokauppapalvelu",
+      "D:\\Projektit\\verkkokaupat\\Hennan-Korukauppa"
+    ]
   }
 }
