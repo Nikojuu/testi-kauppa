@@ -1,7 +1,11 @@
 import { MetadataRoute } from "next";
-import { SEO_ENABLED, STORE_DOMAIN } from "./utils/constants";
+import { SEO_ENABLED } from "./utils/constants";
 
 export default function robots(): MetadataRoute.Robots {
+  // Get domain from environment variable (fallback to constant if needed)
+  const domain =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://example.com";
+
   // If SEO is disabled, disallow all crawling
   if (!SEO_ENABLED) {
     return {
@@ -30,6 +34,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${STORE_DOMAIN}/sitemap.xml`,
+    sitemap: `${domain}/sitemap.xml`,
   };
 }

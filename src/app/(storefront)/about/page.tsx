@@ -1,43 +1,62 @@
 import AboutBlock from "@/components/Aboutpage/AboutBlock";
 import { Metadata } from "next";
-import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
 import { AboutHero } from "@/components/Aboutpage/AboutHero";
 import { AboutCTA } from "@/components/Aboutpage/AboutCTA";
+import { getStoreConfig, getSEOValue, SEO_FALLBACKS } from "@/lib/actions/storeConfigActions";
+import { SEO_ENABLED } from "@/app/utils/constants";
 
-export const metadata: Metadata = {
-  title: "Putiikkipalvelu | Tietoa meistä",
-  description: "Tutustu Putiikkipalvelun tarinaan. ",
-  keywords:
-    "Putiikkipalvelu, verkkokauppa, käsityö, korut, korujen valmistus, materiaalit, käsintehty, uniikki, lahjaidea",
-  authors: [{ name: "Pupun Korvat" }],
-  robots:
-    "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const config = await getStoreConfig();
 
-  openGraph: {
-    title: "Pupun Korvat | Tietoa Minusta",
-    description:
-      "Tutustu Pupun Korvien korujen valmistuksen tarinaan ja ainutlaatuiseen muotoiluun. Lue lisää käsityöläisyydestä ja inspiraatiosta tuotteidemme takana.",
-    url: "https://www.pupunkorvat.fi/about", // Your website URL
-    images: [
-      {
-        url: OPEN_GRAPH_IMAGE, // Main product image
-        width: 1200,
-        height: 630,
-        alt: "Pupun Korvat - Käsintehty koru",
+    const title = `${config.store.name} | Tietoa meistä`;
+    const description = `Tutustu ${config.store.name} tarinaan ja tiimiin.`;
+    const domain = getSEOValue(config.seo.domain, SEO_FALLBACKS.domain);
+    const ogImage = getSEOValue(config.seo.openGraphImageUrl, SEO_FALLBACKS.openGraphImage);
+    const twitterImage = getSEOValue(config.seo.twitterImageUrl, SEO_FALLBACKS.twitterImage);
+
+    return {
+      title,
+      description,
+      robots: SEO_ENABLED
+        ? "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+        : "noindex, nofollow",
+      alternates: {
+        canonical: `${domain}/about`,
       },
-    ],
-    locale: "fi_FI",
-    type: "profile",
-    siteName: "Pupun Korvat",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Pupun Korvat | Käsintehtyjä Koruja",
-    description:
-      "Tutustu Pupun Korvien käsintehtyihin koruihin ja löydä ainutlaatuinen lahja tai itsellesi sopiva koru.",
-    images: [TWITTER_IMAGE], // Main Twitter image
-  },
-};
+      openGraph: {
+        title,
+        description,
+        url: `${domain}/about`,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+        locale: "fi_FI",
+        type: "website",
+        siteName: config.store.name,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [twitterImage],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating about page metadata:", error);
+
+    return {
+      title: "Tietoa meistä",
+      description: "Tutustu yrityksemme tarinaan.",
+      robots: "noindex, nofollow",
+    };
+  }
+}
 
 const aboutPageBlock1 = {
   imgSrc: "/logo.svg",

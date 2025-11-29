@@ -11,7 +11,7 @@ import { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
 import CollectionPageSchema from "@/components/StructuredData/CollectionPageSchema";
 import BreadcrumbSchema from "@/components/StructuredData/BreadcrumbSchema";
-import { STORE_NAME, STORE_DOMAIN } from "@/app/utils/constants";
+import { getStoreConfig, getSEOValue, SEO_FALLBACKS } from "@/lib/actions/storeConfigActions";
 
 export async function generateMetadata({
   params,
@@ -21,46 +21,60 @@ export async function generateMetadata({
   type CategoryMetadata = {
     category: Category;
   };
-  const { slug } = await params;
-  const slugs = slug;
-  const categorySlug = slugs[slugs.length - 1]; // Get the last slug for category
 
-  let categoryName = "Tuotteet";
+  try {
+    const config = await getStoreConfig();
+    const domain = getSEOValue(config.seo.domain, SEO_FALLBACKS.domain);
 
-  if (categorySlug && categorySlug !== "all-products") {
-    try {
-      const categoryMetadata: CategoryMetadata =
-        await getCategoryMetadataFromApi(categorySlug); // Fetch category metadata from API
+    const { slug } = await params;
+    const slugs = slug;
+    const categorySlug = slugs[slugs.length - 1]; // Get the last slug for category
 
-      categoryName = categoryMetadata.category.name || "Tuotteet"; // Use fetched name or default
-    } catch (error) {
-      console.error("Error fetching category metadata for SEO:", error);
-      // Fallback to default name if API call fails -  important to have fallback for SEO
+    let categoryName = "Tuotteet";
+
+    if (categorySlug && categorySlug !== "all-products") {
+      try {
+        const categoryMetadata: CategoryMetadata =
+          await getCategoryMetadataFromApi(categorySlug); // Fetch category metadata from API
+
+        categoryName = categoryMetadata.category.name || "Tuotteet"; // Use fetched name or default
+      } catch (error) {
+        console.error("Error fetching category metadata for SEO:", error);
+        // Fallback to default name if API call fails -  important to have fallback for SEO
+      }
     }
+
+    const categoryUrl = `${domain}/products/${slugs.join("/")}`;
+
+    return {
+      title: `${config.store.name} | ${categoryName}`,
+      description: `Tutustu ${config.store.name} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
+      alternates: {
+        canonical: categoryUrl,
+      },
+      openGraph: {
+        title: `${config.store.name} | ${categoryName}`,
+        description: `Tutustu ${config.store.name} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
+        url: categoryUrl,
+        siteName: config.store.name,
+        locale: "fi_FI",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${config.store.name} | ${categoryName}`,
+        description: `Tutustu ${config.store.name} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
+      },
+    };
+  } catch (error) {
+    console.error("Error generating category metadata:", error);
+
+    return {
+      title: "Tuotteet",
+      description: "Tutustu tuotevalikoimaamme.",
+      robots: "noindex, nofollow",
+    };
   }
-
-  const categoryUrl = `${STORE_DOMAIN}/products/${slugs.join("/")}`;
-
-  return {
-    title: `${STORE_NAME} | ${categoryName}`,
-    description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
-    alternates: {
-      canonical: categoryUrl,
-    },
-    openGraph: {
-      title: `${STORE_NAME} | ${categoryName}`,
-      description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
-      url: categoryUrl,
-      siteName: STORE_NAME,
-      locale: "fi_FI",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${STORE_NAME} | ${categoryName}`,
-      description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin kategoriassa ${categoryName}.`,
-    },
-  };
 }
 
 const getCategoryMetadataFromApi = async (slug: string) => {

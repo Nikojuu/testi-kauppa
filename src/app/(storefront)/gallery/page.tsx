@@ -1,41 +1,61 @@
 import PhotoGallery from "@/components/Aboutpage/PhotoGallery";
 import Subtitle from "@/components/subtitle";
 import { Metadata } from "next";
-import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
+import { getStoreConfig, getSEOValue, SEO_FALLBACKS } from "@/lib/actions/storeConfigActions";
+import { SEO_ENABLED } from "@/app/utils/constants";
 
-export const metadata: Metadata = {
-  title: "Putiikkipalvelu | Galleria",
-  description: "Galleria",
-  keywords:
-    "Putiikkipalvelu, verkkokauppa, galleria, käsintehty, korut, lahjat, lasihelmet",
-  authors: [{ name: "Pupun Korvat" }],
-  robots:
-    "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const config = await getStoreConfig();
 
-  openGraph: {
-    title: "Putiikkipalvelu | Galleria",
-    description: "Putiikkipalvelu on verkkokauppa-alusta",
-    url: "https://www.putiikkipalvelu.fi", // Your website URL
-    images: [
-      {
-        url: OPEN_GRAPH_IMAGE, // Main product image
-        width: 1200,
-        height: 630,
-        alt: "Putiikkipalvelu",
+    const title = `${config.store.name} | Galleria`;
+    const description = `Tutustu ${config.store.name} kuva-galleriaan ja tuotteisiimme.`;
+    const domain = getSEOValue(config.seo.domain, SEO_FALLBACKS.domain);
+    const ogImage = getSEOValue(config.seo.openGraphImageUrl, SEO_FALLBACKS.openGraphImage);
+    const twitterImage = getSEOValue(config.seo.twitterImageUrl, SEO_FALLBACKS.twitterImage);
+
+    return {
+      title,
+      description,
+      robots: SEO_ENABLED
+        ? "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+        : "noindex, nofollow",
+      alternates: {
+        canonical: `${domain}/gallery`,
       },
-    ],
-    locale: "fi_FI",
-    type: "website",
-    siteName: "Putiikkipalvelu",
-  },
+      openGraph: {
+        title,
+        description,
+        url: `${domain}/gallery`,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+        locale: "fi_FI",
+        type: "website",
+        siteName: config.store.name,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [twitterImage],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating gallery page metadata:", error);
 
-  twitter: {
-    card: "summary_large_image",
-    title: "Putiikkipalvelu | Galleria",
-    description: "Putiikkipalvelu on verkkokauppa-alusta",
-    images: [TWITTER_IMAGE], // Main Twitter image
-  },
-};
+    return {
+      title: "Galleria",
+      description: "Kuva-galleria",
+      robots: "noindex, nofollow",
+    };
+  }
+}
 
 const GalleryPage = () => {
   return (

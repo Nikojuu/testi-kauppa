@@ -4,46 +4,67 @@ import AboutMeSection from "@/components/Homepage/AboutMeSection";
 import CategorySection from "@/components/Homepage/CategorySection";
 import { ProductCard } from "@/components/ProductCard";
 import { Metadata } from "next";
-import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
 import { ProductCarousel } from "@/components/Product/ProductCarousel";
-import { ApiResponseProductCardType, Campaign } from "../utils/types";
+import { ApiResponseProductCardType } from "../utils/types";
+import { getStoreConfig, getSEOValue, SEO_FALLBACKS } from "@/lib/actions/storeConfigActions";
+import { SEO_ENABLED } from "../utils/constants";
 
-export const metadata: Metadata = {
-  title: "Pupun Korvat | Käsintehtyjen korujen verkkokauppa",
-  description:
-    "Tutustu Pupun Korvien käsintehtyihin koruihin, jotka yhdistävät luonnon kauneuden ja ainutlaatuisen muotoilun. Löydä täydellinen koru itsellesi tai lahjaksi ystävälle. Laadukkaat materiaalit ja ajaton tyyli.",
-  keywords:
-    "korut, käsintehty, lahjat, lasihelmet, muotoilu, verkkokauppa,uniikit korut, käsityö, korvakorut, kaulakorut, rannekorut, lahja, ystävänpäivä, syntymäpäivä, joulu, äitienpäivä, ystävä, nainen, tyttöystävä, vaimo, äiti, tytär, sisko, ystävyys, rakkaus, kauneus, muoti, tyyli, ajaton, laadukas, kestävä, ekologinen, vastuullinen, kotimainen, suomalainen, design, suunnittelu, käsityöläinen,  käsityöläisyys,suomalainen design,käsityöläinen, ",
-  authors: [{ name: "Pupun Korvat" }],
-  robots:
-    "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const config = await getStoreConfig();
 
-  openGraph: {
-    title: "Pupun Korvat | Käsintehtyjä Koruja",
-    description:
-      "Käsintehtyjä koruja lasihelmistä. Tutustu Pupun Korvien koruvalikoimaan ja löydä itsellesi sopiva koru tai lahja ystävälle.",
-    url: "https://www.pupunkorvat.fi", // Your website URL
-    images: [
-      {
-        url: OPEN_GRAPH_IMAGE, // Main product image
-        width: 1200,
-        height: 630,
-        alt: "Pupun Korvat - Käsintehty koru",
+    const title = getSEOValue(config.seo.seoTitle, `${config.store.name} | Verkkokauppa`);
+    const description = getSEOValue(
+      config.seo.seoDescription,
+      `Tutustu ${config.store.name} valikoimaan. ${SEO_FALLBACKS.description}`
+    );
+    const domain = getSEOValue(config.seo.domain, SEO_FALLBACKS.domain);
+    const ogImage = getSEOValue(config.seo.openGraphImageUrl, SEO_FALLBACKS.openGraphImage);
+    const twitterImage = getSEOValue(config.seo.twitterImageUrl, SEO_FALLBACKS.twitterImage);
+
+    return {
+      title,
+      description,
+      robots: SEO_ENABLED
+        ? "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+        : "noindex, nofollow",
+      alternates: {
+        canonical: domain,
       },
-    ],
-    locale: "fi_FI",
-    type: "website",
-    siteName: "Pupun Korvat",
-  },
+      openGraph: {
+        title,
+        description,
+        url: domain,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+        locale: "fi_FI",
+        type: "website",
+        siteName: config.store.name,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [twitterImage],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating homepage metadata:", error);
 
-  twitter: {
-    card: "summary_large_image",
-    title: "Pupun Korvat | Käsintehtyjä Koruja",
-    description:
-      "Tutustu Pupun Korvien käsintehtyihin koruihin ja löydä ainutlaatuinen lahja tai itsellesi sopiva koru.",
-    images: [TWITTER_IMAGE], // Main Twitter image
-  },
-};
+    // Fallback metadata
+    return {
+      title: SEO_FALLBACKS.title,
+      description: SEO_FALLBACKS.description,
+      robots: "noindex, nofollow",
+    };
+  }
+}
 
 export const revalidate = 3600;
 

@@ -1,17 +1,35 @@
 import { Metadata } from "next";
+import { getStoreConfig } from "@/lib/actions/storeConfigActions";
 
-export const metadata: Metadata = {
-  title: "Pupun Korvat | Maksu- ja toimitusehdot",
-  description: "Tietoa palautuskäytännöistä, toimituksesta ja maksutavoista.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  openGraph: {
-    title: "Pupun Korvat | Pupun Korvat",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const config = await getStoreConfig();
+
+    return {
+      title: `${config.store.name} | Maksu- ja toimitusehdot`,
+      description: "Tietoa palautuskäytännöistä, toimituksesta ja maksutavoista.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+      openGraph: {
+        title: `${config.store.name} | Maksu- ja toimitusehdot`,
+        type: "website",
+      },
+    };
+  } catch (error) {
+    console.error("Error generating terms page metadata:", error);
+
+    return {
+      title: "Maksu- ja toimitusehdot",
+      description: "Tietoa palautuskäytännöistä, toimituksesta ja maksutavoista.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+}
 
 export default async function TermsPage() {
   return (

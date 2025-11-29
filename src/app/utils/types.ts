@@ -417,6 +417,19 @@ export interface StoreConfig {
     defaultVatRate: number;
     businessId: string;
     logoUrl: string | null;
+    ownerFirstName: string | null;
+    ownerLastName: string | null;
+  };
+  seo: {
+    seoTitle: string | null;
+    seoDescription: string | null;
+    domain: string | null;
+    openGraphImageUrl: string | null;
+    twitterImageUrl: string | null;
+    instagramUrl: string | null;
+    facebookUrl: string | null;
+    priceRange: string | null;
+    businessType: string | null;
   };
   payments: {
     methods: string[];

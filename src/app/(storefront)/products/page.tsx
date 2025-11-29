@@ -1,49 +1,62 @@
 import { Metadata } from "next";
 import ProductsPage from "./[...slug]/page";
+import { getStoreConfig, getSEOValue, SEO_FALLBACKS } from "@/lib/actions/storeConfigActions";
+import { SEO_ENABLED } from "@/app/utils/constants";
 
-import { OPEN_GRAPH_IMAGE, TWITTER_IMAGE } from "@/lib/utils";
-import {
-  STORE_NAME,
-  STORE_DOMAIN,
-  STORE_DESCRIPTION,
-  SEO_ENABLED,
-} from "@/app/utils/constants";
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const config = await getStoreConfig();
 
-export const metadata: Metadata = {
-  title: `${STORE_NAME} | Kaikki tuotteet`,
-  description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin. ${STORE_DESCRIPTION}`,
-  keywords:
-    "verkkokauppa, tuotteet, lahjat, verkko-ostokset, suomalaiset tuotteet, laadukkaat tuotteet",
-  authors: [{ name: STORE_NAME }],
-  robots: SEO_ENABLED
-    ? "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
-    : "noindex, nofollow",
-  alternates: {
-    canonical: `${STORE_DOMAIN}/products`,
-  },
-  openGraph: {
-    title: `${STORE_NAME} | Kaikki tuotteet`,
-    description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin. ${STORE_DESCRIPTION}`,
-    url: `${STORE_DOMAIN}/products`,
-    images: [
-      {
-        url: OPEN_GRAPH_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: `${STORE_NAME} - Tuotteet`,
+    const title = `${config.store.name} | Kaikki tuotteet`;
+    const description = getSEOValue(
+      config.seo.seoDescription,
+      `Tutustu ${config.store.name} verkkokaupan tuotteisiin. ${SEO_FALLBACKS.description}`
+    );
+    const domain = getSEOValue(config.seo.domain, SEO_FALLBACKS.domain);
+    const ogImage = getSEOValue(config.seo.openGraphImageUrl, SEO_FALLBACKS.openGraphImage);
+    const twitterImage = getSEOValue(config.seo.twitterImageUrl, SEO_FALLBACKS.twitterImage);
+
+    return {
+      title,
+      description,
+      robots: SEO_ENABLED
+        ? "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+        : "noindex, nofollow",
+      alternates: {
+        canonical: `${domain}/products`,
       },
-    ],
-    locale: "fi_FI",
-    type: "website",
-    siteName: STORE_NAME,
-  },
+      openGraph: {
+        title,
+        description,
+        url: `${domain}/products`,
+        images: [
+          {
+            url: ogImage,
+            width: 1200,
+            height: 630,
+            alt: `${config.store.name} - Tuotteet`,
+          },
+        ],
+        locale: "fi_FI",
+        type: "website",
+        siteName: config.store.name,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [twitterImage],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating products page metadata:", error);
 
-  twitter: {
-    card: "summary_large_image",
-    title: `${STORE_NAME} | Kaikki tuotteet`,
-    description: `Tutustu ${STORE_NAME} verkkokaupan tuotteisiin ja löydä itsellesi sopiva tuote.`,
-    images: [TWITTER_IMAGE],
-  },
-};
+    return {
+      title: "Kaikki tuotteet",
+      description: "Tutustu tuotevalikoimaamme.",
+      robots: "noindex, nofollow",
+    };
+  }
+}
 
 export default ProductsPage;

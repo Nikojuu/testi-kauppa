@@ -1,18 +1,37 @@
 import { Metadata } from "next";
+import { getStoreConfig } from "@/lib/actions/storeConfigActions";
 
-export const metadata: Metadata = {
-  title: "Tietosuojakäytäntö",
-  description:
-    "Tietosuojakäytäntö kuvaa, kuinka käsittelemme henkilötietoja verkkokaupan yhteydessä.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  openGraph: {
-    title: "Tietosuojakäytäntö | Pupun Korvat",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const config = await getStoreConfig();
+
+    return {
+      title: `${config.store.name} | Tietosuojakäytäntö`,
+      description:
+        "Tietosuojakäytäntö kuvaa, kuinka käsittelemme henkilötietoja verkkokaupan yhteydessä.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+      openGraph: {
+        title: `${config.store.name} | Tietosuojakäytäntö`,
+        type: "website",
+      },
+    };
+  } catch (error) {
+    console.error("Error generating privacy policy metadata:", error);
+
+    return {
+      title: "Tietosuojakäytäntö",
+      description:
+        "Tietosuojakäytäntö kuvaa, kuinka käsittelemme henkilötietoja verkkokaupan yhteydessä.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+}
 
 export default async function PrivacyPolicyPage() {
   return (

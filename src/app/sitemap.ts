@@ -1,7 +1,17 @@
 import { MetadataRoute } from "next";
 import { Category, Product } from "./utils/types";
+import { getStoreConfig, getSEOValue, SEO_FALLBACKS } from "@/lib/actions/storeConfigActions";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Get domain from store config with fallback
+  let domain = process.env.NEXT_PUBLIC_BASE_URL || "https://example.com";
+  try {
+    const config = await getStoreConfig();
+    domain = getSEOValue(config.seo.domain, domain);
+  } catch (error) {
+    console.error("Error fetching store config for sitemap:", error);
+  }
+
   // Fetch all products
   const fetchProducts = async () => {
     try {
@@ -28,6 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return [];
     }
   };
+
   // Fetch all categories
   const fetchCategories = async () => {
     try {
@@ -54,18 +65,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return [];
     }
   };
+
   const [products, categories] = await Promise.all([
     fetchProducts(),
     fetchCategories(),
   ]);
 
   const productUrls = products.map((product: Product) => ({
-    url: `${process.env.NEXT_PUBLIC_BASE_URL}/product/${product.slug}`,
+    url: `${domain}/product/${product.slug}`,
     lastModified: product.createdAt,
   }));
 
   const categoryUrls = categories.map((category: Category) => ({
-    url: `${process.env.NEXT_PUBLIC_BASE_URL}/products/${category.slug}`,
+    url: `${domain}/products/${category.slug}`,
     lastModified: category.createdAt,
   }));
 
@@ -78,7 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { route: "/privacy-policy", changefreq: "yearly", priority: 0.5 },
     { route: "/products", changefreq: "daily", priority: 0.9 },
   ].map(({ route, changefreq, priority }) => ({
-    url: `${process.env.NEXT_PUBLIC_BASE_URL}${route}`,
+    url: `${domain}${route}`,
     lastModified: new Date(),
     changefreq,
     priority,
