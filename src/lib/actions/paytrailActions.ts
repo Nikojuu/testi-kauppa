@@ -4,7 +4,6 @@ import { CartItem } from "@/hooks/use-cart";
 
 import { randomUUID } from "crypto";
 
-import { default as fetch } from "node-fetch";
 import { getUser } from "./authActions";
 import { ChosenShipmentType } from "@/components/Checkout/StripeCheckoutPage";
 import { z } from "zod";

@@ -1,6 +1,5 @@
 "use server";
 import { z } from "zod";
-import fetch from "node-fetch";
 import { cookies } from "next/headers";
 import { Resend } from "resend";
 import { STORE_NAME } from "@/app/utils/constants";

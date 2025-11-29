@@ -6,8 +6,6 @@ export const getStoreConfig = cache(async (): Promise<StoreConfig> => {
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/store-config`,
     {
       headers: { "x-api-key": process.env.STOREFRONT_API_KEY || "" },
-      // No revalidate - cache only deduplicates during the same request
-      cache: "no-store",
     }
   );
 

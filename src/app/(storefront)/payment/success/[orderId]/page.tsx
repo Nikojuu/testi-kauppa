@@ -16,7 +16,6 @@ import { ClearCart } from "@/components/Cart/ClearCart";
 import { Metadata } from "next";
 import ImageKitImage from "@/components/ImageKitImage";
 import { Order } from "@/app/utils/types";
-import fetch from "node-fetch";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Kiitos tilauksestasi!",
