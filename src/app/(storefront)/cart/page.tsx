@@ -1,5 +1,6 @@
 import CartPage from "@/components/Cart/CartPage";
 import { Metadata } from "next";
+import { getStoreConfig } from "@/lib/actions/storeConfigActions";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Ostoskori",
@@ -8,8 +9,11 @@ export const metadata: Metadata = {
   robots: "noindex, nofollow",
 };
 
-const CartRoute = () => {
-  return <CartPage />;
+const CartRoute = async () => {
+  const storeConfig = await getStoreConfig();
+  const campaigns = storeConfig.campaigns;
+
+  return <CartPage campaigns={campaigns} />;
 };
 
 export default CartRoute;

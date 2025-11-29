@@ -4,11 +4,10 @@ import { useState } from "react";
 
 import CustomerDataForm from "@/components/Checkout/CustomerDataForm";
 import { useCart } from "@/hooks/use-cart";
-import { useCampaigns } from "@/hooks/use-store-config";
 import { CustomerData, customerDataSchema } from "@/lib/zodSchemas";
 import { Button } from "@/components/ui/button";
 import { SelectShipmentMethod } from "@/components/Checkout/SelectShipmentMethod";
-import { ShipmentMethodsWithLocations } from "@/app/utils/types";
+import { Campaign, ShipmentMethodsWithLocations } from "@/app/utils/types";
 import { useToast } from "@/hooks/use-toast";
 import { XCircle } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
@@ -24,8 +23,7 @@ export type ChosenShipmentType = {
   pickupId: string | null;
 };
 
-const StripeCheckoutPage = () => {
-  const campaigns = useCampaigns();
+const StripeCheckoutPage = ({ campaigns }: { campaigns: Campaign[] }) => {
   const items = useCart((state) => state.items);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);

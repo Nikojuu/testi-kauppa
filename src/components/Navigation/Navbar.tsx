@@ -4,11 +4,9 @@ import MobileLinks from "./MobileLinks";
 import { ApiCategory, Campaign } from "@/app/utils/types";
 import CustomerDropdown from "./CustomerDropdown";
 import { getUser } from "@/lib/actions/authActions";
-import { getStoreConfig } from "@/lib/actions/storeConfigActions";
 
 const getNavbarData = async (): Promise<{
   categories: ApiCategory[];
-  campaigns: Campaign[];
 }> => {
   try {
     // Fetch categories
@@ -36,24 +34,15 @@ const getNavbarData = async (): Promise<{
       console.error(errorMessage);
     }
 
-    // Get campaigns from store config
-    let campaigns: Campaign[] = [];
-    try {
-      const storeConfig = await getStoreConfig();
-      campaigns = storeConfig.campaigns || [];
-    } catch (error) {
-      console.error("Failed to fetch campaigns from store config:", error);
-    }
-
-    return { categories, campaigns };
+    return { categories };
   } catch (error) {
     console.error("Error fetching navbar data:", error);
-    return { categories: [], campaigns: [] };
+    return { categories: [] };
   }
 };
 
-const Navbar = async () => {
-  const { categories, campaigns } = await getNavbarData();
+const Navbar = async ({ campaigns }: { campaigns: Campaign[] }) => {
+  const { categories } = await getNavbarData();
   const { user } = await getUser();
   return (
     <>

@@ -1,8 +1,8 @@
 import { PAYMENT_METHODS } from "@/app/utils/constants";
 import StripeCheckoutPage from "@/components/Checkout/StripeCheckoutPage";
-
 import { Metadata } from "next";
 import PaytrailCheckoutPage from "@/components/Checkout/PaytrailCheckoutPage";
+import { getStoreConfig } from "@/lib/actions/storeConfigActions";
 
 export const metadata: Metadata = {
   title: "Pupun Korvat | Tilaus",
@@ -17,11 +17,14 @@ export const metadata: Metadata = {
   },
 };
 
-const CheckoutRoute = () => {
+const CheckoutRoute = async () => {
+  const storeConfig = await getStoreConfig();
+  const campaigns = storeConfig.campaigns;
+
   if (PAYMENT_METHODS.includes("paytrail")) {
-    return <PaytrailCheckoutPage />;
+    return <PaytrailCheckoutPage campaigns={campaigns} />;
   } else if (PAYMENT_METHODS.includes("stripe")) {
-    return <StripeCheckoutPage />;
+    return <StripeCheckoutPage campaigns={campaigns} />;
   }
 };
 

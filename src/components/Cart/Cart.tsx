@@ -18,7 +18,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import CartItem from "./CartItem";
 import { Campaign } from "@/app/utils/types";
 
-const Cart = ({ campaigns = [] }: { campaigns?: Campaign[] }) => {
+const Cart = ({ campaigns }: { campaigns: Campaign[] }) => {
   const items = useCart((state) => state.items);
   const itemCount = items.length;
 
