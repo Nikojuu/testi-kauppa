@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import CustomerDataForm from "@/components/Checkout/CustomerDataForm";
 import { useCart } from "@/hooks/use-cart";
+import { useCampaigns } from "@/hooks/use-store-config";
 import { CustomerData, customerDataSchema } from "@/lib/zodSchemas";
 import { Button } from "@/components/ui/button";
 import { SelectShipmentMethod } from "@/components/Checkout/SelectShipmentMethod";
@@ -17,18 +18,14 @@ import { getShipmentMethods } from "@/lib/actions/shipmentActions";
 import { useRouter } from "next/navigation";
 import { CheckoutButton } from "../Cart/CheckoutButton";
 import { apiCreateStripeCheckoutSession } from "@/lib/actions/stripeActions";
-import { Campaign } from "@/app/utils/types";
 
 export type ChosenShipmentType = {
   shipmentMethodId: string;
   pickupId: string | null;
 };
 
-interface StripeCheckoutPageProps {
-  campaigns: Campaign[];
-}
-
-const StripeCheckoutPage = ({ campaigns }: StripeCheckoutPageProps) => {
+const StripeCheckoutPage = () => {
+  const campaigns = useCampaigns();
   const items = useCart((state) => state.items);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);

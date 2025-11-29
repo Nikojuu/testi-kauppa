@@ -4,6 +4,7 @@ import MobileLinks from "./MobileLinks";
 import { ApiCategory, Campaign } from "@/app/utils/types";
 import CustomerDropdown from "./CustomerDropdown";
 import { getUser } from "@/lib/actions/authActions";
+import { getStoreConfig } from "@/lib/actions/storeConfigActions";
 
 const getNavbarData = async (): Promise<{
   categories: ApiCategory[];
@@ -13,16 +14,6 @@ const getNavbarData = async (): Promise<{
     // Fetch categories
     const categoriesRes = await fetch(
       `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/categories`,
-      {
-        headers: {
-          "x-api-key": process.env.STOREFRONT_API_KEY || "",
-        },
-      }
-    );
-
-    // Fetch campaigns
-    const campaignsRes = await fetch(
-      `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/campaigns`,
       {
         headers: {
           "x-api-key": process.env.STOREFRONT_API_KEY || "",
@@ -45,20 +36,13 @@ const getNavbarData = async (): Promise<{
       console.error(errorMessage);
     }
 
-    // Handle campaigns response
+    // Get campaigns from store config
     let campaigns: Campaign[] = [];
-    if (campaignsRes.ok) {
-      const campaignData = await campaignsRes.json();
-      campaigns = campaignData.campaigns || [];
-    } else {
-      let errorMessage = "Failed to fetch campaigns";
-      try {
-        const errorData = await campaignsRes.json();
-        errorMessage = errorData.error || errorMessage;
-      } catch (jsonErr) {
-        // Ignore JSON parse errors
-      }
-      console.error(errorMessage);
+    try {
+      const storeConfig = await getStoreConfig();
+      campaigns = storeConfig.campaigns || [];
+    } catch (error) {
+      console.error("Failed to fetch campaigns from store config:", error);
     }
 
     return { categories, campaigns };

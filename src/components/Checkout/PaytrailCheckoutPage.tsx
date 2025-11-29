@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import CustomerDataForm from "@/components/Checkout/CustomerDataForm";
 import { useCart } from "@/hooks/use-cart";
+import { useCampaigns } from "@/hooks/use-store-config";
 import { CustomerData, customerDataSchema } from "@/lib/zodSchemas";
 import { Button } from "@/components/ui/button";
 import { SelectShipmentMethod } from "@/components/Checkout/SelectShipmentMethod";
@@ -15,7 +16,6 @@ import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
 import { getShipmentMethods } from "@/lib/actions/shipmentActions";
 
 import { CheckoutButton } from "../Cart/CheckoutButton";
-import { Campaign } from "@/app/utils/types";
 import { apiCreatePaytrailCheckoutSession } from "@/lib/actions/paytrailActions";
 import PaymentSelection from "./PaytrailPaymentSelection";
 import { PaytrailResponse } from "@/app/utils/paytrailTypes";
@@ -25,11 +25,8 @@ export type ChosenShipmentType = {
   pickupId: string | null;
 };
 
-interface PaytrailCheckoutPageProps {
-  campaigns: Campaign[];
-}
-
-const PaytrailCheckoutPage = ({ campaigns }: PaytrailCheckoutPageProps) => {
+const PaytrailCheckoutPage = () => {
+  const campaigns = useCampaigns();
   const items = useCart((state) => state.items);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);

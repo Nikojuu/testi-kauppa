@@ -4,7 +4,8 @@
       "mcp__shadcn__view_items_in_registries",
       "WebSearch",
       "Bash(ls:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": [],

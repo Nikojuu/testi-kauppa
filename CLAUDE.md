@@ -4,7 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Next.js 16 e-commerce storefront built with React 19, TypeScript, and Tailwind CSS. The application is a headless storefront that connects to an external backend API (Putiikkipalvelu) for product data, orders, and customer management.
+This is a **storefront template** for the Putiikkipalvelu multi-tenant e-commerce platform. Built with Next.js 16, React 19, TypeScript, and Tailwind CSS, this template serves as the foundation for all tenant storefronts.
+
+### Template Architecture
+
+- **Purpose**: This is a reusable template that connects to Putiikkipalvelu (located at `D:\Projektit\verkkokauppapalvelu`)
+- **Multi-tenant**: Each store is built from this template with tenant-specific styling and configuration
+- **Backend API**: Connects to Putiikkipalvelu's storefront API (`/api/storefront/*` endpoints)
+- **Core Logic**: All e-commerce functionality is implemented in this template
+- **Per-store Customization**: Each tenant store has its own styling (colors, fonts, theme) via `tailwind.config.ts` and `src/lib/fonts.ts`
+
+When deploying a new store, this template is duplicated and customized with:
+- Tenant-specific `TENANT_ID` environment variable
+- Custom Tailwind theme in `tailwind.config.ts`
+- Store branding (name, logo, colors, fonts)
+- Store-specific constants in `src/app/utils/constants.ts`
 
 ### Key Technologies
 - **Next.js 16** with App Router
@@ -66,19 +80,28 @@ The app uses Next.js App Router with route groups:
 
 ### Backend Integration
 
-The app communicates with an external backend API (Putiikkipalvelu):
+The template communicates with **Putiikkipalvelu** (located at `D:\Projektit\verkkokauppapalvelu`), which provides:
+
+**Storefront API Endpoints** (`/api/storefront/*`):
+- Product catalog and categories
+- Customer authentication and management
+- Order processing and history
+- Campaigns and sales data
+- Wishlist management
+- Email verification
 
 **Environment Variables (required):**
-- `NEXT_PUBLIC_STOREFRONT_API_URL` - Base URL for the storefront API
+- `NEXT_PUBLIC_STOREFRONT_API_URL` - Base URL for Putiikkipalvelu API (e.g., `https://api.putiikkipalvelu.fi`)
 - `STOREFRONT_API_KEY` - API key for server-side requests (passed as `x-api-key` header)
-- `NEXT_PUBLIC_BASE_URL` - The base URL of this Next.js app
-- `TENANT_ID` - Tenant identifier for multi-tenant backend
+- `NEXT_PUBLIC_BASE_URL` - The base URL of this Next.js storefront instance
+- `TENANT_ID` - Unique tenant identifier for this store (critical for multi-tenant data isolation)
 
 **Authentication Flow:**
-- Uses cookie-based sessions managed by the backend
+- Cookie-based sessions managed by Putiikkipalvelu backend
 - Session token stored in `session_token` cookie
 - Auth actions in `src/lib/actions/authActions.ts` handle login/register/logout
 - `getUser()` server action retrieves current user from session
+- All API requests include tenant context via `TENANT_ID`
 
 ### State Management
 
@@ -110,13 +133,17 @@ Uses **Shipit** API for shipping label generation and pickup point selection:
 
 ### Store Configuration
 
-Key constants in `src/app/utils/constants.ts`:
-- `SEO_ENABLED` - Controls search engine indexing (set to false for template/dev mode)
-- `STORE_NAME`, `STORE_DESCRIPTION`, `STORE_DOMAIN` - Basic store info
-- `SHOWCASE_CATEGORIES` - Featured categories on homepage
-- `PAYMENT_METHODS` - Enabled payment providers
+**Per-tenant customization** is done in these files:
+- `src/app/utils/constants.ts` - Store-specific constants
+  - `SEO_ENABLED` - Controls search engine indexing (set to false for template/dev mode)
+  - `STORE_NAME`, `STORE_DESCRIPTION`, `STORE_DOMAIN` - Basic store info
+  - `SHOWCASE_CATEGORIES` - Featured categories on homepage
+  - `PAYMENT_METHODS` - Enabled payment providers
+- `tailwind.config.ts` - Custom colors, fonts, and design tokens for the tenant
+- `src/lib/fonts.ts` - Store-specific font configuration
+- `.env` - Tenant-specific `TENANT_ID` and API configuration
 
-These should eventually be fetched from the database but are hardcoded for now.
+**Important**: These constants are currently hardcoded per store instance. In the future, they may be fetched from the Putiikkipalvelu backend based on `TENANT_ID`.
 
 ### Image Handling
 
@@ -157,11 +184,19 @@ import { ProductCard } from "@/components/ProductCard";
 
 ### Styling
 
-Uses custom Tailwind theme with design tokens defined in `tailwind.config.ts`:
-- Custom colors: `warm-white`, `charcoal`, `burnt-orange`, `sage-green`, etc.
-- Custom fonts via `src/lib/fonts.ts` (using `next/font`)
-- Animations via `tailwindcss-animate`
-- Component variants via `class-variance-authority`
+**Tenant-specific styling** is the primary customization point for each store:
+
+- **Tailwind theme** (`tailwind.config.ts`) - Define custom colors, spacing, and design tokens per store
+  - Example colors: `warm-white`, `charcoal`, `burnt-orange`, `sage-green`, etc.
+  - Each tenant can have completely different color schemes
+- **Custom fonts** (`src/lib/fonts.ts`) - Store-specific typography using `next/font`
+- **Animations** - Shared across all stores via `tailwindcss-animate`
+- **Component variants** - Shared component system via `class-variance-authority`
+
+**Template vs Instance**:
+- The template contains all UI components and logic
+- Each store instance customizes only the theme, fonts, and constants
+- This ensures consistency in functionality while allowing brand differentiation
 
 ### TypeScript Configuration
 
@@ -173,9 +208,13 @@ Uses custom Tailwind theme with design tokens defined in `tailwind.config.ts`:
 ## Important Patterns
 
 ### Data Fetching
-- Products, categories, and orders are fetched from external API
-- Use `fetch()` with `x-api-key` header for server-side requests
+- All data (products, categories, orders, customers) is fetched from Putiikkipalvelu API
+- API endpoints are prefixed with `/api/storefront/*`
+- Server-side requests must include:
+  - `x-api-key` header with `STOREFRONT_API_KEY`
+  - Requests are automatically scoped to `TENANT_ID` on the backend
 - Client components should use server actions, not direct API calls
+- Data is tenant-isolated on the backend - the template handles API communication
 
 ### Form Validation
 - Use Zod schemas (defined in `src/lib/zodSchemas.ts`)
@@ -193,11 +232,30 @@ Uses custom Tailwind theme with design tokens defined in `tailwind.config.ts`:
 
 ## Environment Setup
 
-Copy `.env` and configure:
-- Point `NEXT_PUBLIC_STOREFRONT_API_URL` to backend (production or local)
-- Add `STOREFRONT_API_KEY` from backend admin
-- Configure payment provider keys (Stripe, Paytrail)
-- Configure shipping API keys (Shipit)
-- Add `RESEND_API_KEY` for email sending
+### For Development (Template)
 
-The storefront connects to `D:\Projektit\verkkokaupat\Hennan-Korukauppa` repository which contains the backend API.
+Copy `.env.example` to `.env.local` and configure:
+- `NEXT_PUBLIC_STOREFRONT_API_URL` - Point to Putiikkipalvelu backend (local: `http://localhost:3000`, production: `https://api.putiikkipalvelu.fi`)
+- `STOREFRONT_API_KEY` - Get from Putiikkipalvelu admin panel
+- `TENANT_ID` - Use a test tenant ID for development
+- Payment provider keys (Stripe, Paytrail)
+- Shipping API keys (Shipit)
+- `RESEND_API_KEY` for email sending
+
+### For New Store Deployment
+
+When creating a new tenant store from this template:
+1. Duplicate this repository
+2. Set unique `TENANT_ID` for the new store
+3. Customize `tailwind.config.ts` with store branding
+4. Update `src/app/utils/constants.ts` with store info
+5. Configure `src/lib/fonts.ts` with store fonts
+6. Set production `NEXT_PUBLIC_STOREFRONT_API_URL`
+7. Deploy to hosting platform
+
+### Backend Connection
+
+This template connects to **Putiikkipalvelu** backend located at:
+- Local development: `D:\Projektit\verkkokauppapalvelu`
+- API documentation: See Putiikkipalvelu's `/api/storefront/*` endpoints
+- All stores share the same backend, isolated by `TENANT_ID`

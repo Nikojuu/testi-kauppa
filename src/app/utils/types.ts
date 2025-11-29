@@ -400,3 +400,33 @@ export interface CampaignApiResponse {
   type: CampaignType;
   found: boolean;
 }
+
+// Store Configuration Types
+export interface StoreConfig {
+  store: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    currency: string;
+    currencySymbol: string;
+    defaultVatRate: number;
+    businessId: string;
+    logoUrl: string | null;
+  };
+  payments: {
+    methods: string[];
+    defaultVatRate: number;
+  };
+  campaigns: Campaign[];
+  features: {
+    wishlistEnabled: boolean;
+    guestCheckoutEnabled: boolean;
+    newsletterEnabled: boolean;
+    reviewsEnabled: boolean;
+  };
+}

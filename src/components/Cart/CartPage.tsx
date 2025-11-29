@@ -2,12 +2,12 @@
 
 import Subtitle from "@/components/subtitle";
 import { useCart } from "@/hooks/use-cart";
+import { useCampaigns } from "@/hooks/use-store-config";
 import { useCampaignCart } from "@/hooks/use-campaign-cart";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Campaign } from "@/app/utils/types";
 import { CampaignAddedCartItems } from "./CampaignAddedCartItems";
 
 export type ShipmentMethods = {
@@ -18,10 +18,11 @@ export type ShipmentMethods = {
   cost: number;
 };
 
-const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
+const CartPage = () => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const items = useCart((state) => state.items);
+  const campaigns = useCampaigns();
 
   const freeShippingCampaign = campaigns.find(
     (campaign) => campaign.type === "FREE_SHIPPING"

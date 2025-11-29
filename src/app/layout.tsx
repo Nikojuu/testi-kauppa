@@ -6,7 +6,8 @@ import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import { textPrimary, textSecondary } from "@/lib/fonts";
 import StickyNavbar from "@/components/Navigation/StickyNavbar";
-import { getCampaigns } from "./utils/campaignUtils";
+import { getStoreConfig } from "@/lib/actions/storeConfigActions";
+import { StoreConfigProvider } from "@/components/StoreConfigProvider";
 import OrganizationSchema from "@/components/StructuredData/OrganizationSchema";
 import LocalBusinessSchema from "@/components/StructuredData/LocalBusinessSchema";
 import {
@@ -47,7 +48,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const campaigns = await getCampaigns();
+  const storeConfig = await getStoreConfig();
+  const campaigns = storeConfig.campaigns;
+
   return (
     <html
       lang="fi"
@@ -60,13 +63,15 @@ export default async function RootLayout({
       </head>
 
       <body className="bg-warm-white">
-        <StickyNavbar campaigns={campaigns}>
-          <Navbar />
-        </StickyNavbar>
-        <main className="min-h-[75vh] max-w-[3500px]">{children}</main>
-        <Footer />
+        <StoreConfigProvider config={storeConfig}>
+          <StickyNavbar campaigns={campaigns}>
+            <Navbar />
+          </StickyNavbar>
+          <main className="min-h-[75vh] max-w-[3500px]">{children}</main>
+          <Footer />
 
-        <Toaster />
+          <Toaster />
+        </StoreConfigProvider>
       </body>
     </html>
   );
