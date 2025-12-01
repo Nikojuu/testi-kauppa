@@ -1,6 +1,5 @@
 "use server";
 
-import { getUser } from "./authActions";
 import { ChosenShipmentType } from "@/components/Checkout/StripeCheckoutPage";
 import { z } from "zod";
 import { cookies } from "next/headers";
@@ -64,21 +63,31 @@ export async function apiCreateStripeCheckoutSession(
   chosenShipmentMethod: ChosenShipmentType | null,
   customerData: ServerCustomerData
 ): Promise<StripeCheckoutSuccessResponse> {
-  const { user } = await getUser();
   const cookieStore = await cookies();
   const cartId = cookieStore.get("cart-id")?.value;
+  const sessionId = cookieStore.get("session-id")?.value;
   const orderId = randomUUID();
+
+  // Build headers with session-id if logged in
+  const headers: Record<string, string> = {
+    "x-api-key": process.env.STOREFRONT_API_KEY || "",
+    "Content-Type": "application/json",
+  };
+  if (sessionId) {
+    headers["x-session-id"] = sessionId;
+  }
+
   const stripeCheckoutSessionRes = await fetch(
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/payments/stripe/checkout`,
     {
       method: "POST",
-      headers: { "x-api-key": process.env.STOREFRONT_API_KEY || "" },
+      headers,
       body: JSON.stringify({
         cartId,
         chosenShipmentMethod,
         customerData,
         orderId,
-        customerId: user?.id,
+        // Backend derives customerId from x-session-id header - don't send in body
         successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success/${orderId}`,
         cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/cancel/${orderId}`,
       }),
