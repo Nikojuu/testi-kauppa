@@ -1,10 +1,11 @@
 "use client";
 
 import { useCart } from "@/hooks/use-cart";
-import { X, Plus, Minus } from "lucide-react";
+import { X, Plus, Minus, Loader2 } from "lucide-react";
 import { isSaleActive } from "@/lib/utils";
 import ImageKitImage from "../ImageKitImage";
 import { ProductFromApi, ProductVariationFromApi } from "@/app/utils/types";
+import { useState } from "react";
 
 type CartItemProps = {
   product: ProductFromApi;
@@ -19,9 +20,11 @@ export default function CartItem({
   paidQuantity,
   freeQuantity,
 }: CartItemProps) {
+  const [isUpdating, setIsUpdating] = useState(false);
   const removeItem = useCart((state) => state.removeItem);
   const incrementQuantity = useCart((state) => state.incrementQuantity);
   const decrementQuantity = useCart((state) => state.decrementQuantity);
+  const loading = useCart((state) => state.loading);
   const cartItem = useCart((state) =>
     state.items.find((item) =>
       variation
@@ -112,24 +115,41 @@ export default function CartItem({
           {/* Quantity controls */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => decrementQuantity(product.id, variation?.id)}
-              disabled={displayQuantity <= 1}
+              onClick={async () => {
+                setIsUpdating(true);
+                await decrementQuantity(product.id, variation?.id);
+                setIsUpdating(false);
+              }}
+              disabled={displayQuantity <= 1 || loading}
               className="w-7 h-7 flex items-center justify-center border border-charcoal/20 text-charcoal/70 transition-colors duration-300 hover:border-rose-gold hover:text-rose-gold disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Minus className="w-3 h-3" />
+              {loading && isUpdating ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Minus className="w-3 h-3" />
+              )}
             </button>
             <span className="w-8 text-center text-sm font-secondary text-charcoal">
               {displayQuantity}
             </span>
             <button
-              onClick={() => incrementQuantity(product.id, variation?.id)}
+              onClick={async () => {
+                setIsUpdating(true);
+                await incrementQuantity(product.id, variation?.id);
+                setIsUpdating(false);
+              }}
               disabled={
+                loading ||
                 isOutOfStock ||
                 (!isUnlimitedStock && displayQuantity >= stockQuantity)
               }
               className="w-7 h-7 flex items-center justify-center border border-charcoal/20 text-charcoal/70 transition-colors duration-300 hover:border-rose-gold hover:text-rose-gold disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Plus className="w-3 h-3" />
+              {loading && isUpdating ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Plus className="w-3 h-3" />
+              )}
             </button>
           </div>
         </div>

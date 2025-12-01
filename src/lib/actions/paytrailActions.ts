@@ -1,9 +1,5 @@
 "use server";
-
-import { CartItem } from "@/hooks/use-cart";
-
 import { randomUUID } from "crypto";
-
 import { getUser } from "./authActions";
 import { ChosenShipmentType } from "@/components/Checkout/StripeCheckoutPage";
 import { z } from "zod";
@@ -11,6 +7,7 @@ import {
   PaytrailCheckoutErrorResponse,
   PaytrailResponse,
 } from "@/app/utils/paytrailTypes";
+import { cookies } from "next/headers";
 
 // Response types for the Stripe checkout endpoint
 
@@ -45,12 +42,13 @@ class CartError extends Error {
   }
 }
 export async function apiCreatePaytrailCheckoutSession(
-  items: CartItem[],
   chosenShipmentMethod: ChosenShipmentType | null,
   customerData: ServerCustomerData
 ): Promise<PaytrailResponse> {
   const orderId = randomUUID();
   const { user } = await getUser();
+  const cookieStore = await cookies();
+  const cartId = cookieStore.get("cart-id")?.value;
 
   const paytrailRes = await fetch(
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/payments/paytrail/checkout`,
@@ -58,7 +56,7 @@ export async function apiCreatePaytrailCheckoutSession(
       method: "POST",
       headers: { "x-api-key": process.env.STOREFRONT_API_KEY || "" },
       body: JSON.stringify({
-        items,
+        cartId,
         chosenShipmentMethod,
         customerData,
         orderId,

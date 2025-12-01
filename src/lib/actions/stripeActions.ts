@@ -1,12 +1,10 @@
 "use server";
 
-import { CartItem } from "@/hooks/use-cart";
-
-import { randomUUID } from "crypto";
-
 import { getUser } from "./authActions";
 import { ChosenShipmentType } from "@/components/Checkout/StripeCheckoutPage";
 import { z } from "zod";
+import { cookies } from "next/headers";
+import { randomUUID } from "crypto";
 
 // Response types for the Stripe checkout endpoint
 type StripeCheckoutErrorCode =
@@ -63,20 +61,20 @@ class CartError extends Error {
   }
 }
 export async function apiCreateStripeCheckoutSession(
-  items: CartItem[],
   chosenShipmentMethod: ChosenShipmentType | null,
   customerData: ServerCustomerData
 ): Promise<StripeCheckoutSuccessResponse> {
-  const orderId = randomUUID();
   const { user } = await getUser();
-
+  const cookieStore = await cookies();
+  const cartId = cookieStore.get("cart-id")?.value;
+  const orderId = randomUUID();
   const stripeCheckoutSessionRes = await fetch(
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/payments/stripe/checkout`,
     {
       method: "POST",
       headers: { "x-api-key": process.env.STOREFRONT_API_KEY || "" },
       body: JSON.stringify({
-        items,
+        cartId,
         chosenShipmentMethod,
         customerData,
         orderId,

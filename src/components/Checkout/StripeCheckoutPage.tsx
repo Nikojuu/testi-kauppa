@@ -5,7 +5,6 @@ import { useState } from "react";
 import CustomerDataForm from "@/components/Checkout/CustomerDataForm";
 import { useCart } from "@/hooks/use-cart";
 import { CustomerData, customerDataSchema } from "@/lib/zodSchemas";
-import { Button } from "@/components/ui/button";
 import { SelectShipmentMethod } from "@/components/Checkout/SelectShipmentMethod";
 import { Campaign, ShipmentMethodsWithLocations } from "@/app/utils/types";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +23,6 @@ export type ChosenShipmentType = {
 };
 
 const StripeCheckoutPage = ({ campaigns }: { campaigns: Campaign[] }) => {
-  const items = useCart((state) => state.items);
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
@@ -93,7 +91,6 @@ const StripeCheckoutPage = ({ campaigns }: { campaigns: Campaign[] }) => {
     const validatedCustomerData = validationResult.data;
 
     const res = await apiCreateStripeCheckoutSession(
-      items,
       chosenShipmentMethod,
       validatedCustomerData
     );
