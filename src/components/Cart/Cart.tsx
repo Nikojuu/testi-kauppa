@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/hooks/use-cart";
 import { useCampaignCart } from "@/hooks/use-campaign-cart";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Sheet,
   SheetContent,
@@ -18,11 +18,19 @@ import { ScrollArea } from "../ui/scroll-area";
 import CartItem from "./CartItem";
 import { Campaign } from "@/app/utils/types";
 
-const Cart = ({ campaigns }: { campaigns: Campaign[] }) => {
+const Cart = ({
+  campaigns,
+  hasExistingCart,
+}: {
+  campaigns: Campaign[];
+  hasExistingCart: boolean;
+}) => {
   const items = useCart((state) => state.items);
+  const syncWithBackend = useCart((state) => state.syncWithBackend);
   const itemCount = items.length;
 
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const initializedRef = useRef<boolean>(false);
 
   // Find campaigns
   const freeShippingCampaign = campaigns.find(
@@ -41,15 +49,29 @@ const Cart = ({ campaigns }: { campaigns: Campaign[] }) => {
     freeShipping,
   } = useCampaignCart(items, buyXPayYCampaign, freeShippingCampaign);
 
+  // Handle hydration mismatch for client-only content
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Sync cart from Redis once per session if user has existing cart
+  useEffect(() => {
+    if (hasExistingCart && !initializedRef.current) {
+      syncWithBackend();
+      initializedRef.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasExistingCart]);
 
   return (
     <Sheet>
       <SheetTrigger
         className="group flex items-center gap-2 p-2 transition-colors duration-300"
-        aria-label={isMounted && itemCount > 0 ? `Avaa ostoskori, ${itemCount} tuotetta` : "Avaa ostoskori"}
+        aria-label={
+          isMounted && itemCount > 0
+            ? `Avaa ostoskori, ${itemCount} tuotetta`
+            : "Avaa ostoskori"
+        }
       >
         <div className="relative">
           <ShoppingCart
@@ -192,6 +214,7 @@ const Cart = ({ campaigns }: { campaigns: Campaign[] }) => {
               <Image
                 src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4i4qKGOmoWuI5hetYs2UbcZvCKz06lFmBSQgq9"
                 fill
+                sizes="200px, 200px"
                 alt="Tyhjä ostoskori"
                 className="object-contain opacity-80"
               />

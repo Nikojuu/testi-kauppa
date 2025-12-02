@@ -153,6 +153,7 @@ export async function loginCustomer(formData: FormData) {
   }
 
   const { email, password } = validatedFields.data;
+  const guestCartId = formData.get("x-cart-id");
 
   try {
     const response = await fetch(
@@ -161,6 +162,7 @@ export async function loginCustomer(formData: FormData) {
         method: "POST",
         headers: {
           "x-api-key": process.env.STOREFRONT_API_KEY || "",
+          ...(guestCartId && { "x-cart-id": guestCartId as string }),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

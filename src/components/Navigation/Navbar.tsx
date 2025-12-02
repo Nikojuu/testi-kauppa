@@ -4,6 +4,7 @@ import MobileLinks from "./MobileLinks";
 import { ApiCategory, Campaign } from "@/app/utils/types";
 import CustomerDropdown from "./CustomerDropdown";
 import { getUser } from "@/lib/actions/authActions";
+import { cookies } from "next/headers";
 
 const getNavbarData = async (): Promise<{
   categories: ApiCategory[];
@@ -44,6 +45,11 @@ const getNavbarData = async (): Promise<{
 const Navbar = async ({ campaigns }: { campaigns: Campaign[] }) => {
   const { categories } = await getNavbarData();
   const { user } = await getUser();
+
+  // Check if user has an existing cart
+  const cookieStore = await cookies();
+  const hasExistingCart = !!cookieStore.get("cart-id")?.value;
+
   return (
     <>
       {/* Mobile menu button */}
@@ -57,7 +63,7 @@ const Navbar = async ({ campaigns }: { campaigns: Campaign[] }) => {
       {/* User dropdown and Cart - positioned on the right */}
       <div className="flex items-center gap-4 ml-auto">
         <CustomerDropdown user={user} />
-        <Cart campaigns={campaigns} />
+        <Cart campaigns={campaigns} hasExistingCart={hasExistingCart} />
       </div>
     </>
   );

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useCart } from "@/hooks/use-cart";
 import { ProductFromApi, ProductVariationFromApi } from "@/app/utils/types";
+import { toast } from "@/hooks/use-toast";
 
 const AddToCartButton = ({
   product,
@@ -33,10 +34,30 @@ const AddToCartButton = ({
   const isOutOfStock =
     availableStock !== null && currentCartQuantity >= availableStock;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (isOutOfStock) return; // Prevent action if out of stock
-    addItem(product, selectedVariation);
-    setIsSuccess(true);
+
+    try {
+      await addItem(product, selectedVariation);
+      setIsSuccess(true);
+    } catch (error: any) {
+      // Handle cart limit error
+      if (error.code === "CART_LIMIT_EXCEEDED") {
+        toast({
+          variant: "destructive",
+          title: "Ostoskorin raja täynnä",
+          description: error.message || "Ostoskorissa voi olla maksimissaan rajallinen määrä eri tuotteita.",
+        });
+      } else {
+        // Handle other errors
+        toast({
+          variant: "destructive",
+          title: "Virhe",
+          description: "Tuotteen lisääminen ostoskoriin epäonnistui. Yritä uudelleen.",
+        });
+      }
+      console.error("Failed to add to cart:", error);
+    }
   };
 
   useEffect(() => {

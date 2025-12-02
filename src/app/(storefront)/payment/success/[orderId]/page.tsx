@@ -12,7 +12,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
-import { ClearCart } from "@/components/Cart/ClearCart";
 import { Metadata } from "next";
 import ImageKitImage from "@/components/ImageKitImage";
 import { Order } from "@/app/utils/types";
@@ -86,8 +85,6 @@ export default async function PaymentSuccessPage({
 
   return (
     <section className="pt-8 md:pt-16 pb-16 bg-warm-white min-h-screen">
-      <ClearCart />
-
       <div className="container mx-auto px-4 max-w-screen-xl">
         {/* Success Header */}
         <div className="text-center mb-12 md:mb-16">

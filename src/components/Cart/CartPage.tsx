@@ -6,7 +6,9 @@ import { useCampaignCart } from "@/hooks/use-campaign-cart";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 import { CampaignAddedCartItems } from "./CampaignAddedCartItems";
 import { Campaign } from "@/app/utils/types";
 
@@ -19,9 +21,11 @@ export type ShipmentMethods = {
 };
 
 const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
-  const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
 
-  const items = useCart((state) => state.items);
+  const router = useRouter();
+  const cart = useCart();
 
   const freeShippingCampaign = campaigns.find(
     (campaign) => campaign.type === "FREE_SHIPPING"
@@ -37,11 +41,75 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
     originalTotal,
     totalSavings,
     freeShipping,
-  } = useCampaignCart(items, buyXPayYCampaign, freeShippingCampaign);
+  } = useCampaignCart(cart.items, buyXPayYCampaign, freeShippingCampaign);
 
+  // Clear validation error when cart items change
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    if (validationError) {
+      setValidationError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart.items]);
+
+  const handleCheckout = async () => {
+    if (isValidating) return;
+    setIsValidating(true);
+
+    try {
+      setValidationError(null); // Clear previous errors
+      const validation = await cart.validateCart();
+
+      if (validation.hasChanges) {
+        // Build toast message from changes
+        const messages: string[] = [];
+        if (validation.changes.removedItems > 0) {
+          messages.push(
+            `${validation.changes.removedItems} tuotetta poistettiin (loppu varastosta tai poistettu)`
+          );
+        }
+        if (validation.changes.quantityAdjusted > 0) {
+          messages.push(
+            `${validation.changes.quantityAdjusted} tuotteen määrää vähennettiin varastotilanteen mukaan`
+          );
+        }
+        if (validation.changes.priceChanged > 0) {
+          messages.push(
+            `${validation.changes.priceChanged} tuotteen hinta päivitettiin`
+          );
+        }
+
+        // Show warning toast
+        toast({
+          title:
+            "Ostoskorissa on tapahtunut muutoksia. Tarkista ostoskori ennen jatkamista.",
+          description: messages.join(". "),
+          variant: "default",
+          className:
+            "bg-amber-50 border-amber-200 dark:bg-amber-900 dark:border-amber-800",
+        });
+
+        // Set persistent error banner
+        setValidationError(
+          "Tuotteissa on tapahtunut muutoksia tarkista ostoskori ennen jatkamista"
+        );
+
+        // BLOCK navigation - user stays on cart page
+        return;
+      }
+
+      // Validation passed - proceed to checkout
+      router.push("/payment/checkout");
+    } catch (error) {
+      console.error("Validation failed:", error);
+      toast({
+        title: "Virhe",
+        description: "Ostoskorin tarkistus epäonnistui. Yritä uudelleen.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsValidating(false);
+    }
+  };
 
   return (
     <section className="pt-8 md:pt-16 pb-16 bg-warm-white">
@@ -53,7 +121,28 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
           <div className="lg:col-span-7">
             <h2 className="sr-only">Ostoskorin tuotteet</h2>
 
-            {isMounted && items.length === 0 ? (
+            {cart.loading ? (
+              /* Loading skeleton */
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="relative p-6 bg-cream/30 border border-rose-gold/10 animate-pulse"
+                  >
+                    <div className="flex gap-6">
+                      {/* Image skeleton */}
+                      <div className="w-24 h-24 bg-rose-gold/20 rounded" />
+                      {/* Content skeleton */}
+                      <div className="flex-1 space-y-3">
+                        <div className="h-5 bg-rose-gold/20 rounded w-3/4" />
+                        <div className="h-4 bg-rose-gold/20 rounded w-1/2" />
+                        <div className="h-4 bg-rose-gold/20 rounded w-1/4" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : cart.items.length === 0 ? (
               /* Empty cart state */
               <div className="relative p-8 md:p-12 bg-cream/30 border border-rose-gold/10">
                 {/* Corner accents */}
@@ -148,11 +237,7 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
                         Alkuperäinen hinta
                       </span>
                       <span className="text-base font-secondary text-charcoal/60">
-                        {isMounted ? (
-                          `${originalTotal.toFixed(2)} €`
-                        ) : (
-                          <Loader2 className="h-4 w-4 animate-spin text-charcoal/40" />
-                        )}
+                        {`${originalTotal.toFixed(2)} €`}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -160,11 +245,7 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
                         Kampanja säästö
                       </span>
                       <span className="text-base font-secondary text-deep-burgundy font-medium">
-                        {isMounted ? (
-                          `-${totalSavings.toFixed(2)} €`
-                        ) : (
-                          <Loader2 className="h-4 w-4 animate-spin text-charcoal/40" />
-                        )}
+                        {`-${totalSavings.toFixed(2)} €`}
                       </span>
                     </div>
                   </div>
@@ -218,11 +299,7 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
                     Yhteensä
                   </span>
                   <span className="text-lg text-charcoal ">
-                    {isMounted ? (
-                      `${cartTotal.toFixed(2)} €`
-                    ) : (
-                      <Loader2 className="h-6 w-6 animate-spin text-charcoal/40" />
-                    )}
+                    {`${cartTotal.toFixed(2)} €`}
                   </span>
                 </div>
 
@@ -237,27 +314,50 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
               </div>
 
               {/* Checkout button - only show if cart has items */}
-              {isMounted && items.length > 0 && (
+              {cart.items.length > 0 && (
                 <div className="mt-8">
-                  <Link
-                    href="/payment/checkout"
-                    className="group w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold"
-                  >
-                    <span>Jatka tilaukseen</span>
-                    <svg
-                      className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                  {/* Validation error banner */}
+                  {validationError && (
+                    <div
+                      className="mb-4 p-4 bg-red-50 border border-red-200 text-red-800"
+                      role="alert"
+                      aria-live="assertive"
+                      aria-atomic="true"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M17 8l4 4m0 0l-4 4m4-4H3"
-                      />
-                    </svg>
-                  </Link>
+                      <p className="text-sm font-secondary">
+                        {validationError}
+                      </p>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleCheckout}
+                    disabled={cart.loading || isValidating}
+                    className="group w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {cart.loading || isValidating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      </>
+                    ) : (
+                      <>
+                        <span>Jatka tilaukseen</span>
+                        <svg
+                          className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
+                        </svg>
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
 

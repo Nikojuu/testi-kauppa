@@ -2,11 +2,12 @@
 
 import { Campaign } from "@/app/utils/types";
 import { isSaleActive } from "@/lib/utils";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import ImageKitImage from "../ImageKitImage";
 import { useCart } from "@/hooks/use-cart";
 import { CampaignCalculatedItem } from "@/hooks/use-campaign-cart";
+import { useState } from "react";
 
 export const CampaignAddedCartItems = ({
   buyXPayYCampaign,
@@ -15,23 +16,31 @@ export const CampaignAddedCartItems = ({
   buyXPayYCampaign: Campaign | undefined;
   calculatedItems: CampaignCalculatedItem[];
 }) => {
+  const [updatingItemKey, setUpdatingItemKey] = useState<string | null>(null);
   const incrementQuantity = useCart((state) => state.incrementQuantity);
   const decrementQuantity = useCart((state) => state.decrementQuantity);
   const removeItem = useCart((state) => state.removeItem);
+  const loading = useCart((state) => state.loading);
 
   return (
     <>
       {calculatedItems.map(({ item, paidQuantity, freeQuantity }, i) => {
         const { product, variation, cartQuantity } = item;
 
-        // Determine if the stock is unlimited or out of stock
-        const isUnlimitedStock = variation
-          ? variation.quantity === null
-          : product.quantity === null;
+        // Create unique key for this item
+        const itemKey = variation
+          ? `${product.id}-${variation.id}`
+          : product.id;
 
-        const isOutOfStock = variation
-          ? !isUnlimitedStock && (variation.quantity ?? 0) <= cartQuantity
-          : !isUnlimitedStock && (product.quantity ?? 0) <= cartQuantity;
+        // Determine stock logic based on variation or product
+        const stockQuantity =
+          variation?.quantity !== undefined
+            ? variation.quantity
+            : product.quantity;
+
+        const isUnlimitedStock = stockQuantity === null;
+        const isOutOfStock = stockQuantity === 0;
+        const isThisItemUpdating = loading && updatingItemKey === itemKey;
 
         // Get current price for display
         let displayPrice = product.price;
@@ -53,7 +62,7 @@ export const CampaignAddedCartItems = ({
 
         return (
           <div
-            key={i}
+            key={`${itemKey}-${i}`}
             className="relative p-4 md:p-6 bg-cream/30 border border-rose-gold/10"
           >
             {/* Corner accents */}
@@ -147,22 +156,48 @@ export const CampaignAddedCartItems = ({
                 {/* Quantity controls */}
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => decrementQuantity(product.id, variation?.id)}
-                    disabled={cartQuantity === 1}
+                    onClick={async () => {
+                      setUpdatingItemKey(itemKey);
+                      try {
+                        await decrementQuantity(product.id, variation?.id);
+                      } finally {
+                        setUpdatingItemKey(null);
+                      }
+                    }}
+                    disabled={cartQuantity === 1 || loading}
                     className="w-8 h-8 flex items-center justify-center border border-charcoal/20 text-charcoal/70 transition-colors duration-300 hover:border-rose-gold hover:text-rose-gold disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <Minus className="w-4 h-4" />
+                    {isThisItemUpdating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Minus className="w-4 h-4" />
+                    )}
                     <span className="sr-only">Vähennä määrää</span>
                   </button>
                   <span className="w-8 text-center text-sm font-secondary text-charcoal">
                     {cartQuantity || 0}
                   </span>
                   <button
-                    onClick={() => incrementQuantity(product.id, variation?.id)}
-                    disabled={isOutOfStock}
+                    onClick={async () => {
+                      setUpdatingItemKey(itemKey);
+                      try {
+                        await incrementQuantity(product.id, variation?.id);
+                      } finally {
+                        setUpdatingItemKey(null);
+                      }
+                    }}
+                    disabled={
+                      loading ||
+                      isOutOfStock ||
+                      (!isUnlimitedStock && cartQuantity >= stockQuantity)
+                    }
                     className="w-8 h-8 flex items-center justify-center border border-charcoal/20 text-charcoal/70 transition-colors duration-300 hover:border-rose-gold hover:text-rose-gold disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <Plus className="w-4 h-4" />
+                    {isThisItemUpdating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Plus className="w-4 h-4" />
+                    )}
                     <span className="sr-only">Lisää määrää</span>
                   </button>
                 </div>
@@ -170,16 +205,9 @@ export const CampaignAddedCartItems = ({
                 {/* Campaign info */}
                 {freeQuantity > 0 && (
                   <div className="mt-3 p-2 bg-soft-blush/30 border border-rose-gold/15">
-                    <div className="flex items-center gap-3 text-xs font-secondary">
-                      <span className="text-charcoal/70">
-                        Maksat: {paidQuantity} kpl
-                      </span>
-                      <span className="text-rose-gold font-medium">
-                        Ilmainen: {freeQuantity} kpl
-                      </span>
-                    </div>
-                    <p className="text-xs font-secondary text-charcoal/50 mt-1">
-                      Kampanja: Osta {buyXPayYCampaign?.BuyXPayYCampaign?.buyQuantity}, maksa{" "}
+                    <p className="text-xs font-secondary text-rose-gold text-center">
+                      Kampanja: Osta{" "}
+                      {buyXPayYCampaign?.BuyXPayYCampaign?.buyQuantity}, maksa{" "}
                       {buyXPayYCampaign?.BuyXPayYCampaign?.payQuantity}
                     </p>
                   </div>
