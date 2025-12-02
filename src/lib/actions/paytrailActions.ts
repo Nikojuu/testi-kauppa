@@ -53,10 +53,9 @@ export async function apiCreatePaytrailCheckoutSession(
   const headers: Record<string, string> = {
     "x-api-key": process.env.STOREFRONT_API_KEY || "",
     "Content-Type": "application/json",
+    ...(cartId && { "x-cart-id": cartId }),
+    ...(sessionId && { "x-session-id": sessionId }),
   };
-  if (sessionId) {
-    headers["x-session-id"] = sessionId;
-  }
 
   const paytrailRes = await fetch(
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/payments/paytrail/checkout`,
@@ -64,11 +63,9 @@ export async function apiCreatePaytrailCheckoutSession(
       method: "POST",
       headers,
       body: JSON.stringify({
-        cartId,
         chosenShipmentMethod,
         customerData,
         orderId,
-        // Backend derives customerId from x-session-id header - don't send in body
         successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success/${orderId}`,
         cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/cancel/${orderId}`,
       }),

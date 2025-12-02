@@ -6,7 +6,7 @@ import { useCampaignCart } from "@/hooks/use-campaign-cart";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { CampaignAddedCartItems } from "./CampaignAddedCartItems";
@@ -22,6 +22,7 @@ export type ShipmentMethods = {
 
 const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
 
   const router = useRouter();
   const cart = useCart();
@@ -42,11 +43,21 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
     freeShipping,
   } = useCampaignCart(cart.items, buyXPayYCampaign, freeShippingCampaign);
 
+  // Clear validation error when cart items change
+  useEffect(() => {
+    if (validationError) {
+      setValidationError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart.items]);
+
   const handleCheckout = async () => {
+    if (isValidating) return;
+    setIsValidating(true);
+
     try {
       setValidationError(null); // Clear previous errors
       const validation = await cart.validateCart();
-      console.log("validation", validation);
 
       if (validation.hasChanges) {
         // Build toast message from changes
@@ -95,6 +106,8 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
         description: "Ostoskorin tarkistus epäonnistui. Yritä uudelleen.",
         variant: "destructive",
       });
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -130,67 +143,60 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
                 ))}
               </div>
             ) : cart.items.length === 0 ? (
-              +(
-                (
-                  /* Empty cart state */
-                  <div className="relative p-8 md:p-12 bg-cream/30 border border-rose-gold/10">
-                    {/* Corner accents */}
-                    <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-rose-gold/30" />
-                    <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-rose-gold/30" />
-                    <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-rose-gold/30" />
-                    <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-rose-gold/30" />
+              /* Empty cart state */
+              <div className="relative p-8 md:p-12 bg-cream/30 border border-rose-gold/10">
+                {/* Corner accents */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-rose-gold/30" />
+                <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-rose-gold/30" />
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-rose-gold/30" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-rose-gold/30" />
 
-                    <div className="flex flex-col items-center justify-center text-center">
-                      {/* Decorative element */}
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/40" />
-                        <div className="w-2 h-2 bg-rose-gold/30 diamond-shape" />
-                        <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/40" />
-                      </div>
-
-                      <div
-                        aria-hidden="true"
-                        className="relative mb-6 h-40 w-40"
-                      >
-                        <Image
-                          src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4i4qKGOmoWuI5hetYs2UbcZvCKz06lFmBSQgq9"
-                          fill
-                          loading="eager"
-                          alt="Tyhjä ostoskori"
-                          className="object-contain opacity-80"
-                        />
-                      </div>
-
-                      <h3 className="font-primary text-4xl text-charcoal mb-2">
-                        Ostoskorisi on tyhjä
-                      </h3>
-                      <p className="text-base font-secondary text-charcoal/60 mb-8">
-                        Löydä itsellesi sopiva koru kokoelmastamme
-                      </p>
-
-                      <Link
-                        href="/products"
-                        className="group inline-flex items-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold"
-                      >
-                        <span>Selaa koruja</span>
-                        <svg
-                          className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M17 8l4 4m0 0l-4 4m4-4H3"
-                          />
-                        </svg>
-                      </Link>
-                    </div>
+                <div className="flex flex-col items-center justify-center text-center">
+                  {/* Decorative element */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/40" />
+                    <div className="w-2 h-2 bg-rose-gold/30 diamond-shape" />
+                    <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/40" />
                   </div>
-                )
-              )
+
+                  <div aria-hidden="true" className="relative mb-6 h-40 w-40">
+                    <Image
+                      src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4i4qKGOmoWuI5hetYs2UbcZvCKz06lFmBSQgq9"
+                      fill
+                      loading="eager"
+                      alt="Tyhjä ostoskori"
+                      className="object-contain opacity-80"
+                    />
+                  </div>
+
+                  <h3 className="font-primary text-4xl text-charcoal mb-2">
+                    Ostoskorisi on tyhjä
+                  </h3>
+                  <p className="text-base font-secondary text-charcoal/60 mb-8">
+                    Löydä itsellesi sopiva koru kokoelmastamme
+                  </p>
+
+                  <Link
+                    href="/products"
+                    className="group inline-flex items-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold"
+                  >
+                    <span>Selaa koruja</span>
+                    <svg
+                      className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
             ) : (
               /* Cart items list */
               <div className="space-y-4">
@@ -312,7 +318,12 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
                 <div className="mt-8">
                   {/* Validation error banner */}
                   {validationError && (
-                    <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-800">
+                    <div
+                      className="mb-4 p-4 bg-red-50 border border-red-200 text-red-800"
+                      role="alert"
+                      aria-live="assertive"
+                      aria-atomic="true"
+                    >
                       <p className="text-sm font-secondary">
                         {validationError}
                       </p>
@@ -321,10 +332,10 @@ const CartPage = ({ campaigns }: { campaigns: Campaign[] }) => {
 
                   <button
                     onClick={handleCheckout}
-                    disabled={cart.loading}
+                    disabled={cart.loading || isValidating}
                     className="group w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {cart.loading ? (
+                    {cart.loading || isValidating ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin" />
                       </>

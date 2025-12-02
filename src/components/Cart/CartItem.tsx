@@ -117,13 +117,16 @@ export default function CartItem({
             <button
               onClick={async () => {
                 setIsUpdating(true);
-                await decrementQuantity(product.id, variation?.id);
-                setIsUpdating(false);
+                try {
+                  await decrementQuantity(product.id, variation?.id);
+                } finally {
+                  setIsUpdating(false);
+                }
               }}
               disabled={displayQuantity <= 1 || loading}
               className="w-7 h-7 flex items-center justify-center border border-charcoal/20 text-charcoal/70 transition-colors duration-300 hover:border-rose-gold hover:text-rose-gold disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {loading && isUpdating ? (
+              {isUpdating ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
               ) : (
                 <Minus className="w-3 h-3" />
@@ -135,8 +138,11 @@ export default function CartItem({
             <button
               onClick={async () => {
                 setIsUpdating(true);
-                await incrementQuantity(product.id, variation?.id);
-                setIsUpdating(false);
+                try {
+                  await incrementQuantity(product.id, variation?.id);
+                } finally {
+                  setIsUpdating(false);
+                }
               }}
               disabled={
                 loading ||
@@ -145,7 +151,7 @@ export default function CartItem({
               }
               className="w-7 h-7 flex items-center justify-center border border-charcoal/20 text-charcoal/70 transition-colors duration-300 hover:border-rose-gold hover:text-rose-gold disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {loading && isUpdating ? (
+              {isUpdating ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
               ) : (
                 <Plus className="w-3 h-3" />
@@ -183,7 +189,11 @@ export default function CartItem({
               <div className="text-[10px] font-secondary text-charcoal/50 mt-1">
                 {paidQuantity > 0 && (
                   <p>
-                    {paidQuantity} × {((isOnSale && salePrice ? salePrice : displayPrice) / 100).toFixed(2)} €
+                    {paidQuantity} ×{" "}
+                    {(
+                      (isOnSale && salePrice ? salePrice : displayPrice) / 100
+                    ).toFixed(2)}{" "}
+                    €
                   </p>
                 )}
                 {freeQuantity > 0 && (

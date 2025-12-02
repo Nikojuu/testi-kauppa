@@ -45,6 +45,7 @@ export async function apiFetchCart() {
       maxAge: 60 * 60 * 24 * 10, // 10 days
       httpOnly: true,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
   }
 
@@ -90,6 +91,7 @@ export async function apiAddToCart(
       maxAge: 60 * 60 * 24 * 10,
       httpOnly: true,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
   }
 

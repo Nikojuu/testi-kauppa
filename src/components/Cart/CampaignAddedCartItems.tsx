@@ -34,7 +34,9 @@ export const CampaignAddedCartItems = ({
 
         // Determine stock logic based on variation or product
         const stockQuantity =
-          variation?.quantity !== undefined ? variation.quantity : product.quantity;
+          variation?.quantity !== undefined
+            ? variation.quantity
+            : product.quantity;
 
         const isUnlimitedStock = stockQuantity === null;
         const isOutOfStock = stockQuantity === 0;
@@ -60,7 +62,7 @@ export const CampaignAddedCartItems = ({
 
         return (
           <div
-            key={i}
+            key={`${itemKey}-${i}`}
             className="relative p-4 md:p-6 bg-cream/30 border border-rose-gold/10"
           >
             {/* Corner accents */}
@@ -156,8 +158,11 @@ export const CampaignAddedCartItems = ({
                   <button
                     onClick={async () => {
                       setUpdatingItemKey(itemKey);
-                      await decrementQuantity(product.id, variation?.id);
-                      setUpdatingItemKey(null);
+                      try {
+                        await decrementQuantity(product.id, variation?.id);
+                      } finally {
+                        setUpdatingItemKey(null);
+                      }
                     }}
                     disabled={cartQuantity === 1 || loading}
                     className="w-8 h-8 flex items-center justify-center border border-charcoal/20 text-charcoal/70 transition-colors duration-300 hover:border-rose-gold hover:text-rose-gold disabled:opacity-40 disabled:cursor-not-allowed"
@@ -175,8 +180,11 @@ export const CampaignAddedCartItems = ({
                   <button
                     onClick={async () => {
                       setUpdatingItemKey(itemKey);
-                      await incrementQuantity(product.id, variation?.id);
-                      setUpdatingItemKey(null);
+                      try {
+                        await incrementQuantity(product.id, variation?.id);
+                      } finally {
+                        setUpdatingItemKey(null);
+                      }
                     }}
                     disabled={
                       loading ||
@@ -198,7 +206,8 @@ export const CampaignAddedCartItems = ({
                 {freeQuantity > 0 && (
                   <div className="mt-3 p-2 bg-soft-blush/30 border border-rose-gold/15">
                     <p className="text-xs font-secondary text-rose-gold text-center">
-                      Kampanja: Osta {buyXPayYCampaign?.BuyXPayYCampaign?.buyQuantity}, maksa{" "}
+                      Kampanja: Osta{" "}
+                      {buyXPayYCampaign?.BuyXPayYCampaign?.buyQuantity}, maksa{" "}
                       {buyXPayYCampaign?.BuyXPayYCampaign?.payQuantity}
                     </p>
                   </div>

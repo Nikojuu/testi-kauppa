@@ -3,17 +3,13 @@
 import { useState } from "react";
 
 import CustomerDataForm from "@/components/Checkout/CustomerDataForm";
-import { useCart } from "@/hooks/use-cart";
 import { CustomerData, customerDataSchema } from "@/lib/zodSchemas";
-import { Button } from "@/components/ui/button";
 import { SelectShipmentMethod } from "@/components/Checkout/SelectShipmentMethod";
 import { Campaign, ShipmentMethodsWithLocations } from "@/app/utils/types";
 import { useToast } from "@/hooks/use-toast";
 import { XCircle } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
-
 import { getShipmentMethods } from "@/lib/actions/shipmentActions";
-
 import { CheckoutButton } from "../Cart/CheckoutButton";
 import { apiCreatePaytrailCheckoutSession } from "@/lib/actions/paytrailActions";
 import PaymentSelection from "./PaytrailPaymentSelection";
@@ -70,7 +66,6 @@ const PaytrailCheckoutPage = ({ campaigns }: { campaigns: Campaign[] }) => {
         action: (
           <div className="flex items-center space-x-2">
             <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
-            <div className="flex flex-col"></div>
           </div>
         ),
       });
@@ -116,7 +111,6 @@ const PaytrailCheckoutPage = ({ campaigns }: { campaigns: Campaign[] }) => {
         action: (
           <div className="flex items-center space-x-2">
             <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
-            <div className="flex flex-col"></div>
           </div>
         ),
       });

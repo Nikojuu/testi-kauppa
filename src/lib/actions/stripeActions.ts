@@ -72,10 +72,9 @@ export async function apiCreateStripeCheckoutSession(
   const headers: Record<string, string> = {
     "x-api-key": process.env.STOREFRONT_API_KEY || "",
     "Content-Type": "application/json",
+    ...(cartId && { "x-cart-id": cartId }),
+    ...(sessionId && { "x-session-id": sessionId }),
   };
-  if (sessionId) {
-    headers["x-session-id"] = sessionId;
-  }
 
   const stripeCheckoutSessionRes = await fetch(
     `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/payments/stripe/checkout`,
@@ -83,7 +82,6 @@ export async function apiCreateStripeCheckoutSession(
       method: "POST",
       headers,
       body: JSON.stringify({
-        cartId,
         chosenShipmentMethod,
         customerData,
         orderId,
