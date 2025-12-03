@@ -46,10 +46,6 @@ const Navbar = async ({ campaigns }: { campaigns: Campaign[] }) => {
   const { categories } = await getNavbarData();
   const { user } = await getUser();
 
-  // Check if user has an existing cart
-  const cookieStore = await cookies();
-  const hasExistingCart = !!cookieStore.get("cart-id")?.value;
-
   return (
     <>
       {/* Mobile menu button */}
@@ -63,7 +59,7 @@ const Navbar = async ({ campaigns }: { campaigns: Campaign[] }) => {
       {/* User dropdown and Cart - positioned on the right */}
       <div className="flex items-center gap-4 ml-auto">
         <CustomerDropdown user={user} />
-        <Cart campaigns={campaigns} hasExistingCart={hasExistingCart} />
+        <Cart campaigns={campaigns} />
       </div>
     </>
   );

@@ -83,18 +83,11 @@ export const useCart = create<CartState>()((set, get) => ({
 
   // Increment quantity
   incrementQuantity: async (productId, variationId) => {
-    const currentItem = get().items.find(
-      (item) =>
-        item.product.id === productId && item.variation?.id === variationId
-    );
-
-    if (!currentItem) return;
-
     set({ loading: true });
     try {
       const data = await apiUpdateCartQuantity(
         productId,
-        currentItem.cartQuantity + 1,
+        +1, // Delta: increment by 1
         variationId
       );
       set({ items: data.items, loading: false });
@@ -107,18 +100,11 @@ export const useCart = create<CartState>()((set, get) => ({
 
   // Decrement quantity
   decrementQuantity: async (productId, variationId) => {
-    const currentItem = get().items.find(
-      (item) =>
-        item.product.id === productId && item.variation?.id === variationId
-    );
-
-    if (!currentItem || currentItem.cartQuantity <= 1) return;
-
     set({ loading: true });
     try {
       const data = await apiUpdateCartQuantity(
         productId,
-        currentItem.cartQuantity - 1,
+        -1, // Delta: decrement by 1
         variationId
       );
       set({ items: data.items, loading: false });

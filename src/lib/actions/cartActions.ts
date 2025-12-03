@@ -99,11 +99,16 @@ export async function apiAddToCart(
 }
 
 /**
- * Update item quantity
+ * Update item quantity by delta (atomic, race-condition safe)
+ *
+ * @param productId - Product ID
+ * @param delta - Quantity change (+1, -1, or any integer)
+ * @param variationId - Optional variation ID
+ * @returns Updated cart data
  */
 export async function apiUpdateCartQuantity(
   productId: string,
-  quantity: number,
+  delta: number,
   variationId?: string
 ) {
   const cookieStore = await cookies();
@@ -117,7 +122,7 @@ export async function apiUpdateCartQuantity(
       cartId,
       productId,
       variationId,
-      quantity,
+      delta,
     }),
   });
 

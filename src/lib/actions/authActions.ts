@@ -153,7 +153,10 @@ export async function loginCustomer(formData: FormData) {
   }
 
   const { email, password } = validatedFields.data;
-  const guestCartId = formData.get("x-cart-id");
+
+  // Get guest cart-id from cookie (if user was guest before login)
+  const cookieStore = await cookies();
+  const guestCartId = cookieStore.get("cart-id")?.value;
 
   try {
     const response = await fetch(
@@ -162,7 +165,7 @@ export async function loginCustomer(formData: FormData) {
         method: "POST",
         headers: {
           "x-api-key": process.env.STOREFRONT_API_KEY || "",
-          ...(guestCartId && { "x-cart-id": guestCartId as string }),
+          ...(guestCartId && { "x-cart-id": guestCartId }),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -239,6 +242,9 @@ export async function loginCustomer(formData: FormData) {
       sameSite: "lax",
       expires: new Date(data.expiresAt),
     });
+
+    // Delete guest cart-id cookie (backend already merged and deleted guest cart)
+    (await cookies()).delete("cart-id");
 
     return {
       success: true,
@@ -322,7 +328,7 @@ export async function logout() {
   const sessionId = sessionIdCookie.value;
 
   try {
-    await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_STOREFRONT_API_URL}/api/storefront/v1/customer/logout`,
       {
         method: "POST",
@@ -336,6 +342,20 @@ export async function logout() {
 
     // Clear session cookie
     (await cookies()).delete("session-id");
+
+    // Handle cart migration: if backend returns a new cartId, set it as cookie
+    if (response.ok) {
+      const data = await response.json();
+      if (data.cartId) {
+        (await cookies()).set("cart-id", data.cartId, {
+          maxAge: 60 * 60 * 24 * 10, // 10 days
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+        });
+      }
+    }
 
     return;
   } catch (error) {

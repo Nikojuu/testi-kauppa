@@ -18,13 +18,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import CartItem from "./CartItem";
 import { Campaign } from "@/app/utils/types";
 
-const Cart = ({
-  campaigns,
-  hasExistingCart,
-}: {
-  campaigns: Campaign[];
-  hasExistingCart: boolean;
-}) => {
+const Cart = ({ campaigns }: { campaigns: Campaign[] }) => {
   const items = useCart((state) => state.items);
   const syncWithBackend = useCart((state) => state.syncWithBackend);
   const itemCount = items.length;
@@ -54,14 +48,15 @@ const Cart = ({
     setIsMounted(true);
   }, []);
 
-  // Sync cart from Redis once per session if user has existing cart
+  // Sync cart from Redis on mount
   useEffect(() => {
-    if (hasExistingCart && !initializedRef.current) {
+    if (!initializedRef.current) {
+      // Always sync -   backend returns empty cart if no session/cart-id exists
       syncWithBackend();
       initializedRef.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasExistingCart]);
+  }, []);
 
   return (
     <Sheet>
