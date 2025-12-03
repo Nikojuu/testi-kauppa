@@ -81,36 +81,60 @@ export const useCart = create<CartState>()((set, get) => ({
     }
   },
 
-  // Increment quantity
+  // Increment quantity (optimistic update)
   incrementQuantity: async (productId, variationId) => {
-    set({ loading: true });
+    const previousItems = get().items;
+
+    // Optimistic: update UI immediately
+    set({
+      items: previousItems.map((item) =>
+        item.product.id === productId && item.variation?.id === variationId
+          ? { ...item, cartQuantity: item.cartQuantity + 1 }
+          : item
+      ),
+    });
+
     try {
       const data = await apiUpdateCartQuantity(
         productId,
         +1, // Delta: increment by 1
         variationId
       );
-      set({ items: data.items, loading: false });
+      // Sync with server truth
+      set({ items: data.items });
     } catch (error) {
       console.error("Failed to update quantity:", error);
-      set({ loading: false });
+      // Rollback on error
+      set({ items: previousItems });
       throw error;
     }
   },
 
-  // Decrement quantity
+  // Decrement quantity (optimistic update)
   decrementQuantity: async (productId, variationId) => {
-    set({ loading: true });
+    const previousItems = get().items;
+
+    // Optimistic: update UI immediately
+    set({
+      items: previousItems.map((item) =>
+        item.product.id === productId && item.variation?.id === variationId
+          ? { ...item, cartQuantity: item.cartQuantity - 1 }
+          : item
+      ),
+    });
+
     try {
       const data = await apiUpdateCartQuantity(
         productId,
         -1, // Delta: decrement by 1
         variationId
       );
-      set({ items: data.items, loading: false });
+      // Sync with server truth
+      set({ items: data.items });
     } catch (error) {
       console.error("Failed to update quantity:", error);
-      set({ loading: false });
+      // Rollback on error
+      set({ items: previousItems });
       throw error;
     }
   },
