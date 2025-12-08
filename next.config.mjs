@@ -4,6 +4,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "images.putiikkipalvelu.fi",
+      },
+      {
+        protocol: "https",
+        hostname: "pub-93d6c2a1c0274c318eeb70253a796faa.r2.dev",
+      },
+      {
+        protocol: "https",
         hostname: "utfs.io",
         port: "",
       },
