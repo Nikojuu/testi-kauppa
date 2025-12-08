@@ -2,8 +2,7 @@
 
 import { useCart } from "@/hooks/use-cart";
 import { X, Plus, Minus } from "lucide-react";
-import { isSaleActive } from "@/lib/utils";
-import ImageKitImage from "../ImageKitImage";
+import { getImageUrl, isSaleActive } from "@/lib/utils";
 import { ProductFromApi, ProductVariationFromApi } from "@/app/utils/types";
 
 type CartItemProps = {
@@ -70,14 +69,11 @@ export default function CartItem({
       <div className="flex gap-4">
         {/* Product image */}
         <div className="relative w-20 h-20 flex-shrink-0 overflow-hidden bg-warm-white">
-          <ImageKitImage
-            src={variation?.images?.[0] ?? product.images[0]}
+          <img
+            src={getImageUrl(variation?.images?.[0] ?? product.images[0], "thumbnail")}
             alt={product.name}
-            width={80}
-            height={80}
             className="object-cover w-full h-full"
-            transformations="w-80,h-80"
-            quality={90}
+            loading="lazy"
           />
         </div>
 

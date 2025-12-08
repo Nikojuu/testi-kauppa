@@ -5,9 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Share2 } from "lucide-react";
 
-import { getPriceInfo } from "@/lib/utils";
+import { getPriceInfo, getImageUrl } from "@/lib/utils";
 import { Skeleton } from "./ui/skeleton";
-import ImageKitImage from "./ImageKitImage";
 import { ApiResponseProductCardType } from "@/app/utils/types";
 
 interface ProductCardProps {
@@ -46,14 +45,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
 
           {/* Image section */}
           <div className="relative aspect-square overflow-hidden bg-cream/30">
-            <ImageKitImage
-              src={item.images[0]}
+            <img
+              src={getImageUrl(item.images[0], "small")}
               alt={item.name}
-              fill
-              quality={90}
-              sizes="(min-width: 1040px) 400px, (min-width: 768px) 50vw, 100vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              transformations="w-500,h-500"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
             />
 
             {/* Elegant overlay on hover */}

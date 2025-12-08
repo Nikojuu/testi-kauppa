@@ -156,7 +156,7 @@ const MobileLinks = memo(({ categories }: { categories: ApiCategory[] }) => {
               onClick={handleLinkClick}
             >
               <Image
-                src="https://ik.imagekit.io/putiikkipalvelu/tr:w-80,h-80/https:/dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
+                src="https://dsh3gv4ve2.ufs.sh/f/PRCJ5a0N1o4iZ21jgtkpBdQ56DKGgHuI8cM2XEZmqPvzU1fn"
                 alt="Pupun Korvat logo"
                 width={64}
                 height={64}

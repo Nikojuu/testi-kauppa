@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
-import ImageKitImage from "@/components/ImageKitImage";
+import { getImageUrl } from "@/lib/utils";
 import { Order } from "@/app/utils/types";
 
 export const metadata: Metadata = {
@@ -138,12 +138,11 @@ export default async function PaymentSuccessPage({
                   <div className="flex gap-4">
                     {item.images.length > 0 && (
                       <div className="w-16 h-16 flex-shrink-0">
-                        <ImageKitImage
-                          src={item.images[0]}
+                        <img
+                          src={getImageUrl(item.images[0], "thumbnail")}
                           alt={item.name}
-                          width={64}
-                          height={64}
                           className="rounded-md object-cover w-full h-full border border-rose-gold/10"
+                          loading="lazy"
                         />
                       </div>
                     )}

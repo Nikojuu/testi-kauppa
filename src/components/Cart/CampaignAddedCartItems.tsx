@@ -1,10 +1,9 @@
 "use client";
 
 import { Campaign } from "@/app/utils/types";
-import { isSaleActive } from "@/lib/utils";
+import { getImageUrl, isSaleActive } from "@/lib/utils";
 import { Minus, Plus, X } from "lucide-react";
 import Link from "next/link";
-import ImageKitImage from "../ImageKitImage";
 import { useCart } from "@/hooks/use-cart";
 import { CampaignCalculatedItem } from "@/hooks/use-campaign-cart";
 
@@ -74,26 +73,26 @@ export const CampaignAddedCartItems = ({
                   href={`/product/${product.slug}`}
                   className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 overflow-hidden bg-warm-white group"
                 >
-                  <ImageKitImage
-                    src={variation?.images[0] || product.images[0]}
+                  <img
+                    src={getImageUrl(
+                      variation?.images[0] || product.images[0],
+                      "thumbnail"
+                    )}
                     alt={product.name}
-                    width={128}
-                    height={128}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    transformations="w-128,h-128"
-                    quality={90}
+                    loading="lazy"
                   />
                 </Link>
               ) : (
                 <div className="relative w-24 h-24 md:w-32 md:h-32 flex-shrink-0 overflow-hidden bg-warm-white">
-                  <ImageKitImage
-                    src={variation?.images[0] || product.images[0]}
+                  <img
+                    src={getImageUrl(
+                      variation?.images[0] || product.images[0],
+                      "thumbnail"
+                    )}
                     alt={product.name}
-                    width={128}
-                    height={128}
                     className="w-full h-full object-cover"
-                    transformations="w-128,h-128"
-                    quality={90}
+                    loading="lazy"
                   />
                 </div>
               )}

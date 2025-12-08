@@ -61,7 +61,7 @@ const ProductDetail = ({ product }: { product: ProductFromApi }) => {
 
       <div className="flex flex-col md:flex-row gap-8 lg:gap-16">
         {/* Image Section */}
-        <div className="md:w-1/2">
+        <div className="md:w-1/2 relative z-10">
           <div className="hidden md:block">
             <ImageSliderWithZoom
               images={

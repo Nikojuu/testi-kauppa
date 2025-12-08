@@ -11,6 +11,32 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export type ImageSize = "master" | "large" | "medium" | "small" | "thumbnail";
+
+// Map size names to actual filenames in R2 storage
+const sizeToFilename: Record<ImageSize, string> = {
+  master: "master",
+  large: "large",
+  medium: "medium",
+  small: "small",
+  thumbnail: "thumbnail",
+};
+
+/**
+ * Get a specific size variant URL from a master image URL
+ * @param masterUrl - The master image URL (e.g., .../master.avif)
+ * @param size - Desired size: master (2400px), large (1200px), medium (800px), small (400px), thumbnail (200px)
+ * @returns URL for the requested size
+ */
+export function getImageUrl(
+  masterUrl: string | null | undefined,
+  size: ImageSize = "medium"
+): string {
+  if (!masterUrl) return "";
+  const filename = sizeToFilename[size];
+  return masterUrl.replace("/master.avif", `/${filename}.avif`);
+}
+
 // priceUtils.ts
 
 export const isSaleActive = (
