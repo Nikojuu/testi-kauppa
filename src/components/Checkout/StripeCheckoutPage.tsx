@@ -8,13 +8,12 @@ import { CustomerData, customerDataSchema } from "@/lib/zodSchemas";
 import { SelectShipmentMethod } from "@/components/Checkout/SelectShipmentMethod";
 import { Campaign, ShipmentMethodsWithLocations } from "@/app/utils/types";
 import { useToast } from "@/hooks/use-toast";
-import { XCircle } from "lucide-react";
+import { XCircle, Loader2 } from "lucide-react";
 import { CheckoutSteps } from "@/components/Checkout/CheckoutSteps";
 
 import { getShipmentMethods } from "@/lib/actions/shipmentActions";
 
 import { useRouter } from "next/navigation";
-import { CheckoutButton } from "../Cart/CheckoutButton";
 import { apiCreateStripeCheckoutSession } from "@/lib/actions/stripeActions";
 
 export type ChosenShipmentType = {
@@ -79,23 +78,36 @@ const StripeCheckoutPage = ({ campaigns }: { campaigns: Campaign[] }) => {
   };
 
   const handleStripeCheckout = async () => {
+    // Prevent double submission
+    if (isLoading) return;
+    setIsLoading(true);
+
     // Revalidate customer data with Zod schema
     const validationResult = customerDataSchema.safeParse(customerData);
     if (!validationResult.success) {
       console.error("Customer data validation failed:", validationResult.error);
-
+      setIsLoading(false);
       return;
     }
 
-    // Use the validated data
-    const validatedCustomerData = validationResult.data;
+    try {
+      // Use the validated data
+      const validatedCustomerData = validationResult.data;
 
-    const res = await apiCreateStripeCheckoutSession(
-      chosenShipmentMethod,
-      validatedCustomerData
-    );
-    router.push(res.url);
-    setIsLoading(false);
+      const res = await apiCreateStripeCheckoutSession(
+        chosenShipmentMethod,
+        validatedCustomerData
+      );
+      router.push(res.url);
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Virhe",
+        description: "Maksun käsittely epäonnistui. Yritä uudelleen.",
+        className: "bg-red-50 border-red-200",
+      });
+      setIsLoading(false);
+    }
   };
 
   const handleGoBack = () => {
@@ -152,9 +164,36 @@ const StripeCheckoutPage = ({ campaigns }: { campaigns: Campaign[] }) => {
               </svg>
               <span>Takaisin</span>
             </button>
-            <form action={handleStripeCheckout}>
-              <CheckoutButton disabled={!chosenShipmentMethod} />
-            </form>
+            <button
+              type="button"
+              onClick={handleStripeCheckout}
+              disabled={!chosenShipmentMethod || isLoading}
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-charcoal text-warm-white font-secondary text-sm tracking-wider uppercase transition-all duration-300 hover:bg-rose-gold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Odota</span>
+                </>
+              ) : (
+                <>
+                  <span>Siirry maksamaan</span>
+                  <svg
+                    className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </>
+              )}
+            </button>
           </div>
         </>
       )}
